@@ -1,3 +1,7 @@
+var crypto = require('crypto');
+
+
+
 /**
  * Фильтруем размеры. Оставляем только те что меньше заданного 
  * @param {array} arr массив с размерами по ширине
@@ -17,6 +21,7 @@ let extend = function () {
   let merge = {}
   Array.prototype.forEach.call(arguments, function (obj) {
     for (let key in obj) {
+      // eslint-disable-next-line no-prototype-builtins
       if (!obj.hasOwnProperty(key)) return
       merge[key] = obj[key]
     }
@@ -41,17 +46,36 @@ const removeProperty = prop => ({
 // [].concat.apply([], [sizes[0], sizes[1]]))
 const concat = function (args) {
   args = Array.prototype.slice.call(arguments)
-  // console.log('⚡ args', args.join().split(','))
-  // return [].concat.apply([], [...args])
-  // return args.join().split(',')
   return Array.prototype.concat(...args)
-  // return args.reduce((merged, block) => {
-  //   merged.push(...block);
-  //   return merged;
-  // }, []);
-  //   .reduce((prev, next) => {
-  //   return prev.concat(next);
-  // }, []);
+}
+
+/**
+ *  
+ * @param  {...any} args arguments
+ * @returns {array}
+ */
+const arrArguments = function (...args) {
+  let number = Number(args[1]) || 0
+  return [].slice.call(...args, number)
+}
+
+const promisify = function promisify(func, args) {
+  return new Promise((resolve, reject) => {
+    func.apply(null, [...args, (err, result) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    }])
+  })
+}
+
+const generateChecksum = function (str, algorithm, encoding) {
+  return crypto
+    .createHash(algorithm || 'md5')
+    .update(str, 'utf8')
+    .digest(encoding || 'hex');
 }
 
 const util = {}
@@ -61,5 +85,8 @@ util.arrayToObject = arrayToObject
 util.removeProperty = removeProperty
 util.extend = extend
 util.concat = concat
+util.arrArguments = arrArguments
+util.promisify = promisify
+util.generateChecksum = generateChecksum
 
 module.exports = util

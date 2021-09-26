@@ -1,12 +1,42 @@
 const fs = require('fs')
+const fsPromises = fs.promises
 const path = require('path')
+const FileHound = require('filehound')
+copy = require('recursive-copy')
 
 const Base = require('./base')
+const {
+  async
+} = require('regenerator-runtime')
 
 
 class Dir extends Base {
   constructor(options) {
     super(options)
+  }
+
+  create(path) {
+    // this.dir = path
+    return FileHound.create()
+  }
+
+  directory(path, depth = 0) {
+    path = this.resolve(path)
+    return FileHound.create().paths(path).depth(depth).directory().find()
+  }
+
+  files(path, depth = 0) {
+    path = this.resolve(path)
+    return this.create()
+      .paths(path)
+      .depth(depth)
+      // .ignoreHiddenDirectories()
+      .find()
+  }
+
+  /** Recursively copy files and folders from src to dest */
+  dirCopy(src, dest, options) {
+
   }
 
   mkDir(targetDir, {
@@ -39,6 +69,11 @@ class Dir extends Base {
 
       return curDir;
     }, initDir)
+  }
+
+  isDirectory(dir) {
+    dir = this.resolve(dir)
+    return this.fs.stat(dir).then(stat => stat.isDirectory())
   }
 
 }

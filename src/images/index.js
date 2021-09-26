@@ -1,6 +1,11 @@
 /* eslint-disable private-variables/no-access */
 const sharp = require('sharp')
 
+const {
+  promisify
+} = require('util')
+const sizeOf = promisify(require('image-size'))
+
 const imagemin = require('imagemin')
 const imageminMozjpeg = require('imagemin-mozjpeg')
 const imageminPngquant = require('imagemin-pngquant')
@@ -18,9 +23,8 @@ const arrFiles = (file, folder) => file.reduce((arr, obj) => {
   return arr.concat(path.join(folder, obj.name))
 }, [])
 
-/**
- * 
- */
+
+/** @namespace */
 class Images extends File {
   constructor(options) {
     super(options)
@@ -28,14 +32,39 @@ class Images extends File {
     this.sharp = sharp
   }
 
-  name(file) {
+
+  /**
+   * Определяем размер по ширине и высоте файла и его расширение
+   * Determine the size of the width and height of the file and its expansion
+   * Supported formats BMP, CUR, DDS, GIF, ICNS, ICO, JPEG, KTX, PNG, PNM(PAM, PBM, PFM, PGM, PPM), PSD, SVG, TIFF, WebP
+   * @param {string} file Абс
+   * @returns {object} {width,height,type}
+   * @example:
+   * new File.size(path) //=> { height: 1024, width: 682, type: 'jpg' }
+   */
+  // async
+  dimensions(file) {
+    // const dimensions = await sizeOf(file)
+    // console.log('⚡ dimensions', dimensions)
+    return sizeOf(file)
+  }
+
+
+  async statImg(file) {
+    file = this.resolve(file)
+    const dimensions = await this.dimensions(file)
+    const size = this.size(file)
     const {
-      ext,
       name
-    } = path.parse(file)
+    } = this.name(file)
+
     return {
-      ext,
-      name
+      name,
+      // ext,
+      size,
+      width: dimensions.width,
+      height: dimensions.height,
+      ext: dimensions.type
     }
   }
 
@@ -107,13 +136,12 @@ class Images extends File {
       const writePath = this.mkDir(path.resolve(this.root + folder))
       sharp(file)
         .resize(res)
+        // .metadata() // error: is not a function
         .toFile(path.resolve(writePath, name))
         .then((info) => {
-          console.log('⚡ info', info)
-
           resolve({
             ...info,
-            name
+            name,
           })
         }).catch((err) => reject(err))
     })
@@ -160,6 +188,50 @@ class Images extends File {
     // } catch (error) {
     //   new Error(error)
     // }
+  }
+
+  /**
+   * Конвертируем изображение в WebP
+   * @param {array} file абсолютный путь до файла
+   * @param {string} folder папка в которую сохраняем изменённое изображение
+   * @returns {Promise}
+   */
+  async webp(file, folder) {
+    // FIXME: extend default options
+    const webpQuality = (this.options.webpQuality) ? {
+      quality: this.options.webpQuality
+    } : {
+      quality: 50
+    }
+
+    // FIXME: Вынести в отдельный метод
+    folder = this.isAbsolute(folder) ? folder : this.resolve([].slice.call(arguments, 1).join(''))
+
+    return await imagemin(file, {
+      destination: this.mkDir(folder),
+      plugins: [
+        imageminWebp({
+          quality: 50
+        })
+      ]
+    })
+  }
+
+  /**
+   * Выводим все изображения. Также будут выведены все изображения из всех поддиректорий рекурсивно.
+   * @memberof images
+   * @instance
+   * @param {string} path директория
+   * @returns (array) 
+   */
+  foto(path) {
+    path = this.resolve(path)
+    return this.create()
+      .paths(path)
+      // .depth(depth)
+      .ext('.bmp', '.gif', '.jpeg', '.jpg', 'JPG', '.png', '.svg', '.tiff', '.webp')
+      // .ignoreHiddenDirectories()
+      .find()
   }
 
 }

@@ -2,31 +2,41 @@ const fs = require('fs')
 const {
   constants
 } = require('fs')
-const {
-  promisify
-} = require('util')
-const sizeOf = promisify(require('image-size'))
+// const path = require('path')
 
-// const Base = require('./base')
 const Dir = require('./dir')
 
-// ✨
+// ✨ 📌
 class Files extends Dir {
   constructor(options) {
     super(options)
   }
 
   /**
-   * Определяем размер и расширение файла
-   * @param {string} file Абс
-   * @returns {object} {width,height,type}
+   * Получаем имя и расширение файла
+   * @param {string} file Путь до файлами
+   * @returns {object} {ext, name}
    */
-  // async
-  size(file) {
-    // const dimensions = await sizeOf(file)
-    // console.log('⚡ dimensions', dimensions)
-    return sizeOf(file)
+  name(file) {
+    const {
+      ext,
+      name
+    } = this.path.parse(file)
+    return {
+      ext,
+      name
+    }
   }
+
+  /**
+   * Расширение файла
+   * @param {string} file Путь до файла
+   * @returns {string}
+   */
+  extFile(file) {
+    return this.path.extname(file)
+  }
+
 
   /**
    * Проверка существования файла, а так же проверка на то что он не занят другими процессами
@@ -34,6 +44,7 @@ class Files extends Dir {
    * @returns {Promise} Promise object true - объект существует и доступен false - объекта не существует или он занят другими процессами
    */
   isExists(path) {
+    // await fsPromises.access(saveTo, constants.F_OK | constants.R_).then((access) => true).catch((err) => false)
     return new Promise((resolve, reject) => {
       fs.access(path, constants.F_OK | constants.R_OK, err => {
         if (!err) return resolve(true);
@@ -41,6 +52,26 @@ class Files extends Dir {
         reject(err);
       });
     });
+  }
+
+  /**
+   * Проверка является ли файлом
+   * @param {string} path Путь до файла
+   * @returns {boolean}
+   */
+  isFile(path) {
+    path = this.resolve(path);
+    return this.fs.stat(path).then(stat => stat.isFile())
+  }
+
+  /**
+   * Размер файла
+   * @param {string} path Путь до файла
+   * @returns {string}
+   */
+  size(path) {
+    path = this.resolve(path);
+    return this.fs.stat(path).then(stat => this.formatBytes(stat.size))
   }
 
   /**
@@ -83,6 +114,10 @@ class Files extends Dir {
     }
     return Promise.all(arrPromise).then(del => del.every(bool => bool === true)).catch(error => error)
   }
+
+
+
+
 }
 
 module.exports = Files

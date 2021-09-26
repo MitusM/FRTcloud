@@ -18,5 +18,11 @@
   "bugs": {
     "url": "https://github.com/MitusM/FRTcloud/issues"
   },
-  "homepage": "https://github.com/MitusM/FRTcloud#readme"
+  "homepage": "https://github.com/MitusM/FRTcloud#readme",
+  "dependencies": {
+    "dropzone": "^5.9.2",
+    "filehound": "^1.17.4",
+    "mime-types": "^2.1.32",
+    "recursive-copy": "^2.0.13"
+  }
 }
