@@ -31,7 +31,6 @@ class Files extends Images {
             obj.bytes = stat.bytes
 
             let img = this.extImg.indexOf(ext)
-            console.log('⚡ img', img)
             if (img > 0) {
                 // FIXME: Переписать на statImg
                 let {
