@@ -1,28 +1,37 @@
 {
-  "name": "FRTcloud",
+  "name": "cloudFRT",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": ""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MitusM/FRTcloud.git"
+    "url": "git+https://github.com/MitusM/cloudFRT.git"
   },
   "keywords": [
-    "cloud"
+    ""
   ],
   "author": "MitusM.",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MitusM/FRTcloud/issues"
+    "url": "https://github.com/MitusM/cloudFRT/issues"
   },
-  "homepage": "https://github.com/MitusM/FRTcloud#readme",
+  "homepage": "https://github.com/MitusM/cloudFRT#readme",
   "dependencies": {
+    "delegate": "^3.2.0",
+    "dotenv": "^10.0.0",
     "dropzone": "^5.9.2",
+    "file-type": "^16.5.3",
     "filehound": "^1.17.4",
     "mime-types": "^2.1.32",
-    "recursive-copy": "^2.0.13"
+    "moment": "^2.29.1",
+    "nunjucks": "^3.2.3",
+    "orientjs": "^3.0.11",
+    "recursive-copy": "^2.0.13",
+    "sharp": "^0.29.1",
+    "sortablejs": "^1.14.0",
+    "tippy.js": "^6.3.1"
   }
 }
