@@ -1,0 +1,47 @@
+/*!*************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./microservices/users/assets/scss/index.scss ***!
+  \*************************************************************************************************************************************/
+:root {
+  --cl-user-table-thead: #fff;
+}
+
+.user-table {
+  margin-bottom: 30px;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.user-table-thead {
+  height: 60px;
+  background: var(--bs-header-logo-background-color);
+}
+
+.user-table-thead-item {
+  text-align: center;
+  color: var(--cl-user-table-thead);
+}
+
+.user-table-thead,
+.user-table-body-line {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+.user-table-body__line-none {
+  text-align: center;
+  font: 1.5rem/2rem var(--bs-font-sans-serif);
+  color: var(--bs-gray-600);
+}
+
+.user-table-body-line {
+  text-align: left;
+  line-height: 3em;
+}
+.user-table-body-line:nth-child(even) {
+  border-top: 1px solid var(--cl-border-color);
+}
+
+.user-table-body-line-item:nth-child(2n+1), .user-table-body-line-item:nth-child(6) {
+  text-align: center;
+}

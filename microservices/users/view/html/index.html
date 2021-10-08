@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="csrf-param" content="authenticity_token" />
+    <meta name="csrf-token" content="{{ csrf }}" />
+    <meta name="autor" />
+    <title>{{ title }}</title>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="/public/css/style.css" />
+    <link rel="stylesheet" href="/public/css/users.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://yastatic.net/bem-components/latest/desktop/bem-components.css"
+    />
+    <script src="https://yastatic.net/bem-components/latest/desktop/bem-components.js+bemhtml.js"></script>
+  </head>
+
+  <body>
+    <div class="page">
+      <header class="page-header header-top" role="navigation">
+        {% include "header.html" %}
+      </header>
+
+      <aside class="page-aside sidebar" role="complementary">
+        {% include "left-menu.html" %}
+        <!-- settings -->
+        {% include "menu-settings.html" %}
+      </aside>
+
+      <main class="page-content" role="main">
+        <!-- main -->
+        {% include page %}
+      </main>
+
+      <footer class="page-footer" role="contentinfo"></footer>
+    </div>
+  </body>
+</html>

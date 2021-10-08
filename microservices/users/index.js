@@ -1,27 +1,34 @@
-import Gateway from './core/micromq/gateway.js'
 import dotenv from 'dotenv'
+import pkg from 'app-root-path'
+const reqModule = pkg.require
+const MicroMQ = reqModule('./core/micromq/src/MicroService.js')
 
 import {
     error
-} from './core/error.js'
+} from './service/errorServices.js'
 
 import {
     middlewares
-} from './core/middlewares.js'
+} from './service/middlewares/index.js'
 
 import {
     action
-} from './core/action.js'
+} from './action/index.js'
+
+import {
+    endpoints
+} from './controllers/index.js'
 
 dotenv.config()
 
 const rabbitUrl = process.env.RABBIT_URL || 'amqp://guest:guest@localhost:5672/'
 const timeout = process.env.TIMED_OUT || 5000
 // === === === === === === === === === === === ===
-// 1. Gateway connection
+// 1. Create an instance of a MicroService class
 // === === === === === === === === === === === ===
-const app = new Gateway({
-    microservices: ['users', 'render', 'files'],
+const app = new MicroMQ({
+    microservices: ['render', 'files'],
+    name: 'users',
     rabbit: {
         url: rabbitUrl
     },
@@ -32,7 +39,6 @@ const app = new Gateway({
 
 // === === === === === === === === === === === ===
 // 2. error - Create an Error event and handler
-//    error - создаем событие error и обработчик
 // === === === === === === === === === === === ===
 error(app)
 
@@ -47,11 +53,10 @@ middlewares(app)
 action(app)
 
 // === === === === === === === === === === === ===
-// 5. Connecting and microservice endpoints
+// 5.URL (interfaces)
 // === === === === === === === === === === === ===
-app.all('/:microservice/(.*)', async (req, res) => {
-    await res.delegate(req.params.microservice);
-})
-
-// We listen to the port and accept requests
-app.listen(process.env.PORT || 7606)
+endpoints(app)
+// === === === === === === === === === === === ===
+// 6. Run Microservice
+// === === === === === === === === === === === ===
+app.start()

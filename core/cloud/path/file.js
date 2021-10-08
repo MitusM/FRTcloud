@@ -2,7 +2,7 @@ const fs = require('fs')
 const {
   constants
 } = require('fs')
-// const path = require('path')
+
 
 const Dir = require('./dir')
 

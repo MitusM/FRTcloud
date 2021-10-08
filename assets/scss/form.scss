@@ -1,0 +1,65 @@
+.form-control {
+  display: block;
+  width: 100%;
+  height: calc(1.5em + 1.25rem + 2px);
+  padding: 0.625rem 1.1875rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.input {
+  border: none;
+  border-bottom-width: medium;
+  border-left-color: currentcolor;
+  border-bottom: 1px solid #ced4da;
+  border-bottom-color: rgb(206, 212, 218);
+  background: no-repeat center bottom, center calc(100% - 1px);
+  background-color: rgba(0, 0, 0, 0);
+  background-image: none, none;
+  background-size: auto, auto;
+  background-size: 0 100%, 100% 100%;
+  transition: background 0s ease-out;
+  transition-duration: 0s;
+
+  &:focus {
+    border-bottom-color: transparent;
+    background-size: 100% 100%, 100% 100%;
+    transition-duration: 0.3s;
+    box-shadow: none;
+    background-image: linear-gradient(
+        to top,
+        #4680ff 2px,
+        rgba(70, 128, 255, 0) 2px
+      ),
+      linear-gradient(to top, #ced4da 1px, rgba(206, 212, 218, 0) 1px);
+  }
+}
+
+.form-inline {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+label {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.settings-form {
+  button {
+    margin: 1em 0;
+  }
+}

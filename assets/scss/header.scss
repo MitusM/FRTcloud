@@ -1,0 +1,64 @@
+// === === === === === === === === === === === ===
+//* header
+// === === === === === === === === === === === ===
+.header-top {
+  background-color: #fafbfc;
+  height: 60px;
+  // box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03),
+  //   0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03),
+  //   0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05),
+  //   0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+
+  // box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: var(--bs-header-top-box-shadow);
+}
+
+.header-top-logo {
+  height: 60px;
+  display: flex;
+  background: var(--bs-header-logo-background-color);
+}
+
+.header-top-logo__img {
+  width: auto;
+  height: 100%;
+  max-height: 45px;
+  margin: 0.5rem;
+}
+
+.header-top-logo__text {
+  font: 1.5rem/3.4rem sans-serif;
+  margin-left: 1rem;
+  color: #fff;
+}
+
+.header-top-widget {
+  display: flex;
+  align-content: center;
+  line-height: 1rem;
+
+  svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.header-top-widget__item {
+  margin: 0 0.5rem;
+
+  a {
+    color: #000;
+  }
+}
+
+.header-top-user-panel {
+  display: flex;
+  align-content: center;
+  color: #000;
+
+  line-height: 2rem;
+}
+
+.header-top-user-panel-name {
+  margin-left: 0.5em;
+}

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": ""
   },
@@ -20,18 +21,43 @@
   },
   "homepage": "https://github.com/MitusM/cloudFRT#readme",
   "dependencies": {
+    "app-root-path": "^3.0.0",
+    "csurf": "^1.11.0",
     "delegate": "^3.2.0",
     "dotenv": "^10.0.0",
     "dropzone": "^5.9.2",
     "file-type": "^16.5.3",
-    "filehound": "^1.17.4",
+    "filehound": "^1.17.5",
+    "image-size": "^1.0.0",
+    "imagemin": "^8.0.1",
+    "imagemin-mozjpeg": "^9.0.0",
+    "imagemin-pngquant": "^9.0.2",
+    "imagemin-svgo": "^10.0.0",
+    "imagemin-webp": "^6.0.0",
     "mime-types": "^2.1.32",
     "moment": "^2.29.1",
     "nunjucks": "^3.2.3",
     "orientjs": "^3.0.11",
+    "qs": "^6.10.1",
     "recursive-copy": "^2.0.13",
     "sharp": "^0.29.1",
     "sortablejs": "^1.14.0",
-    "tippy.js": "^6.3.1"
+    "tippy.js": "^6.3.1",
+    "webpack": "^5.55.1",
+    "webpack-cli": "^4.8.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.15.6",
+    "babel-loader": "^8.2.2",
+    "copy-webpack-plugin": "^9.0.1",
+    "css-loader": "^6.3.0",
+    "image-webpack-loader": "^8.0.1",
+    "mini-css-extract-plugin": "^2.3.0",
+    "sass": "^1.42.1",
+    "sass-loader": "^12.1.0",
+    "svg-url-loader": "^7.1.1",
+    "webpack-bundle-analyzer": "^4.4.2",
+    "webpack-merge": "^5.8.0"
   }
 }

@@ -1,0 +1,9 @@
+<div id="{{user._id}}" class="user-table-body-line" data-id="{{user._id}}">
+  <div class="user-table-body-line-item">{{ user.login }}</div>
+  <div class="user-table-body-line-item">{{ user.create | date}}</div>
+  <div class="user-table-body-line-item">{{ user.group }}</div>
+  <div class="user-table-body-line-item">{{ user.email }}</div>
+  <div class="user-table-body-line-item">{{ user.quota }}</div>
+  <div class="user-table-body-line-item">{{ user.block }}</div>
+  <div class="user-table-body-line-item">{{ user.actions }}</div>
+</div>

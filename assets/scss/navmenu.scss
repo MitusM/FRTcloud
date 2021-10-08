@@ -1,0 +1,35 @@
+// === === === === === === === === === === === ===
+//* LEFT MENU
+// === === === === === === === === === === === ===
+// .sidebar {
+// }
+
+.navbar-left-ul {
+  // @include d-flex;
+  list-style: none;
+  margin: 0.5em 0.5em auto;
+  display: flex;
+  align-content: center;
+  flex-direction: column;
+  line-height: 2rem;
+}
+
+.navbar-left-ul__li {
+  margin: 0.25em 0;
+  a {
+    display: flex;
+    align-content: center;
+    line-height: 1.5rem;
+    color: #000;
+    font-family: "Lobster";
+
+    &:hover,
+    &:visited {
+      color: rgb(41, 129, 197);
+    }
+  }
+
+  svg {
+    margin-right: 00.5em;
+  }
+}

@@ -1,0 +1,37 @@
+.page-aside {
+  display: grid;
+  //   grid-template-rows: repeat(2, auto 200px);
+  grid-template-rows: auto 200px;
+}
+
+.menu-config ul {
+  list-style: none;
+  list-style: none;
+  margin: 0.5em 0.5em auto;
+  display: flex;
+  align-content: center;
+  flex-direction: column;
+  line-height: 2rem;
+}
+
+.page-aside-menu-item {
+  margin: 0.25em 0;
+}
+
+.page-aside-menu-item__link {
+  display: flex;
+  align-content: center;
+  line-height: 1.5rem;
+  color: #000;
+  font-family: "Lobster";
+  justify-content: center;
+
+  &:hover,
+  &:visited {
+    color: rgb(41, 129, 197);
+  }
+
+  svg {
+    margin-right: 00.5em;
+  }
+}

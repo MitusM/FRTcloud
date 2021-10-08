@@ -1,0 +1,32 @@
+{% set lenght = users.length %}
+<div class="container-fluid">
+  <div class="row">
+    {% include "./breadcrumb.html" %}
+    <div class="user-table">
+      <div id="user-table-thead" class="user-table-thead">
+        <div class="user-table-thead-item">{{ lang.login }}:</div>
+        <div class="user-table-thead-item">
+          {{ lang.Date_of_registration }}:
+        </div>
+        <div class="user-table-thead-item">{{ lang.Group }}:</div>
+        <div class="user-table-thead-item">{{ lang.Email }}:</div>
+        <div class="user-table-thead-item">{{ lang.Quota }}:</div>
+        <div class="user-table-thead-item">{{ lang.Locked }}:</div>
+        <div class="user-table-thead-item">{{ lang.Actions }}:</div>
+      </div>
+      <div class="user-table-body card">
+        <!-- User table -->
+        {% asyncAll user in users %} {% include "./user-table-item.html" %} {%
+        endall %}
+        <!--  -->
+        {% if lenght == 0 %} {# {{lenght }} #}
+        <div class="user-table-body__line-none">Нет пользователей</div>
+        {% endif %}
+        <!-- END User table -->
+      </div>
+    </div>
+    {#
+    <div class="container">MAIN CONTENT</div>
+    #}
+  </div>
+</div>
