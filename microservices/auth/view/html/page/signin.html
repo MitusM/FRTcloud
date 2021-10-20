@@ -1,0 +1,50 @@
+<div class="page-content-login shadow-box">
+  <form
+    action="/auth/signin"
+    class="form form-login form-inline"
+    id="login_form"
+    method="post"
+  >
+    <fieldset class="form-group width-100">
+      <input type="hidden" name="token" value="{{ csrf }}" />
+      <input type="hidden" name="consumer" value="cloud" />
+
+      <legend>Авторизация</legend>
+
+      <div class="form-group width-100">
+        <label for="user-name">{{ lang.form.ru.Username }}:</label>
+        <input
+          class="form-login-input input form-control"
+          name="username"
+          type="text"
+          placeholder="Your username is your email address"
+          required
+          autofocus
+        />
+      </div>
+
+      <div class="form-group width-100">
+        <label for="password floating-label">
+          {{ lang.form.ru.Password }}:
+        </label>
+        <input
+          class="form-login-input input form-control"
+          name="password"
+          type="password"
+          placeholder="6 digits, a combination of numbers and letters"
+          required
+        />
+      </div>
+
+      <div class="form-group width-100">
+        {# <input name="login" type="submit" value="Login" /> #}
+        <button
+          type="submit"
+          class="login-form-button form-inline-button btn btn-primary"
+        >
+          Вход
+        </button>
+      </div>
+    </fieldset>
+  </form>
+</div>

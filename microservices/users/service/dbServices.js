@@ -1,11 +1,6 @@
 // === === === === === === === === === === === ===
 // 
 // === === === === === === === === === === === ===
-// import pkg from 'app-root-path'
-// console.log('⚡ pkg', pkg)
-// const require = pkg.require
-// const OrientDBClient = require("orientjs").OrientDBClient
-
 import OrientDB from 'orientjs'
 const OrientDBClient = OrientDB.OrientDBClient
 

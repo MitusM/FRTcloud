@@ -37,7 +37,7 @@ const endpoints = async (app) => {
         username: 'misha',
         password: '#23a50zJs&$a'
       })
-      // console.log('⚡ auth::', auth)
+      console.log('⚡ auth::', auth)
 
       /**  */
       const {

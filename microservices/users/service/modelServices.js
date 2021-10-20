@@ -40,11 +40,6 @@ class UserModel extends PDO {
     }
   }
 
-  // getAuth(password) {
-  //   let password = new Authorization(password).encryptPassword()
-  //   console.log('⚡ password', password)
-  // }
-
 
   getUserAll() {
     return this.queryAll("SELECT @rid as rid, _id, username as login, email, block, group, created, quota FROM User")

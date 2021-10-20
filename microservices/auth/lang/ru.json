@@ -1,0 +1,20 @@
+{
+    "title": "Авторизация",
+    "login": "Логин",
+    "form": {
+        "ru": {
+            "Username": "Имя пользователя",
+            "Password": "Пароль",
+            "required_checkbox_not_checked": "Необходимо принять пользовательское соглашение",
+            "required_field_empty": "Необходимо заполнить поле",
+            "passwords_do_not_match": "Введённые пароли не совпадают"
+        },
+        "en": {
+            "Username": "Username",
+            "Password": "Password",
+            "required_checkbox_not_checked": "You need to accept the User Agreement",
+            "required_field_empty": "You need to fill in this field",
+            "passwords_do_not_match": "Passwords you entered do not match"
+        }
+    }
+}

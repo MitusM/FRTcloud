@@ -106,3 +106,7 @@ dist
 .todo
 
 .vscode
+
+*.config.js
+
+/core/session

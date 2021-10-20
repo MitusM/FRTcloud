@@ -25,3 +25,16 @@
   border: 1px solid var(--cl-border-color);
   padding: 1rem;
 }
+.width-100 {
+  width: 100%;
+}
+
+.shadow-box {
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  margin: 0 auto;
+  padding: 40px;
+  box-sizing: border-box;
+}

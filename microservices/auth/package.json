@@ -1,0 +1,13 @@
+{
+  "name": "cloudFRT-auth",
+  "version": "1.0.0",
+  "description": "Авторизация",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": ""
+  },
+  "author": "MitusM",
+  "license": "MIT",
+  "dependencies": {}
+}

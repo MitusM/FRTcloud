@@ -65,6 +65,18 @@
   --bs-sidebar-background-color: #101b33;
   --cl-border-color: rgba(0, 0, 0, 0.125);
   --cl-box-shadow-color: rgba(69, 90, 100, 0.3);
+  --cl-header-logo-background-color: rgb(41, 129, 197);
+  --cl-gray: #6c757d;
+  --cl-gray-dark: #343a40;
+  --cl-gray-100: #f8f9fa;
+  --cl-gray-200: #e9ecef;
+  --cl-gray-300: #dee2e6;
+  --cl-gray-400: #ced4da;
+  --cl-gray-500: #adb5bd;
+  --cl-gray-600: #6c757d;
+  --cl-gray-700: #495057;
+  --cl-gray-800: #343a40;
+  --cl-gray-900: #212529;
 }
 
 html,
@@ -280,7 +292,11 @@ svg {
 }
 
 .header-top-user-panel-name {
-  margin-left: 0.5em;
+  margin: 0 1rem;
+}
+
+.header-top-user-panel__logut {
+  color: #000;
 }
 
 .navbar-left-ul {
@@ -434,7 +450,16 @@ label {
   margin-bottom: 0.5rem;
 }
 
+legend {
+  width: 100%;
+  text-align: center;
+}
+
 .settings-form button {
+  margin: 1em 0;
+}
+
+.form-inline-button {
   margin: 1em 0;
 }
 
@@ -481,4 +506,18 @@ label {
   background-clip: border-box;
   border: 1px solid var(--cl-border-color);
   padding: 1rem;
+}
+
+.width-100 {
+  width: 100%;
+}
+
+.shadow-box {
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  margin: 0 auto;
+  padding: 40px;
+  box-sizing: border-box;
 }

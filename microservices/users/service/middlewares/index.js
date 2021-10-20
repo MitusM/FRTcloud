@@ -1,17 +1,36 @@
 /** ***** ***** ***** ***** ***** ***** *****
- ** middleware - setup route middlewares
- * Copyright 
+ * * middleware - setup route middlewares *
+ * Copyright (c) 2021 MitusM.
  *   
  * ***** ***** ***** ***** ***** ***** ***** */
 'use strict'
 
-import csrf from 'csurf'
+// import csrf from 'csurf'
 
 const middlewares = (app) => {
-    // 3.1 Session
 
-    // 3.2 CSRF
-    // app.use(csrf())
+    app.all([
+        "/users/",
+        "/users/id-:id?.html",
+        "/users/:page?-:number?.html",
+        "/users/info-:id",
+        "/users/create"
+    ], async (req, res, next) => {
+        console.log('⚡ req.session::', req.session)
+        if (!req.session.auth) {
+            const redirect = await res.app.ask('auth', {
+                server: {
+                    action: 'aut:redirect',
+                    meta: {
+                        csrf: req.session.csrfSecret
+                    }
+                }
+            })
+            res.end(redirect.response)
+        } else {
+            next()
+        }
+    })
 
     return app
 }

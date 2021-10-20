@@ -58,8 +58,17 @@ label {
   margin-bottom: 0.5rem;
 }
 
+legend {
+  width: 100%;
+  text-align: center;
+}
+
 .settings-form {
   button {
     margin: 1em 0;
   }
+}
+
+.form-inline-button {
+  margin: 1em 0;
 }

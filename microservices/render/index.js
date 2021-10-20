@@ -31,7 +31,9 @@ app.action('html', async (meta, res) => {
       html: html
     })
   } catch (err) {
-    new Error(err.message)
+    // new Error(err.message)
+    console.log('⚡ err::render', err)
+    return err
   }
 })
 

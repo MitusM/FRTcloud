@@ -23,6 +23,7 @@ const common = merge([{
     entry: {
       style: './assets/js/index.js',
       users: './microservices/users/assets/js/index.js',
+      login: './microservices/auth/assets/js/index.js'
       // files: './microservices/files/assets/js/index.js',
     },
 

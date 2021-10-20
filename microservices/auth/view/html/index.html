@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="csrf-param" content="authenticity_token" />
+    <meta name="csrf-token" content="{{ csrf }}" />
+    <meta name="autor" />
+    <title>{{ title }}</title>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="/public/css/vendors.css" />
+    <link rel="stylesheet" href="/public/css/style.css" />
+    <link rel="stylesheet" href="/public/css/login.css" />
+  </head>
+
+  <body>
+    <div class="login-page">
+      <header class="login-page-header header-top" role="navigation">
+        {% include "header.html" %}
+      </header>
+      <div class="login-page-form" role="main">
+        {% include "./page/signin.html" %}
+      </div>
+
+      <footer class="login-page-footer" role="contentinfo">
+        (c) Copyright 2021 {{ copyright }}
+      </footer>
+      <script rel="preload" src="/public/js/runtime.js"></script>
+      <script rel="preload" src="/public/js/vendors.js"></script>
+      <script
+        rel="preload"
+        src="https://unpkg.com/axios/dist/axios.min.js"
+      ></script>
+      <script src="/public/js/style.js"></script>
+      <script src="/public/js/login.js"></script>
+      <script>
+        {# const config = {{ config | dump }}; #}
+        const lang = {{ lang.form | dump }};
+      </script>
+    </div>
+  </body>
+</html>
