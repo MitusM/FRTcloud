@@ -19,7 +19,7 @@ console.log("⚡ templateDir::", templateDir);
 const endpoints = async (app) => {
   /**  */
   const db = await new UserModel().connect({
-    db: process.env.ORIENTDB_NAME,
+    name: process.env.ORIENTDB_NAME,
     username: process.env.ORIENTDB_USERNAME,
     password: process.env.ORIENTDB_PASSWORD,
   });
