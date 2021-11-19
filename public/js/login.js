@@ -33,25 +33,25 @@ __webpack_require__.r(__webpack_exports__);
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            Login = new _$.Form('login_form');
+            Login = new _$.Form("login_form");
             elements = Login._form.elements;
             token = elements[1];
             consumer = elements[2];
             user = elements[3];
             password = elements[4];
             submit = elements[5];
-            csrf = document.querySelector('meta[name=csrf-token]').getAttributeNode('content').value;
+            csrf = document.querySelector("meta[name=csrf-token]").getAttributeNode("content").value;
             token.value = csrf;
 
             message = function message(body) {
-              _$.message('error', {
-                title: 'Ошибка',
+              _$.message("error", {
+                title: "Ошибка",
                 message: body,
-                position: 'topCenter'
+                position: "topCenter"
               });
             };
 
-            submit.addEventListener('click', function (e) {
+            submit.addEventListener("click", function (e) {
               e.preventDefault();
               var target = e.target;
               var usrVal = user.value;
@@ -62,26 +62,25 @@ __webpack_require__.r(__webpack_exports__);
                 password: pswVal
               };
 
-              if (usrVal === '') {
-                validateFields(usrVal, 'Укажите логин');
+              if (usrVal === "") {
+                validateFields(usrVal, "Укажите логин");
                 user.focus();
               }
 
-              if (pswVal === '') {
-                validateFields(pswVal, 'Укажите пароль');
+              if (pswVal === "") {
+                validateFields(pswVal, "Укажите пароль");
                 password.focus();
               }
 
-              if (usrVal !== '' && pswVal !== '') {
-                // submit.disabled = false
-                axios.post('/auth/signin', {
+              if (usrVal !== "" && pswVal !== "") {
+                // submit.disabled = true;
+                axios.post("/auth/signin", {
                   username: usrVal,
                   csrf: token.value,
                   password: pswVal,
                   consumer: consumer.value
                 }).then(function (response) {
                   var data = response.data;
-                  console.log('⚡ response::', response);
 
                   if (response.status === 200) {
                     window.location.href = response.data;
@@ -95,12 +94,7 @@ __webpack_require__.r(__webpack_exports__);
             });
 
             validateFields = function validateFields(field, message) {
-              if (field === '') {
-                // _$.message('error', {
-                //   title: 'Ошибка',
-                //   message: message,
-                //   position: 'topCenter'
-                // })
+              if (field === "") {
                 message(message);
               }
             };

@@ -1,19 +1,14 @@
-'use strict'
-// const csrf = require('csurf')
-import csrf from 'csurf'
-import {
-  session
-} from './session.js'
+"use strict";
+import csrf from "csurf";
+import { session } from "./session.js";
 
 const middlewares = (app) => {
   // 3.1 Session
-  session(app)
+  // session(app);
   // 3.2 CSRF
-  app.use(csrf())
+  app.use(csrf());
 
-  return app
-}
+  return app;
+};
 
-export {
-  middlewares
-}
+export { middlewares };

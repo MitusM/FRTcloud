@@ -14,7 +14,6 @@ dotenv.config();
 const lang = require("../lang/ru");
 /** */
 const templateDir = path.join(appRoot, process.env.VIEW_DIR);
-console.log("⚡ templateDir::", templateDir);
 
 const endpoints = async (app) => {
   /**  */
