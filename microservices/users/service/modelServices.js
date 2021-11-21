@@ -1,48 +1,103 @@
 // === === === === === === === === === === === ===
-// 
+//
 // === === === === === === === === === === === ===
 
-import {
-  PDO
-} from './dbServices.js'
-import Authorization from './autServices.js'
+import { PDO } from "./dbServices.js";
+import Authorization from "./autServices.js";
 
 class UserModel extends PDO {
   constructor(options) {
-    super(options)
+    super(options);
   }
+
+  async queryAll(query, params) {
+    try {
+      const session = await this.pool.acquire();
+      const message = await session.query(query, params).all();
+      session.close();
+      return message;
+    } catch (err) {
+      console.log("⚡ err::PDO.queryAll => ", err);
+      process.exit();
+    }
+  }
+
+  async queryOne(query, params) {
+    try {
+      const session = await this.pool.acquire();
+      const message = await session.query(query, params).one();
+      session.close();
+      return message;
+    } catch (err) {
+      console.log("⚡ err::PDO.query => ", err);
+      process.exit();
+    }
+  }
+
+  liveQuery(options) {}
+
+  async insert(query, json) {
+    try {
+      const session = await this.pool.acquire();
+      const message = await session.command(query, json).one();
+      session.close();
+      return message;
+    } catch (err) {
+      console.log("⚡ err::PDO.query => ", err);
+      process.exit();
+    }
+  }
+
+  async create(edgeClass, from, to) {
+    try {
+      const session = await this.pool.acquire();
+      const message = await session
+        .create("EDGE", edgeClass)
+        .from(from)
+        .to(to)
+        .one();
+      session.close();
+      return message;
+    } catch (err) {
+      console.log("⚡ err::PDO.create => ", err);
+      process.exit();
+    }
+  }
+
+  command(options) {}
 
   //username, password
   async getLogin(obj) {
     try {
       return await this.queryOne("SELECT FROM User WHERE username= :username", {
         params: {
-          username: obj.username
-        }
-      }).then(user => {
+          username: obj.username,
+        },
+      }).then((user) => {
         if (!user) {
           // if the user does not exist | если пользователя не существует
-          return null
+          return null;
         } else {
           // If the login matched (the user exists) | если совпал логин (пользователь существует)
-          let salt = new Authorization().hashPassword(obj.password, user.salt)
+          let salt = new Authorization().hashPassword(obj.password, user.salt);
           if (user.hashedPassword === salt && user.block === false) {
             // если совпал логин, и совпадают пароли
-            return user
+            return user;
           } else {
             // если совпал логин, но не совпадают пароли
-            return false
+            return false;
           }
         }
-      })
+      });
     } catch (err) {
-      console.log('⚡ err::getLogin', err)
+      console.log("⚡ err::getLogin", err);
     }
   }
 
-
   getUserAll() {
-    return this.queryAll("SELECT @rid as rid, _id, username as login, email, block, group, created, quota FROM User")
+    return this.queryAll(
+      "SELECT @rid as rid, _id, username as login, email, block, group, created, quota FROM User"
+    );
   }
 
   /**
@@ -51,14 +106,16 @@ class UserModel extends PDO {
    * @returns {Object}
    */
   getUser(user) {
-    // firstName as firstName, lastName as 
-    return this.queryOne("select @rid as rid, username, email, block, group, created, quota from User where username =: name ", {
-      params: {
-        name: user
+    // firstName as firstName, lastName as
+    return this.queryOne(
+      "select @rid as rid, username, email, block, group, created, quota from User where username =: name ",
+      {
+        params: {
+          name: user,
+        },
       }
-    })
+    );
   }
-
 
   /**
    * Получаем @rid пользователя
@@ -68,12 +125,10 @@ class UserModel extends PDO {
   getRid(user) {
     return this.queryOne("select @rid from User where username =: name ", {
       params: {
-        name: user
-      }
-    })
+        name: user,
+      },
+    });
   }
 }
 
-export {
-  UserModel
-}
+export { UserModel };

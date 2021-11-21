@@ -11,6 +11,8 @@ import { action } from "./action/index.js";
 
 import { endpoints } from "./controllers/index.js";
 
+import { UserModel } from "./service/modelServices.js";
+
 dotenv.config();
 
 const rabbitUrl =
@@ -28,6 +30,11 @@ const app = new MicroMQ({
   requests: {
     timeout: timeout,
   },
+  db: await new UserModel().connect({
+    name: process.env.ORIENTDB_NAME,
+    username: process.env.ORIENTDB_USERNAME,
+    password: process.env.ORIENTDB_PASSWORD,
+  }),
 });
 
 // === === === === === === === === === === === ===

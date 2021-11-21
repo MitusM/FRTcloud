@@ -1,11 +1,9 @@
 /** ***** ***** ***** ***** ***** ***** *****
- * * middleware - setup route middlewares *
+ * *  middleware - setup route middlewares  *
  * Copyright (c) 2021 MitusM.
  *
  * ***** ***** ***** ***** ***** ***** ***** */
 "use strict";
-
-// import csrf from 'csurf'
 
 const middlewares = (app) => {
   app.all(
@@ -17,11 +15,6 @@ const middlewares = (app) => {
       "/users/create",
     ],
     async (req, res, next) => {
-      console.log(
-        "------------------- [" + process.pid + "] ----------------------"
-      );
-      console.log("⚡ req.session::", req.session);
-      console.log("⚡ req.sessionID::", req.sessionID);
       if (!req.session.auth) {
         const redirect = await res.app.ask("auth", {
           server: {

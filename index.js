@@ -32,14 +32,14 @@ const app = new Gateway({
 error(app);
 
 // === === === === === === === === === === === ===
-// 3. middleware - setup route middlewares
-// === === === === === === === === === === === ===
-middlewares(app);
-
-// === === === === === === === === === === === ===
-// 4. actions
+// 3. actions
 // === === === === === === === === === === === ===
 action(app);
+
+// === === === === === === === === === === === ===
+// 4. middleware - setup route middlewares
+// === === === === === === === === === === === ===
+middlewares(app);
 
 // === === === === === === === === === === === ===
 // 5. Connecting and microservice endpoints

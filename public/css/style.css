@@ -172,6 +172,10 @@ svg {
   transition: all 0.2s ease-in-out;
 }
 
+input {
+  outline: none;
+}
+
 .container-fluid,
 .container-lg,
 .container-md,

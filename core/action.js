@@ -1,10 +1,12 @@
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 import dotenv from "dotenv";
-dotenv.config();
 
+import csrf from "csurf";
+
+dotenv.config();
 const redis = require("redis");
-const session = require("./session/index");
+var session = require("express-session");
 const RedisStore = require("connect-redis")(session);
 const redisClient = redis.createClient();
 const RedisSess = new RedisStore({ client: redisClient });
@@ -12,13 +14,11 @@ const RedisSess = new RedisStore({ client: redisClient });
 const action = (app) => {
   app.action("gateway:session", async (meta, res) => {
     try {
-      let sid = meta.sid;
-      let sess = {
+      RedisSess.set(meta.sid, {
         ...meta.session,
         auth: meta.auth,
         user: meta.user,
-      };
-      let query = RedisSess.set(sid, sess);
+      });
     } catch (err) {
       console.error(err);
       return err;
@@ -27,14 +27,12 @@ const action = (app) => {
 
   app.action("gateway:session-destroy", async (meta, res) => {
     try {
-      //   let sid = meta.sid
-      //   let connect = new UpdateSession(options)
-      //   let destroy = await connect.delete(sid)
-      //   if (destroy) {
-      //     res.writeHead(302, {
-      //       location: meta.location
-      //     }).end()
-      //   }
+      RedisSess.destroy(meta.sid);
+      res
+        .writeHead(302, {
+          location: meta.location,
+        })
+        .end();
     } catch (err) {
       console.error(err);
       return err;
@@ -56,6 +54,8 @@ const action = (app) => {
       store: RedisSess,
     })
   );
+  // 3.2 CSRF
+  app.use(csrf());
 
   return app;
 };

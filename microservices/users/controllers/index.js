@@ -6,8 +6,6 @@ import dotenv from "dotenv";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
-import { UserModel } from "../service/modelServices.js";
-
 const appRoot = pkg.path;
 dotenv.config();
 /**  */
@@ -16,23 +14,11 @@ const lang = require("../lang/ru");
 const templateDir = path.join(appRoot, process.env.VIEW_DIR);
 
 const endpoints = async (app) => {
-  /**  */
-  const db = await new UserModel().connect({
-    name: process.env.ORIENTDB_NAME,
-    username: process.env.ORIENTDB_USERNAME,
-    password: process.env.ORIENTDB_PASSWORD,
-  });
-
   app.get("/users/", async (req, res) => {
     try {
-      /**  */
-      const users = await db.getUserAll();
-
-      const auth = await db.getLogin({
-        username: "misha",
-        password: "#23a50zJs&$",
-      });
-      console.log("⚡ auth::", auth);
+      /** Получаем список пользователей  */
+      const client = await app.options.db;
+      const users = await client.getUserAll();
 
       /**  */
       const { response } = await res.app.ask("render", {
@@ -56,9 +42,8 @@ const endpoints = async (app) => {
 
       res.status(200).end(response.html);
     } catch (err) {
-      console.log("⚡ err", err);
-      console.log("⚡ err::users", err);
-      process.exit();
+      console.log("⚡ err::/users/", err);
+      return err;
     }
   });
 
@@ -89,7 +74,8 @@ const endpoints = async (app) => {
     } catch (err) {
       console.log("⚡ err", err);
       console.log("⚡ err::users", err);
-      process.exit();
+      // process.exit();
+      return err;
     }
   });
 

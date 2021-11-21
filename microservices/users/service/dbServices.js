@@ -42,61 +42,61 @@ class PDO {
     }
   }
 
-  async queryAll(query, params) {
-    try {
-      const session = await this.pool.acquire();
-      const message = await session.query(query, params).all();
-      session.close();
-      return message;
-    } catch (err) {
-      console.log("⚡ err::PDO.queryAll => ", err);
-      process.exit();
-    }
-  }
+  // async queryAll(query, params) {
+  //   try {
+  //     const session = await this.pool.acquire();
+  //     const message = await session.query(query, params).all();
+  //     session.close();
+  //     return message;
+  //   } catch (err) {
+  //     console.log("⚡ err::PDO.queryAll => ", err);
+  //     process.exit();
+  //   }
+  // }
 
-  async queryOne(query, params) {
-    try {
-      const session = await this.pool.acquire();
-      const message = await session.query(query, params).one();
-      session.close();
-      return message;
-    } catch (err) {
-      console.log("⚡ err::PDO.query => ", err);
-      process.exit();
-    }
-  }
+  // async queryOne(query, params) {
+  //   try {
+  //     const session = await this.pool.acquire();
+  //     const message = await session.query(query, params).one();
+  //     session.close();
+  //     return message;
+  //   } catch (err) {
+  //     console.log("⚡ err::PDO.query => ", err);
+  //     process.exit();
+  //   }
+  // }
 
-  liveQuery(options) {}
+  // liveQuery(options) {}
 
-  async insert(query, json) {
-    try {
-      const session = await this.pool.acquire();
-      const message = await session.command(query, json).one();
-      session.close();
-      return message;
-    } catch (err) {
-      console.log("⚡ err::PDO.query => ", err);
-      process.exit();
-    }
-  }
+  // async insert(query, json) {
+  //   try {
+  //     const session = await this.pool.acquire();
+  //     const message = await session.command(query, json).one();
+  //     session.close();
+  //     return message;
+  //   } catch (err) {
+  //     console.log("⚡ err::PDO.query => ", err);
+  //     process.exit();
+  //   }
+  // }
 
-  async create(edgeClass, from, to) {
-    try {
-      const session = await this.pool.acquire();
-      const message = await session
-        .create("EDGE", edgeClass)
-        .from(from)
-        .to(to)
-        .one();
-      session.close();
-      return message;
-    } catch (err) {
-      console.log("⚡ err::PDO.create => ", err);
-      process.exit();
-    }
-  }
+  // async create(edgeClass, from, to) {
+  //   try {
+  //     const session = await this.pool.acquire();
+  //     const message = await session
+  //       .create("EDGE", edgeClass)
+  //       .from(from)
+  //       .to(to)
+  //       .one();
+  //     session.close();
+  //     return message;
+  //   } catch (err) {
+  //     console.log("⚡ err::PDO.create => ", err);
+  //     process.exit();
+  //   }
+  // }
 
-  command(options) {}
+  // command(options) {}
 }
 
 export { PDO };

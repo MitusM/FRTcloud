@@ -70,7 +70,7 @@ export let endpoints = (app) => {
             },
           },
         });
-        console.log("⚡ response::", response);
+
         let message;
         let location;
         let status;
@@ -93,6 +93,7 @@ export let endpoints = (app) => {
                 action: "gateway:session",
                 meta: {
                   sid: req.sessionID,
+                  location: location,
                   session: req.session,
                   auth: true,
                   user: {
@@ -118,13 +119,12 @@ export let endpoints = (app) => {
             message: message,
           }
         );
-        // .end(message)
       } else {
         res.status(403).end();
       }
     } catch (err) {
       console.log("⚡ err::login[post]", err);
-      // process.exit()
+      return err;
     }
   });
 
