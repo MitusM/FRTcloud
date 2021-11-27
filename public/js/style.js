@@ -28,14 +28,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-/** 
- * 
- * 
+/**
+ *
+ *
  */
 var Form = function Form(selector, option) {
   (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Form);
 
-  this._form = typeof selector === 'string' ? document.forms[selector] : (0,_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__["default"])(selector) === 'object' ? selector : null;
+  this._form = typeof selector === "string" ? document.forms[selector] : (0,_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__["default"])(selector) === "object" ? selector : null;
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Form);

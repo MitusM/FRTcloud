@@ -31,9 +31,6 @@
   color: var(--bs-gray-600);
 }
 
-// .user-table-body {
-// }
-
 .user-table-body-line {
   text-align: left;
   line-height: 3em;
@@ -48,5 +45,52 @@
   &:nth-child(6) {
     text-align: center;
   }
-  // &::hover,
+}
+
+.block {
+  #i-ban {
+    color: red;
+  }
+}
+// ----------------------------------------------------------------
+// ACTIONS USER TABLE
+// ----------------------------------------------------------------
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  div {
+    cursor: pointer;
+  }
+}
+
+// ----------------------------------------------------------------
+// USER FORM ADD
+// ----------------------------------------------------------------
+.user-form-add {
+  display: grid;
+  grid-template-columns: auto 860px auto;
+  grid-template-areas: ". form .";
+}
+
+.user-form__add {
+  grid-area: form;
+
+  fieldset {
+    padding: 1.5em;
+  }
+  legend {
+    background-color: var(--bs-header-logo-background-color);
+    font: 1.5em/2em var(--cl--font-sans-serif);
+    color: var(--cl-user-table-thead);
+    position: relative;
+  }
+}
+
+.user-form-title__close {
+  position: absolute;
+  right: 1em;
+  cursor: pointer;
+  &:hover {
+    color: var(--cl-gray-500);
+  }
 }

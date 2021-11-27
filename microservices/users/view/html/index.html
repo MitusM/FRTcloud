@@ -11,12 +11,18 @@
     <!-- CSS only -->
     <link rel="stylesheet" href="/public/css/style.css" />
     <link rel="stylesheet" href="/public/css/users.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
 
+    {#
     <link
       rel="stylesheet"
       href="https://yastatic.net/bem-components/latest/desktop/bem-components.css"
     />
     <script src="https://yastatic.net/bem-components/latest/desktop/bem-components.js+bemhtml.js"></script>
+    #}
   </head>
 
   <body>
@@ -38,5 +44,17 @@
 
       <footer class="page-footer" role="contentinfo"></footer>
     </div>
+    <script rel="preload" src="/public/js/runtime.js"></script>
+    <script rel="preload" src="/public/js/vendors.js"></script>
+    <script
+      rel="preload"
+      src="https://unpkg.com/axios/dist/axios.min.js"
+    ></script>
+    <script src="/public/js/style.js"></script>
+    <script src="/public/js/users.js"></script>
+    <script>
+      {# const config = {{ config | dump }}; #}
+      const lang = {{ lang.form | dump }};
+    </script>
   </body>
 </html>

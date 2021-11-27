@@ -1,8 +1,9 @@
 {% set lenght = users.length %}
 <div class="container-fluid">
+  {# animate__animated animate__backOutLeft #}
   <div class="row">
     {% include "./breadcrumb.html" %}
-    <div class="user-table">
+    <div class="user-table animate__animated">
       <div id="user-table-thead" class="user-table-thead">
         <div class="user-table-thead-item">{{ lang.login }}:</div>
         <div class="user-table-thead-item">
@@ -25,8 +26,110 @@
         <!-- END User table -->
       </div>
     </div>
-    {#
-    <div class="container">MAIN CONTENT</div>
-    #}
+
+    {# animate__animated animate__backInRight #}
+    <div id="user-add" class="user-form-add display-none animate__animated">
+      <form id="user-form" action="/users" class="user-form__add" method="post">
+        <fieldset class="form-group width-100 card">
+          <legend>
+            Добавить пользователя
+            <span class="user-form-title__close">
+              <svg
+                id="i-close"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 32 32"
+                width="22"
+                height="22"
+                fill="none"
+                stroke="currentcolor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              >
+                <path d="M2 30 L30 2 M30 30 L2 2" />
+              </svg>
+            </span>
+          </legend>
+
+          <div class="form-group width-100">
+            <label for="user-name">{{ lang.login }}:</label>
+            <input
+              class="form-group-input input form-control user-name"
+              name="username"
+              type="text"
+              placeholder="Your username"
+              required
+              autofocus
+            />
+          </div>
+
+          <div class="form-group width-100">
+            <label for="user-email">{{ lang.Email }}:</label>
+            <input
+              class="form-group-input input form-control user-email"
+              name="email"
+              type="email"
+              placeholder="Your email"
+              required
+            />
+          </div>
+
+          <div class="form-group width-100">
+            <label for="user-password">{{ lang.password }}:</label>
+            <input
+              class="form-group-input input form-control user-password"
+              name="password"
+              type="password"
+              placeholder="Your password"
+              required
+            />
+          </div>
+
+          <div class="form-group width-100">
+            <label for="user-group">{{ lang.Group }}:</label>
+            <select name="select" class="form-control user-group">
+              <!--Supplement an id here instead of using 'name'-->
+              <option value="admin">admin</option>
+              <option value="user" selected>user</option>
+              {#
+              <option value="value3">Значение 3</option>
+              #}
+            </select>
+          </div>
+
+          <div class="form-group width-100">
+            <label for="user-quota">{{ lang.Quota }}:</label>
+            <input
+              class="form-group-input input form-control user-quota"
+              name="quota"
+              type="number"
+              value="0"
+              step="1"
+              max="5"
+              min="0"
+              placeholder="Your quota"
+              required
+              list="user-quota-input-list"
+            />
+            <datalist id="user-quota-input-list">
+              <option value="1"></option>
+              <option value="2"></option>
+              <option value="3"></option>
+              <option value="4"></option>
+              <option value="5"></option>
+            </datalist>
+          </div>
+
+          <div class="form-group width-100">
+            <button
+              type="submit"
+              class="user-form-button form-inline-button btn btn-primary"
+            >
+              {{ lang.form.submit }}
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
   </div>
 </div>

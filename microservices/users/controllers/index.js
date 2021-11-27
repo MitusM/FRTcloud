@@ -1,5 +1,4 @@
 import path from "path";
-// import * as path from "path";
 import pkg from "app-root-path";
 import dotenv from "dotenv";
 
@@ -17,8 +16,8 @@ const endpoints = async (app) => {
   app.get("/users/", async (req, res) => {
     try {
       /** Получаем список пользователей  */
-      const client = await app.options.db;
-      const users = await client.getUserAll();
+      const db = await app.options.db;
+      // const users = await db.getUserAll();
 
       /**  */
       const { response } = await res.app.ask("render", {
@@ -31,7 +30,7 @@ const endpoints = async (app) => {
             data: {
               csrf: req.session.csrfSecret,
               title: "Пользователи | cloudFRT",
-              users: users,
+              users: await db.getUserAll(),
               lang: lang,
               page: "./page/main-content.html",
               breadcrumb: "users",
@@ -49,8 +48,6 @@ const endpoints = async (app) => {
 
   app.get("/users/settings(.*)", async (req, res) => {
     try {
-      /**  */
-
       /**  */
       const { response } = await res.app.ask("render", {
         server: {
@@ -74,7 +71,6 @@ const endpoints = async (app) => {
     } catch (err) {
       console.log("⚡ err", err);
       console.log("⚡ err::users", err);
-      // process.exit();
       return err;
     }
   });

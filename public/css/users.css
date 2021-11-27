@@ -45,3 +45,43 @@
 .user-table-body-line-item:nth-child(2n+1), .user-table-body-line-item:nth-child(6) {
   text-align: center;
 }
+
+.block #i-ban {
+  color: red;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.actions div {
+  cursor: pointer;
+}
+
+.user-form-add {
+  display: grid;
+  grid-template-columns: auto 860px auto;
+  grid-template-areas: ". form .";
+}
+
+.user-form__add {
+  grid-area: form;
+}
+.user-form__add fieldset {
+  padding: 1.5em;
+}
+.user-form__add legend {
+  background-color: var(--bs-header-logo-background-color);
+  font: 1.5em/2em var(--cl--font-sans-serif);
+  color: var(--cl-user-table-thead);
+  position: relative;
+}
+
+.user-form-title__close {
+  position: absolute;
+  right: 1em;
+  cursor: pointer;
+}
+.user-form-title__close:hover {
+  color: var(--cl-gray-500);
+}

@@ -9,6 +9,7 @@
 @use "menu-settings";
 @use "form";
 @use "button";
+
 // === === === === === === === === === === === ===
 //* MAIN
 // === === === === === === === === === === === ===
@@ -37,4 +38,8 @@
   margin: 0 auto;
   padding: 40px;
   box-sizing: border-box;
+}
+
+.display-none {
+  display: none !important;
 }
