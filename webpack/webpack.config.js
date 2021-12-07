@@ -1,34 +1,32 @@
-const path = require('path')
-const {
-  merge
-} = require('webpack-merge')
-const webpack = require('webpack')
+const path = require("path");
+const { merge } = require("webpack-merge");
+const webpack = require("webpack");
 // const CopyPlugin = require('copy-webpack-plugin')
 
-const svg = require('./svg')
-const images = require('./images')
-const sass = require('./sass')
-const babel = require('./babel')
+// const svg = require("./svg");
+const images = require("./images");
+const sass = require("./sass");
+const babel = require("./babel");
 
-var appRoot = require('app-root-path')
-
+var appRoot = require("app-root-path");
 
 const pathList = {
   // source: path.join(appRoot.path, 'developer', 'js'),
-  build: path.join(appRoot.path, 'public', 'js')
-}
+  build: path.join(appRoot.path, "public", "js"),
+};
 
-const common = merge([{
+const common = merge([
+  {
     // context:
     entry: {
-      style: './assets/js/index.js',
-      users: './microservices/users/assets/js/index.js',
-      login: './microservices/auth/assets/js/index.js'
+      style: "./assets/js/index.js",
+      users: "./microservices/users/assets/js/index.js",
+      login: "./microservices/auth/assets/js/index.js",
       // files: './microservices/files/assets/js/index.js',
     },
 
     optimization: {
-      runtimeChunk: 'single',
+      runtimeChunk: "single",
       splitChunks: {
         minSize: 0,
         minChunks: 2,
@@ -37,20 +35,20 @@ const common = merge([{
         cacheGroups: {
           vendors: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
+            name: "vendors",
             enforce: true,
-            chunks: 'all'
-          }
-        }
-      }
+            chunks: "all",
+          },
+        },
+      },
     },
-
 
     output: {
       path: pathList.build,
-      filename: '[name].js',
-      chunkFilename: '[name].bundle.js',
-      publicPath: pathList.build
+      filename: "[name].js",
+      chunkFilename: "[name].bundle.js",
+      publicPath: pathList.build,
+      assetModuleFilename: "[name][ext]",
     },
     devtool: false,
     watchOptions: {
@@ -67,7 +65,7 @@ const common = merge([{
       version: false,
       timings: true,
       warnings: true,
-      children: false
+      children: false,
     },
 
     plugins: [
@@ -81,24 +79,24 @@ const common = merge([{
           NODE_ENV: JSON.stringify(process.env.NODE_ENV || "development"),
         },
       }),
-
-    ]
-
+    ],
   },
   images(),
-  svg(),
-  babel()
-])
+  // svg(),
+  babel(),
+]);
 
 module.exports = function (env) {
-  console.log('env', env)
-  console.log('⚡ process.env.NODE_ENV', process.env.NODE_ENV)
-  return merge([{
-      mode: 'development',
+  console.log("env", env);
+  console.log("⚡ process.env.NODE_ENV", process.env.NODE_ENV);
+  return merge([
+    {
+      mode: "development",
       // watch: true
     },
+    sass(),
     common,
-    sass()
+
     // analyzer
-  ])
-}
+  ]);
+};

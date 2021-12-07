@@ -536,3 +536,17 @@ legend {
 .display-none {
   display: none !important;
 }
+
+.d-flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+  justify-items: center;
+}
+
+.align-center {
+  align-items: center;
+  align-content: center;
+}

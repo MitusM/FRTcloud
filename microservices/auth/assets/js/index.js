@@ -32,11 +32,11 @@ import "../scss/index.scss";
     };
 
     if (usrVal === "") {
-      validateFields(usrVal, "Укажите логин");
+      validateFields(user, "Укажите логин");
       user.focus();
     }
     if (pswVal === "") {
-      validateFields(pswVal, "Укажите пароль");
+      validateFields(password, "Укажите пароль");
       password.focus();
     }
 
@@ -63,9 +63,10 @@ import "../scss/index.scss";
     }
   });
 
-  const validateFields = (field, message) => {
-    if (field === "") {
-      message(message);
-    }
+  const validateFields = (field, body) => {
+    // if (field === "") {
+    message(body);
+    field.focus();
+    // }
   };
 })(window);

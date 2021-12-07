@@ -37,6 +37,7 @@
 
   &:nth-child(even) {
     border-top: 1px solid var(--cl-border-color);
+    border-bottom: 1px solid var(--cl-border-color);
   }
 }
 
@@ -58,9 +59,17 @@
 .actions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-items: center;
   div {
     cursor: pointer;
+    display: flex;
   }
+}
+.actions__edit {
+  width: 32px;
+  height: 32px;
+  background: url("../images/edit.svg");
 }
 
 // ----------------------------------------------------------------

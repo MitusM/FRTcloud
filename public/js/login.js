@@ -63,12 +63,12 @@ __webpack_require__.r(__webpack_exports__);
               };
 
               if (usrVal === "") {
-                validateFields(usrVal, "Укажите логин");
+                validateFields(user, "Укажите логин");
                 user.focus();
               }
 
               if (pswVal === "") {
-                validateFields(pswVal, "Укажите пароль");
+                validateFields(password, "Укажите пароль");
                 password.focus();
               }
 
@@ -93,10 +93,10 @@ __webpack_require__.r(__webpack_exports__);
               }
             });
 
-            validateFields = function validateFields(field, message) {
-              if (field === "") {
-                message(message);
-              }
+            validateFields = function validateFields(field, body) {
+              // if (field === "") {
+              message(body);
+              field.focus(); // }
             };
 
           case 12:

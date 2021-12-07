@@ -1,10 +1,14 @@
-<div id="{{user._id}}" class="user-table-body-line" data-id="{{user._id}}">
-  <div class="user-table-body-line-item">{{ user.login }}</div>
-  <div class="user-table-body-line-item">{{ user.create | date}}</div>
+<div
+  id="{{user._id}}"
+  class="user-table-body-line animate__animated"
+  data-id="{{user._id}}"
+>
+  <div class="user-table-body-line-item">{{ user.username }}</div>
+  <div class="user-table-body-line-item">{{ user.created | date}}</div>
   <div class="user-table-body-line-item">{{ user.group }}</div>
   <div class="user-table-body-line-item">{{ user.email }}</div>
   <div class="user-table-body-line-item">{{ user.quota | gb}}</div>
-  <div class="user-table-body-line-item block">
+  <div class="user-table-body-line-item block d-flex justify-center">
     {% if user.block === true %} {# {{ user.block }} #}
     <svg
       id="i-ban"
@@ -25,7 +29,7 @@
   </div>
   <div class="user-table-body-line-item actions">
     <div class="actions__edit">
-      <svg
+      {# <svg
         id="i-edit"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 32 32"
@@ -38,7 +42,7 @@
         stroke-width="2"
       >
         <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z" />
-      </svg>
+      </svg> #}
     </div>
     <div class="actions__trash">
       <svg

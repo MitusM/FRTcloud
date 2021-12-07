@@ -43,8 +43,8 @@ class UserModel extends PDO {
       session.close();
       return message;
     } catch (err) {
-      console.log("⚡ err::PDO.query => ", err);
-      process.exit();
+      console.log("⚡ err::PDO.insert => ", err);
+      return err;
     }
   }
 
@@ -96,7 +96,7 @@ class UserModel extends PDO {
 
   getUserAll() {
     return this.queryAll(
-      "SELECT @rid as rid, _id, username as login, email, block, group, created, quota FROM User"
+      "SELECT @rid as rid, _id, username, email, block, group, created, quota FROM User ORDER BY created DESC LIMIT 20"
     );
   }
 
@@ -128,6 +128,27 @@ class UserModel extends PDO {
         name: user,
       },
     });
+  }
+
+  setCreated(obj) {
+    return this.insert(
+      "INSERT INTO User SET username =:username, hashedPassword =:hashedPassword, salt =:salt, email =:email, group =:group, quota =:quota, block=:block, created =sysdate(), _id =:_id",
+      { params: { ...obj } }
+    );
+  }
+
+  validateFields(field, value) {
+    return this.queryOne(
+      "select " + field + " from User where " + field + " ='" + value + "'"
+    );
+  }
+
+  hashPassword(password) {
+    let auth = new Authorization();
+    return {
+      password: auth.hashPassword(password),
+      salt: auth.salt,
+    };
   }
 }
 
