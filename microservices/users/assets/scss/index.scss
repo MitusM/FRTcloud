@@ -49,8 +49,11 @@
 }
 
 .block {
-  #i-ban {
-    color: red;
+  .ban {
+    width: 32px;
+    height: 32px;
+    background: url("../images/ban.svg");
+    cursor: pointer;
   }
 }
 // ----------------------------------------------------------------
@@ -61,7 +64,8 @@
   grid-template-columns: repeat(3, 1fr);
   align-items: center;
   justify-items: center;
-  div {
+  div,
+  span {
     cursor: pointer;
     display: flex;
   }
@@ -71,7 +75,21 @@
   height: 32px;
   background: url("../images/edit.svg");
 }
-
+.actions__trash {
+  width: 32px;
+  height: 32px;
+  background: url("../images/trash.svg");
+}
+.actions_unlock {
+  width: 32px;
+  height: 32px;
+  background: url("../images/unlock.svg");
+}
+.actions_lock {
+  width: 32px;
+  height: 32px;
+  background: url("../images/lock.svg");
+}
 // ----------------------------------------------------------------
 // USER FORM ADD
 // ----------------------------------------------------------------

@@ -47,8 +47,11 @@
   text-align: center;
 }
 
-.block #i-ban {
-  color: red;
+.block .ban {
+  width: 32px;
+  height: 32px;
+  background: url(../images/ban.svg);
+  cursor: pointer;
 }
 
 .actions {
@@ -57,7 +60,8 @@
   align-items: center;
   justify-items: center;
 }
-.actions div {
+.actions div,
+.actions span {
   cursor: pointer;
   display: flex;
 }
@@ -66,6 +70,24 @@
   width: 32px;
   height: 32px;
   background: url(../images/edit.svg);
+}
+
+.actions__trash {
+  width: 32px;
+  height: 32px;
+  background: url(../images/trash.svg);
+}
+
+.actions_unlock {
+  width: 32px;
+  height: 32px;
+  background: url(../images/unlock.svg);
+}
+
+.actions_lock {
+  width: 32px;
+  height: 32px;
+  background: url(../images/lock.svg);
 }
 
 .user-form-add {

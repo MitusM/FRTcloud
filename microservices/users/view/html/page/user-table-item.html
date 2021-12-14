@@ -9,96 +9,35 @@
   <div class="user-table-body-line-item">{{ user.email }}</div>
   <div class="user-table-body-line-item">{{ user.quota | gb}}</div>
   <div class="user-table-body-line-item block d-flex justify-center">
-    {% if user.block === true %} {# {{ user.block }} #}
-    <svg
-      id="i-ban"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 32 32"
-      width="32"
-      height="32"
-      fill="none"
-      stroke="currentcolor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-    >
-      <circle cx="16" cy="16" r="14" />
-      <path d="M6 6 L26 26" />
-    </svg>
+    {% if user.block === true %}
+    <span class="ban"></span>
     {% endif %}
   </div>
   <div class="user-table-body-line-item actions">
-    <div class="actions__edit">
-      {# <svg
-        id="i-edit"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 32 32"
-        width="32"
-        height="32"
-        fill="none"
-        stroke="currentcolor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-      >
-        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z" />
-      </svg> #}
-    </div>
-    <div class="actions__trash">
-      <svg
-        id="i-trash"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 32 32"
-        width="32"
-        height="32"
-        fill="none"
-        stroke="currentcolor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-      >
-        <path
-          d="M28 6 L6 6 8 30 24 30 26 6 4 6 M16 12 L16 24 M21 12 L20 24 M11 12 L12 24 M12 6 L13 2 19 2 20 6"
-        />
-      </svg>
-    </div>
+    <div
+      class="actions__edit"
+      data-id="{{user._id}}"
+      data-target="edit"
+      data-user='{{user| json }}'
+    ></div>
+    <div
+      class="actions__trash"
+      data-id="{{user._id}}"
+      data-target="trash"
+    ></div>
     <div class="actions__lock">
       {% if user.block === true %}
-      <svg
-        id="i-unlock"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 32 32"
-        width="32"
-        height="32"
-        fill="none"
-        stroke="currentcolor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-      >
-        <path
-          d="M5 15 L5 30 27 30 27 15 Z M9 15 C9 7 9 3 16 3 23 3 23 8 23 9 M16 20 L16 23"
-        />
-        <circle cx="16" cy="24" r="1" />
-      </svg>
+      <span
+        class="actions_unlock"
+        data-id="{{user._id}}"
+        data-target="unlock"
+      ></span>
       {% else %}
-      <svg
-        id="i-lock"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 32 32"
-        width="32"
-        height="32"
-        fill="none"
-        stroke="currentcolor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-      >
-        <path
-          d="M5 15 L5 30 27 30 27 15 Z M9 15 C9 9 9 5 16 5 23 5 23 9 23 15 M16 20 L16 23"
-        />
-        <circle cx="16" cy="24" r="1" />
-      </svg>
+      <span
+        class="actions_lock"
+        data-id="{{user._id}}"
+        data-target="lock"
+      ></span>
       {% endif %}
     </div>
     <div class="actions__"></div>

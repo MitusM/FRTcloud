@@ -13,6 +13,28 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./assets/js/core/gb.js":
+/*!******************************!*\
+  !*** ./assets/js/core/gb.js ***!
+  \******************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "formatBytes": () => (/* binding */ formatBytes)
+/* harmony export */ });
+function formatBytes(bytes) {
+  var decimals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+  if (bytes === 0) return '0 Bytes';
+  var k = 1024;
+  var dm = decimals < 0 ? 0 : decimals;
+  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  var i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)); // + ' ' + sizes[i]
+}
+
+/***/ }),
+
 /***/ "./assets/js/form/index.js":
 /*!*********************************!*\
   !*** ./assets/js/form/index.js ***!
@@ -52,13 +74,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scss_index_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../scss/index.scss */ "./assets/scss/index.scss");
 /* harmony import */ var tippy_js_dist_tippy_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! tippy.js/dist/tippy.css */ "./node_modules/tippy.js/dist/tippy.css");
 /* harmony import */ var izitoast_dist_css_iziToast_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! izitoast/dist/css/iziToast.css */ "./node_modules/izitoast/dist/css/iziToast.css");
-/* harmony import */ var tippy_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! tippy.js */ "./node_modules/tippy.js/dist/tippy.esm.js");
+/* harmony import */ var tippy_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! tippy.js */ "./node_modules/tippy.js/dist/tippy.esm.js");
 /* harmony import */ var delegate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! delegate */ "./node_modules/delegate/src/delegate.js");
 /* harmony import */ var _system_each_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./system/each.js */ "./assets/js/system/each.js");
 /* harmony import */ var _system_extend_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./system/extend.js */ "./assets/js/system/extend.js");
 /* harmony import */ var _system_fetch_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./system/fetch.js */ "./assets/js/system/fetch.js");
 /* harmony import */ var _form_index_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./form/index.js */ "./assets/js/form/index.js");
 /* harmony import */ var _system_message_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./system/message.js */ "./assets/js/system/message.js");
+/* harmony import */ var _system_attribute_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./system/attribute.js */ "./assets/js/system/attribute.js");
+/* harmony import */ var _core_gb_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./core/gb.js */ "./assets/js/core/gb.js");
+
+
 
 
 
@@ -70,15 +96,55 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _$ = {
-  tippy: tippy_js__WEBPACK_IMPORTED_MODULE_9__["default"],
+  tippy: tippy_js__WEBPACK_IMPORTED_MODULE_11__["default"],
   extend: _system_extend_js__WEBPACK_IMPORTED_MODULE_5__.extend,
   each: _system_each_js__WEBPACK_IMPORTED_MODULE_4__.each,
   ajax: _system_fetch_js__WEBPACK_IMPORTED_MODULE_6__.ajax,
   delegate: delegate__WEBPACK_IMPORTED_MODULE_3__,
   Form: _form_index_js__WEBPACK_IMPORTED_MODULE_7__["default"],
-  message: _system_message_js__WEBPACK_IMPORTED_MODULE_8__["default"]
+  message: _system_message_js__WEBPACK_IMPORTED_MODULE_8__["default"],
+  data: _system_attribute_js__WEBPACK_IMPORTED_MODULE_9__.data,
+  attr: _system_attribute_js__WEBPACK_IMPORTED_MODULE_9__.attr,
+  gb: _core_gb_js__WEBPACK_IMPORTED_MODULE_10__.formatBytes
 };
 window._$ = _$;
+
+/***/ }),
+
+/***/ "./assets/js/system/attribute.js":
+/*!***************************************!*\
+  !*** ./assets/js/system/attribute.js ***!
+  \***************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "attr": () => (/* binding */ attr),
+/* harmony export */   "data": () => (/* binding */ data)
+/* harmony export */ });
+function attr(element, options) {
+  this.each(options, function (elem, key) {
+    if (key === 'class') {
+      element.classList.add(options["class"]);
+    } else {
+      element.setAttribute(key, elem);
+    }
+  });
+  return this;
+}
+/**
+ * Создаём объект с данными, на основании всех (data-*) атрибутов элемента
+ * @param   {object}        e    элемент на котором произошло событие
+ * @param   {string}        attr не обязательный параметр, если указан то будет получено значение только данного атрибута Например: name
+ * @param   {*}             val  не обязательный параметр, если он указан вместе с параметром attr то у переданного атрибута будет установлено значение val
+ * @returns {object|string} Если передан один первый параметр(e) то получим данные
+ */
+
+function data(e, attr, val) {
+  var element = e.target || e;
+  var data = !attr ? element.dataset : !val ? element.dataset[attr] : element.dataset[attr] = val;
+  return data;
+}
 
 /***/ }),
 
