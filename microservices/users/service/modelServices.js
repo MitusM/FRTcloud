@@ -36,7 +36,6 @@ class UserModel extends PDO {
 
   async queryRid(query) {
     try {
-      console.log('RID')
       const session = await this.pool.acquire()
       const message = await session.query(query).one()
       session.close()
@@ -76,7 +75,17 @@ class UserModel extends PDO {
     }
   }
 
-  command(options) {}
+  async command(query) {
+    try {
+      const session = await this.pool.acquire()
+      const message = await session.command(query).all()
+      session.close()
+      return message
+    } catch (err) {
+      console.log('⚡ err::PDO.command => ', err)
+      return err
+    }
+  }
 
   //username, password
   async getLogin(obj) {
@@ -106,9 +115,11 @@ class UserModel extends PDO {
     }
   }
 
-  getUserAll() {
+  getUserAll(limit = 10) {
+    // ORDER BY created DESC
     return this.queryAll(
-      'SELECT @rid as rid, _id, username, email, block, group, created, quota FROM User ORDER BY created DESC LIMIT 20',
+      'SELECT @rid as rid, _id, username, email, block, group, created, quota FROM User LIMIT ' +
+        limit,
     )
   }
 
@@ -119,17 +130,14 @@ class UserModel extends PDO {
    */
   async getUser(user) {
     try {
+      let select = // , hashedPassword, salt,
+        'SELECT @rid as rid, _id, username, email, block, group, created, quota FROM User WHERE '
       if (typeof user === 'Object') {
-        return this.queryOne(
-          'select @rid as rid, username, email, block, group, created, quota from User where username =: name ',
-          {
-            params: {
-              name: user,
-            },
-          },
-        )
+        return this.queryOne(select + 'username =: username ', {
+          params: { username: user },
+        })
       } else if (typeof user === 'string') {
-        return this.queryRid('SELECT FROM User WHERE @rid = ' + user)
+        return this.queryRid(select + '@rid = ' + user)
       }
     } catch (err) {
       return err
@@ -142,7 +150,7 @@ class UserModel extends PDO {
    * @returns { '@rid': RecordID { cluster: integer, position: integer } }
    */
   getRid(user) {
-    return this.queryOne('select @rid from User where username =: name ', {
+    return this.queryOne('SELECT @rid FROM User WHERE username =: name ', {
       params: {
         name: user,
       },
@@ -156,15 +164,40 @@ class UserModel extends PDO {
     )
   }
 
-  update(obj) {
+  update(set, rid, obj) {
     return this.insert(
-      'UPDATE User SET username =:username email =:email group =:group, quota =:quota, block = :block',
+      'UPDATE User SET ' + set + ' UPSERT WHERE @rid =' + rid,
+      { params: { ...obj } },
+    )
+  }
+
+  async deleteUser(rid) {
+    try {
+      const session = await this.pool.acquire()
+      const message = await session
+        .delete('VERTEX', 'User')
+        .where('@rid = ' + rid)
+        .one()
+      session.close()
+      return message
+    } catch (err) {
+      console.log('⚡ err::deleteUser => ', err)
+      return err
+    }
+  }
+
+  async paginate(lowerRid, limit) {
+    return this.queryAll(
+      'SELECT @rid as rid, _id, username, email, block, group, created, quota FROM User WHERE @rid > ' +
+        lowerRid +
+        ' LIMIT ' +
+        limit,
     )
   }
 
   validateFields(field, value) {
     return this.queryOne(
-      'select ' + field + ' from User where ' + field + " ='" + value + "'",
+      'SELECT ' + field + ' FROM User WHERE ' + field + " ='" + value + "'",
     )
   }
 

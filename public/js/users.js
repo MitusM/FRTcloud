@@ -29,11 +29,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-(0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.mark(function _callee() {
+(0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.mark(function _callee3() {
   var doc;
-  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.wrap(function _callee$(_context) {
+  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.wrap(function _callee3$(_context3) {
     while (1) {
-      switch (_context.prev = _context.next) {
+      switch (_context3.prev = _context3.next) {
         case 0:
           doc = document;
           doc.addEventListener('DOMContentLoaded', function () {
@@ -66,6 +66,12 @@ __webpack_require__.r(__webpack_exports__);
             /**  */
 
             var userTableBody = userTables.children[1];
+            /**  */
+
+            var ulUserTableBody = document.getElementById('user-list');
+            /**  */
+
+            var lastRid = userTableBody.dataset.lastRid;
             /** Заголовок формы добавления или редактирования пользователя */
 
             var userFormTitle = document.querySelector('.user-form-add__title');
@@ -79,12 +85,10 @@ __webpack_require__.r(__webpack_exports__);
             var group = elements[6];
             var quota = elements[7];
             var submit = elements[8];
-            var rid; // console.log('⚡ elements::', elements)
-            // console.log("⚡ userTables::", userTables);
-            // console.log('⚡ formAdd::', formAdd)
-            // console.log("⚡ userTableBody::", userTableBody);
-            // console.log("⚡ userFormTitle::", userFormTitle);
+            var rid;
+            /** Модальное окно удаления пользователя  */
 
+            var dialog = new _$.Dialog('#dialog');
             var csrf = document.querySelector('meta[name=csrf-token]').getAttributeNode('content').value;
             /**
              * Всплывающее сообщение.
@@ -104,6 +108,7 @@ __webpack_require__.r(__webpack_exports__);
             var toggleFormAdd = function toggleFormAdd() {
               divAddForm.classList.toggle(displayNone);
               divAddForm.classList.add('animate__zoomIn');
+              /** Очищаем форму от данных */
 
               formAdd._form.reset();
 
@@ -115,31 +120,8 @@ __webpack_require__.r(__webpack_exports__);
                 userTables.classList.toggle('display-none');
               }
             };
-            /** This function is called when the form is submitted*/
-
-
-            submit.addEventListener('click', function (e) {
-              e.preventDefault();
-              return hidden.value === 'add' ? add() : update();
-            });
-            /**
-             * Показываем или скрываем форму добавления пользователя
-             */
-
-            urlUserAdd.addEventListener('click', function (e) {
-              e.preventDefault();
-              userFormTitle.textContent = 'Добавить пользователя';
-              hidden.value = 'add';
-              toggleFormAdd();
-            });
-            /**
-             * Скрываем форму добавления пользователя
-             */
-
-            closeUserForm.addEventListener('click', function (e) {
-              toggleFormAdd();
-            });
             /**  */
+
 
             var validateFields = function validateFields(field, body) {
               message('error', body);
@@ -148,12 +130,9 @@ __webpack_require__.r(__webpack_exports__);
 
             var update = function update() {
               var user = username.value,
-                  emailUpdated = email.value; //,
-              // pass = password.value //,
-              // obj = { _id: _id.value, csrf: csrf, rid: rid }
-
-              console.log('⚡ user && email::', user && emailUpdated);
+                  emailUpdated = email.value;
               if (user === '') validateFields(username, langError.username);
+              if (emailUpdated === '') validateFields(email, langError.email);
 
               if (user && email) {
                 if (user) axios.post('/users/update', {
@@ -166,9 +145,37 @@ __webpack_require__.r(__webpack_exports__);
                   csrf: csrf,
                   rid: rid
                 }).then(function (res) {
-                  console.log('⚡ res::', res); // rid = ''
+                  var data = res.data;
+                  var id;
+                  var dataObj;
 
-                  console.log('⚡ rid::', rid);
+                  if (data.status === 200) {
+                    dataObj = data.user;
+                    message('success', 'Your account has been updated');
+                    /** Скрываем форму добавления пользователя*/
+
+                    toggleFormAdd();
+                    /** Находим id добавляемого элемента в таблицу для анимации */
+
+                    id = doc.getElementById(data.id);
+                    var keys = Object.keys(dataObj);
+                    keys.forEach(function (value) {
+                      var v = dataObj[value];
+                      var txt = id.querySelector('[data-class="' + value + '"]');
+
+                      if (value === 'quota') {
+                        v = _$.gb(v, 2, true);
+                      }
+
+                      if (txt) txt.innerText = v;
+                    });
+                    /** Добавляем class к элементу для анимации */
+
+                    id.classList.add('animate__zoomIn');
+                    rid = '';
+                  } else {
+                    message('error', data.message);
+                  }
                 })["catch"](function (err) {
                   return console.error(err);
                 });
@@ -183,7 +190,6 @@ __webpack_require__.r(__webpack_exports__);
 
               if (user !== '' && pass !== '') {
                 axios.post('/users/create', {
-                  // target: hidden.value,
                   username: user,
                   email: email.value,
                   password: pass,
@@ -209,8 +215,6 @@ __webpack_require__.r(__webpack_exports__);
                     /** Добавляем class к элементу для анимации */
 
                     id.classList.add('animate__zoomIn');
-                    /** Очищаем форму от данных */
-                    // formAdd._form.reset()
                   } else {
                     message('error', data.message);
                   }
@@ -219,11 +223,14 @@ __webpack_require__.r(__webpack_exports__);
                 });
               }
             };
-            /** Редактирование данных пользователя */
+            /**
+             * Редактирование данных пользователя:
+             * Заполняем данными форму.
+             * @user {object} Данные пользователя
+             */
 
 
             var editUser = function editUser(user) {
-              console.log('⚡ user::', user);
               userFormTitle.textContent = 'Редактировать пользователя';
               toggleFormAdd();
               hidden.value = 'update';
@@ -232,51 +239,214 @@ __webpack_require__.r(__webpack_exports__);
               email.value = user.email;
               quota.value = _$.gb(user.quota);
               group.value = user.group;
-              rid = user.rid; // console.log('⚡ user.quota::', user.quota)
-              // console.log('⚡ _$.gb(user.quota)::', _$.gb(user.quota))
-              // console.log('⚡ user._id::', user._id)
+              rid = user.rid;
             };
             /** Удаляем пользователя */
 
 
-            var deleteUser = function deleteUser(user) {// user = JSON.parse(user)
+            var deleteUser = function deleteUser(user) {
+              var rid = user.rid;
+              var id = user._id;
+              dialog.header('Удалить пользователя').show(function (bool) {
+                if (bool === 'true') {
+                  axios.post('/users/delete/' + id, {
+                    rid: rid,
+                    csrf: csrf
+                  }).then(function (res) {
+                    if (res.data.status === 200) {
+                      dialog.close();
+                      var el = document.getElementById(id);
+                      el.classList.add('animate__fadeOutLeft');
+                      setTimeout(function () {
+                        el.remove();
+                      }, 500); // Пользователь успешно удалён
+
+                      message('success', 'The user has been successfully removed');
+                    }
+                  })["catch"](function (err) {
+                    console.log('⚡ err::', err);
+                    return err;
+                  });
+                }
+              });
             };
             /** Блокируем или разблокируем пользователя */
 
 
             var userBan = function userBan(user) {// user = JSON.parse(user)
             };
+            /** Получаем с сервера данные пользователя */
 
-            userTableBody.addEventListener('click', function (e) {
-              var target = e.target;
-              var task = target.dataset['target'];
-              var id = target.dataset['id'];
-              var user = JSON.parse(target.dataset['user']);
 
-              switch (task) {
-                case 'edit':
-                  editUser(user);
-                  break;
+            var getUser = function getUser(id, rid) {
+              return axios.post('/users/' + id, {
+                rid: rid,
+                csrf: csrf
+              }).then(function (res) {
+                // TODO: Обработка данных пришедших с сервера, для исключения ошибок
+                return res.data;
+              })["catch"](function (err) {
+                console.error(err); // TODO: handle errors
 
-                case 'delete':
-                  deleteUser(user);
-                  break;
+                return err;
+              });
+            };
 
-                case 'ban':
-                  userBan(user);
-                  break;
-              } // console.log('⚡ target::', target)
-              // console.log('⚡ task::', task)
+            userTableBody.addEventListener('click', /*#__PURE__*/function () {
+              var _ref2 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.mark(function _callee(e) {
+                var target, task, id, rid, user;
+                return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.wrap(function _callee$(_context) {
+                  while (1) {
+                    switch (_context.prev = _context.next) {
+                      case 0:
+                        target = e.target;
+                        task = target.dataset['target'];
+                        id = target.dataset['id'];
+                        rid = target.dataset['rid'];
+                        _context.next = 6;
+                        return getUser(id, rid);
 
+                      case 6:
+                        user = _context.sent;
+
+                        if (!(typeof user === 'string')) {
+                          _context.next = 11;
+                          break;
+                        }
+
+                        message('error', user);
+                        _context.next = 23;
+                        break;
+
+                      case 11:
+                        _context.t0 = task;
+                        _context.next = _context.t0 === 'edit' ? 14 : _context.t0 === 'trash' ? 16 : _context.t0 === 'lock' ? 18 : _context.t0 === 'unlock' ? 20 : 22;
+                        break;
+
+                      case 14:
+                        editUser(user);
+                        return _context.abrupt("break", 23);
+
+                      case 16:
+                        deleteUser(user);
+                        return _context.abrupt("break", 23);
+
+                      case 18:
+                        userBan(user);
+                        return _context.abrupt("break", 23);
+
+                      case 20:
+                        userBan(user);
+                        return _context.abrupt("break", 23);
+
+                      case 22:
+                        return _context.abrupt("break", 23);
+
+                      case 23:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }
+                }, _callee);
+              }));
+
+              return function (_x) {
+                return _ref2.apply(this, arguments);
+              };
+            }());
+            /** This function is called when the form is submitted*/
+
+            submit.addEventListener('click', function (e) {
+              e.preventDefault();
+              return hidden.value === 'add' ? add() : update();
             });
+            /**
+             * Показываем или скрываем форму добавления пользователя
+             */
+
+            urlUserAdd.addEventListener('click', function (e) {
+              e.preventDefault();
+              userFormTitle.textContent = 'Добавить пользователя';
+              hidden.value = 'add';
+              toggleFormAdd();
+            });
+            /**
+             * Скрываем форму добавления пользователя
+             */
+
+            closeUserForm.addEventListener('click', function (e) {
+              toggleFormAdd();
+            }); // === === === === === === === === === === === ===
+            // PAGINATE
+            // === === === === === === === === === === === ===
+
+            var page = 1;
+            var total = 10;
+
+            function getDocumentHeight() {
+              var body = document.body;
+              var html = document.documentElement;
+              return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+            }
+
+            function getScrollTop() {
+              return window.pageYOffset !== undefined ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+            }
+
+            var addPage = /*#__PURE__*/function () {
+              var _ref3 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.mark(function _callee2(num) {
+                return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        axios.post('/users/page-' + num, {
+                          rid: lastRid,
+                          csrf: csrf
+                        }).then(function (res) {
+                          var data = res.data;
+
+                          if (data.status === 200 && data.total > 0) {
+                            total += data.total;
+                            lastRid = data.last;
+                            ulUserTableBody.insertAdjacentHTML('beforeend', data.page);
+                            var li = ulUserTableBody.querySelector('[data-number="' + num + '"]');
+                            li.classList.add('animate__zoomInDown');
+                            message('success', 'Загружено! <br/> Всего пользователей на странице ' + total);
+                          } else {
+                            message('success', 'Все пользователи загружены');
+                            window.removeEventListener('scroll', onScroll, false);
+                          }
+                        })["catch"](function (err) {
+                          console.log('⚡ err::', err);
+                        });
+
+                      case 1:
+                      case "end":
+                        return _context2.stop();
+                    }
+                  }
+                }, _callee2);
+              }));
+
+              return function addPage(_x2) {
+                return _ref3.apply(this, arguments);
+              };
+            }();
+
+            var onScroll = function onScroll() {
+              if (getScrollTop() < getDocumentHeight() - window.innerHeight) return;
+              addPage(++page);
+            };
+
+            window.addEventListener('scroll', onScroll, false);
           });
 
         case 2:
         case "end":
-          return _context.stop();
+          return _context3.stop();
       }
     }
-  }, _callee);
+  }, _callee3);
 }))();
 
 /***/ })

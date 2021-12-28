@@ -1,0 +1,101 @@
+// DIALOG - MODAL
+//======================================
+// $dialog-header-background: $mountain-mist; // фон хейдера модального окна #88a0b9
+$dialog-header-color: var(--cl-gray-100); // цвет текста
+$dialog-header-padding: 0.8em;
+$dialog-border-width: 3px; // border bottom
+
+// BOXES
+//======================================
+// $box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); // shadow (тень)
+$border-color: #d8dcde;
+
+.group {
+  display: flex;
+  align-items: center;
+  line-height: 1.5rem;
+}
+
+dialog {
+  position: fixed;
+  top: 45%;
+  left: 45%;
+  width: 40%;
+  height: auto;
+  padding: 0;
+
+  transition: transform 0.8s ease-out;
+  transform: translate(0, -50%);
+  //   transition: box-shadow 0.2s ease-in-out;
+  box-shadow: var(--cl-box-shadow);
+  border: 1px solid var(--cl-border-color);
+
+  .dialog-header {
+    // Modal header
+    @extend .group;
+    box-shadow: var(--cl-header-top-box-shadow);
+    background-color: var(--cl-header-logo-background-color);
+    color: $dialog-header-color;
+    padding: $dialog-header-padding;
+    justify-content: center;
+
+    .modal-title {
+      font-size: 1.5em;
+    }
+
+    .modal-close {
+      // кнопка закрыть модальное окно
+      background-image: url(../images/close2.svg);
+      background-repeat: no-repeat;
+      cursor: pointer;
+      height: 1.5rem;
+      width: 1.5rem;
+      transition: transform 0.5s cubic-bezier(0.16, 0.81, 0.32, 1) 0s,
+        opacity 0.5s ease 0s;
+      opacity: 0.6;
+      position: absolute;
+      right: 10px;
+
+      &:hover {
+        transform: rotate(180deg);
+        opacity: 1 !important;
+      }
+    }
+  }
+
+  label {
+    span.error-text {
+      color: red;
+      margin-left: 0.5rem;
+    }
+  }
+
+  // четбокс группа
+  #group-checkbox__add {
+    margin-left: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  // кнопка добавить
+  .btn {
+    @extend .group;
+    margin-left: auto;
+    margin-right: auto;
+
+    i {
+      padding-right: 0.3em;
+    }
+  }
+}
+
+#dialog {
+  width: 20%;
+}
+._dialog_overlay {
+  position: fixed;
+  background-color: #b3afaf8a;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}

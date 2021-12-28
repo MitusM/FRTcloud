@@ -20,6 +20,8 @@ import { data, attr } from './system/attribute.js'
 
 import { formatBytes } from './core/gb.js'
 
+import Dialog from './modal/index.js'
+
 const _$ = {
   tippy: tippy,
   extend: extend,
@@ -31,6 +33,7 @@ const _$ = {
   data: data,
   attr: attr,
   gb: formatBytes,
+  Dialog: Dialog,
 }
 
 window._$ = _$

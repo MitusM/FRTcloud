@@ -1,14 +1,15 @@
-@use "_mixin";
+@use '_mixin';
 
-@use "_root";
-@use "_reset";
-@use "grid";
-@use "header";
-@use "navmenu";
-@use "breadcrumb";
-@use "menu-settings";
-@use "form";
-@use "button";
+@use '_root';
+@use '_reset';
+@use 'grid';
+@use 'header';
+@use 'navmenu';
+@use 'breadcrumb';
+@use 'menu-settings';
+@use 'form';
+@use 'button';
+@use 'dialog';
 
 // === === === === === === === === === === === ===
 //* MAIN

@@ -3,14 +3,29 @@
   class="user-table-body-line animate__animated"
   data-id="{{user._id}}"
 >
-  <div class="user-table-body-line-item">{{ user.username }}</div>
-  <div class="user-table-body-line-item">{{ user.created | date}}</div>
-  <div class="user-table-body-line-item">{{ user.group }}</div>
-  <div class="user-table-body-line-item">{{ user.email }}</div>
-  <div class="user-table-body-line-item">{{ user.quota | gb}}</div>
+  <div class="username user-table-body-line-item" data-class="username">
+    {{ user.username }}
+  </div>
+  <div class="user-table-body-line-item" data-class="created">
+    {{ user.created | date}}
+  </div>
+  <div class="user-table-body-line-item" data-class="group">
+    {{ user.group }}
+  </div>
+  <div class="user-table-body-line-item" data-class="email">
+    {{ user.email }}
+  </div>
+  <div class="user-table-body-line-item" data-class="quota">
+    {{ user.quota | gb}}
+  </div>
   <div class="user-table-body-line-item block d-flex justify-center">
     {% if user.block === true %}
-    <span class="ban"></span>
+    <span
+      class="ban"
+      data-id="{{user._id}}"
+      data-rid="{{user.rid}}"
+      data-target="unlock"
+    ></span>
     {% endif %}
   </div>
   <div class="user-table-body-line-item actions">
@@ -18,11 +33,12 @@
       class="actions__edit"
       data-id="{{user._id}}"
       data-target="edit"
-      data-user='{{user| json }}'
+      data-rid="{{user.rid}}"
     ></div>
     <div
       class="actions__trash"
       data-id="{{user._id}}"
+      data-rid="{{user.rid}}"
       data-target="trash"
     ></div>
     <div class="actions__lock">
@@ -31,12 +47,14 @@
         class="actions_unlock"
         data-id="{{user._id}}"
         data-target="unlock"
+        data-rid="{{user.rid}}"
       ></span>
       {% else %}
       <span
         class="actions_lock"
         data-id="{{user._id}}"
         data-target="lock"
+        data-rid="{{user.rid}}"
       ></span>
       {% endif %}
     </div>

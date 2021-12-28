@@ -1,0 +1,7 @@
+<li class="user--list__page animate__animated" data-number="{{number}}">
+  {% asyncAll user in users %}
+  <!--  -->
+  {% include "./user-table-item.html" %}
+  <!--  -->
+  {% endall %}
+</li>

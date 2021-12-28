@@ -1,6 +1,6 @@
 :root {
-  --bs-blue: #0d6efd;
-  --bs-indigo: #6610f2;
+  --cl-blue: #0d6efd;
+  --cl-indigo: #6610f2;
   --bs-purple: #6f42c1;
   --bs-pink: #d63384;
   --bs-red: #dc3545;
@@ -40,11 +40,11 @@
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
   --bs-body-rgb: 33, 37, 41;
-  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --bs-font-sans-serif: system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+    'Liberation Mono', 'Courier New', monospace;
   --bs-gradient: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.15),
@@ -62,9 +62,21 @@
     0 2px 10px 0 rgba(0, 0, 0, 0.12);
   --bs-sidebar-background-color: #101b33;
 
-  --cl-border-color: rgba(0, 0, 0, 0.125);
-  --cl-box-shadow-color: rgba(69, 90, 100, 0.3);
-  --cl-header-logo-background-color: rgb(41, 129, 197); // rgb(30, 146, 236);
+  // ----------------------------------------------------------------
+  //
+  // ----------------------------------------------------------------
+
+  --cl-blue: #0d6efd;
+  --cl-indigo: #6610f2;
+  --cl-purple: #6f42c1;
+  --cl-pink: #d63384;
+  --cl-red: #dc3545;
+  --cl-orange: #fd7e14;
+  --cl-yellow: #ffc107;
+  --cl-green: #198754;
+  --cl-teal: #20c997;
+  --cl-cyan: #0dcaf0;
+  --cl-white: #fff;
 
   --cl-gray: #6c757d;
   --cl-gray-dark: #343a40;
@@ -78,11 +90,51 @@
   --cl-gray-800: #343a40;
   --cl-gray-900: #212529;
 
+  --cl-primary: #0d6efd;
+  --cl-secondary: #6c757d;
+  --cl-success: #198754;
+  --cl-info: #0dcaf0;
+  --cl-warning: #ffc107;
   --cl-danger: #dc3545;
+  --cl-light: #f8f9fa;
+  --cl-dark: #212529;
+  --cl-primary-rgb: 13, 110, 253;
+  --cl-secondary-rgb: 108, 117, 125;
+  --cl-success-rgb: 25, 135, 84;
+  --cl-info-rgb: 13, 202, 240;
+  --cl-warning-rgb: 255, 193, 7;
+  --cl-danger-rgb: 220, 53, 69;
+  --cl-light-rgb: 248, 249, 250;
+  --cl-dark-rgb: 33, 37, 41;
+  --cl-white-rgb: 255, 255, 255;
+  --cl-black-rgb: 0, 0, 0;
+  --cl-body-rgb: 33, 37, 41;
 
-  --cl--font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+  --cl-body-font-family: var(--cl-font-sans-serif);
+  --cl-body-font-size: 1rem;
+  --cl-body-font-weight: 400;
+  --cl-body-line-height: 1.5;
+  --cl-body-color: #212529;
+  --cl-body-bg: #fff;
+
+  --cl-border-color: rgba(0, 0, 0, 0.125);
+  --cl-box-shadow-color: rgba(69, 90, 100, 0.3);
+  --cl-header-logo-background-color: rgb(41, 129, 197); // rgb(30, 146, 236);
+
+  --cl-header-logo-background-color: rgb(41, 129, 197); // rgb(30, 146, 236);
+  --cl-header-top-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
+    0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  --cl-sidebar-background-color: #101b33;
+
+  --cl--font-sans-serif: system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --cl-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
+  --cl-header-top-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
+    0 2px 10px 0 rgba(0, 0, 0, 0.12);
+
+    // .card
+  --cl-box-shadow: box-shadow: 0 2px 10px -1px var(--cl-box-shadow-color)
 }

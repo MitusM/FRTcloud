@@ -1,23 +1,11 @@
 "use strict";
 (self["webpackChunkcloudFRT"] = self["webpackChunkcloudFRT"] || []).push([["style"],{
 
-/***/ "./assets/scss/index.scss":
-/*!********************************!*\
-  !*** ./assets/scss/index.scss ***!
-  \********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
 /***/ "./assets/js/core/gb.js":
 /*!******************************!*\
   !*** ./assets/js/core/gb.js ***!
   \******************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -25,12 +13,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 function formatBytes(bytes) {
   var decimals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+  var txt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   if (bytes === 0) return '0 Bytes';
   var k = 1024;
   var dm = decimals < 0 ? 0 : decimals;
   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-  var i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)); // + ' ' + sizes[i]
+  var i = Math.floor(Math.log(bytes) / Math.log(k)); // let s = sizes[i % sizes.]
+
+  var s = txt ? sizes[i] : '';
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + s; //+ ' ' + sizes[i]
 }
 
 /***/ }),
@@ -39,7 +30,7 @@ function formatBytes(bytes) {
 /*!*********************************!*\
   !*** ./assets/js/form/index.js ***!
   \*********************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -68,14 +59,15 @@ var Form = function Form(selector, option) {
 /*!****************************!*\
   !*** ./assets/js/index.js ***!
   \****************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scss_index_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../scss/index.scss */ "./assets/scss/index.scss");
 /* harmony import */ var tippy_js_dist_tippy_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! tippy.js/dist/tippy.css */ "./node_modules/tippy.js/dist/tippy.css");
 /* harmony import */ var izitoast_dist_css_iziToast_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! izitoast/dist/css/iziToast.css */ "./node_modules/izitoast/dist/css/iziToast.css");
-/* harmony import */ var tippy_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! tippy.js */ "./node_modules/tippy.js/dist/tippy.esm.js");
+/* harmony import */ var tippy_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! tippy.js */ "./node_modules/tippy.js/dist/tippy.esm.js");
 /* harmony import */ var delegate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! delegate */ "./node_modules/delegate/src/delegate.js");
+/* harmony import */ var delegate__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(delegate__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _system_each_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./system/each.js */ "./assets/js/system/each.js");
 /* harmony import */ var _system_extend_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./system/extend.js */ "./assets/js/system/extend.js");
 /* harmony import */ var _system_fetch_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./system/fetch.js */ "./assets/js/system/fetch.js");
@@ -83,6 +75,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _system_message_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./system/message.js */ "./assets/js/system/message.js");
 /* harmony import */ var _system_attribute_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./system/attribute.js */ "./assets/js/system/attribute.js");
 /* harmony import */ var _core_gb_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./core/gb.js */ "./assets/js/core/gb.js");
+/* harmony import */ var _modal_index_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modal/index.js */ "./assets/js/modal/index.js");
+
 
 
 
@@ -96,18 +90,214 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _$ = {
-  tippy: tippy_js__WEBPACK_IMPORTED_MODULE_11__["default"],
+  tippy: tippy_js__WEBPACK_IMPORTED_MODULE_12__["default"],
   extend: _system_extend_js__WEBPACK_IMPORTED_MODULE_5__.extend,
   each: _system_each_js__WEBPACK_IMPORTED_MODULE_4__.each,
   ajax: _system_fetch_js__WEBPACK_IMPORTED_MODULE_6__.ajax,
-  delegate: delegate__WEBPACK_IMPORTED_MODULE_3__,
+  delegate: (delegate__WEBPACK_IMPORTED_MODULE_3___default()),
   Form: _form_index_js__WEBPACK_IMPORTED_MODULE_7__["default"],
   message: _system_message_js__WEBPACK_IMPORTED_MODULE_8__["default"],
   data: _system_attribute_js__WEBPACK_IMPORTED_MODULE_9__.data,
   attr: _system_attribute_js__WEBPACK_IMPORTED_MODULE_9__.attr,
-  gb: _core_gb_js__WEBPACK_IMPORTED_MODULE_10__.formatBytes
+  gb: _core_gb_js__WEBPACK_IMPORTED_MODULE_10__.formatBytes,
+  Dialog: _modal_index_js__WEBPACK_IMPORTED_MODULE_11__["default"]
 };
 window._$ = _$;
+
+/***/ }),
+
+/***/ "./assets/js/modal/index.js":
+/*!**********************************!*\
+  !*** ./assets/js/modal/index.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/esm/typeof.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+
+
+
+
+/* global define */
+
+/**
+ * [[Description]]
+ * Copyright (c) Wed Jan 31 2018 Mitus M.
+ * Licensed under the Apache 2.0 license.
+ */
+var modal = (__webpack_require__(/*! dialog-polyfill */ "./assets/node_modules/dialog-polyfill/dist/dialog-polyfill.esm.js")["default"]); // import modal from 'dialog-polyfill'
+
+
+var init = Symbol();
+var getElement = Symbol();
+var promis = Symbol();
+/**
+ * @class Dialog
+ * @classdesc [[Description]]
+ */
+
+var Dialog = /*#__PURE__*/function () {
+  /**
+   * [[Description]]
+   * @constructs [[Link]]
+   * @param {string|object} elem [[Description]]
+   */
+  function Dialog(elem) {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Dialog);
+
+    this.elem = typeof elem === 'string' ? document.querySelector(elem) : (0,_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__["default"])(elem) === 'object' ? elem : null;
+    if (this.elem) this[init]();
+  }
+  /**
+   * Получение элемента
+   */
+
+
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Dialog, [{
+    key: "element",
+    get: function get() {
+      return this.elem;
+    }
+    /**
+     * Задаём элемент который будет использован в виде модального или диалогового окна
+     */
+    ,
+    set: function set(elem) {
+      this.elem = elem;
+    }
+    /**
+     * Задаем заголовок диалогового или модального окна
+     * @param   {string} text Текст заголовка
+     * @param   {string} elem class или id, внутри диалогово или модального окна. Если не задан то будет находить по умолчанию .modal-title
+     * @returns {object} this
+     */
+
+  }, {
+    key: "header",
+    value: function header(text, elem) {
+      elem = elem ? this[getElement](elem) : this[getElement]('.modal-title');
+      elem.innerHTML = text;
+      return this;
+    }
+    /**
+     * Задаём текст диалогового или модального окна
+     * @param   {string} text текст сообщения
+     * @param   {string} elem class или id, внутри диалогово или модального окна. Если не задан то будет находить по умолчанию .modal-content
+     * @returns {object} this
+     */
+
+  }, {
+    key: "content",
+    value: function content(text, elem) {
+      elem = elem ? this[getElement](elem) : this[getElement]('.modal-content');
+      elem.innerHTML = text;
+      return this;
+    }
+    /**
+     * Показать модальное или диалоговое окно
+     * @param   {function} fn функция которая должна быть выполнена в момент открытия диалогового окна
+     * @returns {object}   this
+     */
+    // NOTE: Если не использовать Promise, то при каждом новом клике на кнопку происходит срабатывание предыдущих событий.
+
+  }, {
+    key: "show",
+    value: function show(cb) {
+      this.elem.showModal(); // document.querySelector('._dialog_overlay').addEventListener('click', this.close.bind(this))
+
+      if (cb) {
+        // cb(this.elem.returnValue)
+        this[promis]().then(function (val) {
+          cb(val);
+        });
+      }
+
+      return this;
+    }
+    /**
+     * Закрыть модальное или диалоговое окно
+     */
+
+  }, {
+    key: "close",
+    value: function close() {
+      if (this.elem.hasAttribute('open')) this.elem.close(false);
+    }
+    /**
+     * Инициализация кнопки закрытия диалогового окна и закрытия по клику по затемнению
+     * @returns {object} this
+     */
+    // TODO: Добавить выбор вывода окна show() или showModal(). Если showModal() то только тогда инициализация overlay 📌
+
+  }, {
+    key: "initClose",
+    value: function initClose() {
+      this[getElement]('#modal-close').addEventListener('click', this.close.bind(this));
+      return this;
+    }
+    /**
+     * Инициализация диалогового или модального окна
+     * @private
+     */
+
+  }, {
+    key: init,
+    value: function value() {
+      modal.registerDialog(this.elem);
+    }
+    /**
+     * Находим элементы внутри диалогового окна
+     * @param {string} selector class или id (.class | #id)
+     * @private
+     */
+
+  }, {
+    key: getElement,
+    value: function value(selector) {
+      return this.elem.querySelector(selector);
+    }
+    /**
+     * Promise
+     * @private
+     */
+
+  }, {
+    key: promis,
+    value: function value() {
+      var _this = this;
+
+      return new Promise(function (resolve) {
+        _this.elem.addEventListener('close', function () {
+          // e.preventDefault()
+          // e.stopImmediatePropagation()
+          resolve(_this.elem.returnValue);
+        });
+      });
+    }
+  }]);
+
+  return Dialog;
+}(); // window.Dialog = Dialog
+// module.exports = Dialog
+// if (typeof define === 'function' && define.amd) {
+//   define('Dialog', [], function () {
+//     return Dialog
+//   })
+// } else if (typeof exports !== 'undefined' && !exports.nodeType) {
+//   if (typeof module !== 'undefined' && !module.nodeType && module.exports) {
+//     // eslint-disable-next-line no-global-assign
+//     exports = module.exports = Dialog
+//   }
+//   exports.default = Dialog
+// }
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Dialog);
 
 /***/ }),
 
@@ -115,7 +305,7 @@ window._$ = _$;
 /*!***************************************!*\
   !*** ./assets/js/system/attribute.js ***!
   \***************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -152,7 +342,7 @@ function data(e, attr, val) {
 /*!**********************************!*\
   !*** ./assets/js/system/each.js ***!
   \**********************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -188,7 +378,7 @@ function each(obj, iterator, context) {
 /*!************************************!*\
   !*** ./assets/js/system/extend.js ***!
   \************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -214,7 +404,7 @@ var extend = function extend() {
 /*!***********************************!*\
   !*** ./assets/js/system/fetch.js ***!
   \***********************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -280,13 +470,14 @@ function ajax(url, options) {
 /*!*************************************!*\
   !*** ./assets/js/system/message.js ***!
   \*************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var izitoast__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! izitoast */ "./node_modules/izitoast/dist/js/iziToast.js");
+/* harmony import */ var izitoast__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(izitoast__WEBPACK_IMPORTED_MODULE_0__);
 //📌
 
 
@@ -308,10 +499,22 @@ function message(action, settings, fn) {
     }
   }
 
-  izitoast__WEBPACK_IMPORTED_MODULE_0__[action](obj);
+  (izitoast__WEBPACK_IMPORTED_MODULE_0___default())[action](obj);
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (message);
+
+/***/ }),
+
+/***/ "./assets/scss/index.scss":
+/*!********************************!*\
+  !*** ./assets/scss/index.scss ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
 
 /***/ })
 

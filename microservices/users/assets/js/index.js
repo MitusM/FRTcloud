@@ -23,9 +23,12 @@ import { nanoid } from 'nanoid'
     let langError = lang.errorAdmin
     /**  */
     let userTableBody = userTables.children[1]
+    /**  */
+    let ulUserTableBody = document.getElementById('user-list')
+    /**  */
+    let lastRid = userTableBody.dataset.lastRid
     /** Заголовок формы добавления или редактирования пользователя */
     let userFormTitle = document.querySelector('.user-form-add__title')
-
     /** Элементы формы добавления или редактирования пользователя */
     let hidden = elements[0]
     let _id = elements[1]
@@ -35,15 +38,9 @@ import { nanoid } from 'nanoid'
     let group = elements[6]
     let quota = elements[7]
     let submit = elements[8]
-
     let rid
-
-    // console.log('⚡ elements::', elements)
-    // console.log("⚡ userTables::", userTables);
-    // console.log('⚡ formAdd::', formAdd)
-    // console.log("⚡ userTableBody::", userTableBody);
-    // console.log("⚡ userFormTitle::", userFormTitle);
-
+    /** Модальное окно удаления пользователя  */
+    let dialog = new _$.Dialog('#dialog')
     let csrf = document
       .querySelector('meta[name=csrf-token]')
       .getAttributeNode('content').value
@@ -64,6 +61,7 @@ import { nanoid } from 'nanoid'
     let toggleFormAdd = () => {
       divAddForm.classList.toggle(displayNone)
       divAddForm.classList.add('animate__zoomIn')
+      /** Очищаем форму от данных */
       formAdd._form.reset()
       if (userTables.classList.contains('animate__fadeOut')) {
         userTables.classList.remove('animate__fadeOut')
@@ -73,6 +71,196 @@ import { nanoid } from 'nanoid'
         userTables.classList.toggle('display-none')
       }
     }
+
+    /**  */
+    const validateFields = (field, body) => {
+      message('error', body)
+      field.focus()
+    }
+
+    let update = () => {
+      let user = username.value,
+        emailUpdated = email.value
+
+      if (user === '') validateFields(username, langError.username)
+      if (emailUpdated === '') validateFields(email, langError.email)
+      if (user && email) {
+        if (user)
+          axios
+            .post('/users/update', {
+              username: user,
+              email: emailUpdated,
+              password: password.value,
+              group: group.value,
+              quota: quota.value,
+              id: _id.value,
+              csrf: csrf,
+              rid: rid,
+            })
+            .then((res) => {
+              let data = res.data
+              let id
+              let dataObj
+
+              if (data.status === 200) {
+                dataObj = data.user
+                message('success', 'Your account has been updated')
+                /** Скрываем форму добавления пользователя*/
+                toggleFormAdd()
+                /** Находим id добавляемого элемента в таблицу для анимации */
+                id = doc.getElementById(data.id)
+                let keys = Object.keys(dataObj)
+                keys.forEach((value) => {
+                  let v = dataObj[value]
+                  let txt = id.querySelector('[data-class="' + value + '"]')
+                  if (value === 'quota') {
+                    v = _$.gb(v, 2, true)
+                  }
+                  if (txt) txt.innerText = v
+                })
+                /** Добавляем class к элементу для анимации */
+                id.classList.add('animate__zoomIn')
+                rid = ''
+              } else {
+                message('error', data.message)
+              }
+            })
+            .catch((err) => console.error(err))
+      }
+    }
+
+    let add = () => {
+      let user = username.value,
+        pass = password.value
+      if (user === '') validateFields(username, langError.username)
+      if (pass === '') validateFields(password, langError.password)
+      if (user !== '' && pass !== '') {
+        axios
+          .post('/users/create', {
+            username: user,
+            email: email.value,
+            password: pass,
+            group: group.value,
+            quota: quota.value,
+            id: nanoid(),
+            csrf: csrf,
+          })
+          .then((res) => {
+            let data = res.data
+            let id
+            if (data.status === 200) {
+              message('success', 'Your account has been created')
+              /** Скрываем форму добавления пользователя*/
+              toggleFormAdd()
+              /** Добавляем данные о пользователе в таблицу */
+              userTableBody.insertAdjacentHTML('afterbegin', data.html)
+              /** Находим id добавляемого элемента в таблицу для анимации */
+              id = doc.getElementById(data.id)
+              /** Добавляем class к элементу для анимации */
+              id.classList.add('animate__zoomIn')
+            } else {
+              message('error', data.message)
+            }
+          })
+          .catch((err) => {
+            console.log('⚡ err::', err)
+          })
+      }
+    }
+
+    /**
+     * Редактирование данных пользователя:
+     * Заполняем данными форму.
+     * @user {object} Данные пользователя
+     */
+    const editUser = (user) => {
+      userFormTitle.textContent = 'Редактировать пользователя'
+      toggleFormAdd()
+      hidden.value = 'update'
+      _id.value = user._id
+      username.value = user.username
+      email.value = user.email
+      quota.value = _$.gb(user.quota)
+      group.value = user.group
+      rid = user.rid
+    }
+
+    /** Удаляем пользователя */
+    const deleteUser = (user) => {
+      let rid = user.rid
+      let id = user._id
+      dialog.header('Удалить пользователя').show((bool) => {
+        if (bool === 'true') {
+          axios
+            .post('/users/delete/' + id, { rid: rid, csrf: csrf })
+            .then((res) => {
+              if (res.data.status === 200) {
+                dialog.close()
+                let el = document.getElementById(id)
+                el.classList.add('animate__fadeOutLeft')
+                setTimeout(() => {
+                  el.remove()
+                }, 500)
+                // Пользователь успешно удалён
+                message('success', 'The user has been successfully removed')
+              }
+            })
+            .catch((err) => {
+              console.log('⚡ err::', err)
+              return err
+            })
+        }
+      })
+    }
+
+    /** Блокируем или разблокируем пользователя */
+    const userBan = (user) => {
+      // user = JSON.parse(user)
+    }
+
+    /** Получаем с сервера данные пользователя */
+    let getUser = (id, rid) => {
+      return axios
+        .post('/users/' + id, { rid: rid, csrf: csrf })
+        .then((res) => {
+          // TODO: Обработка данных пришедших с сервера, для исключения ошибок
+          return res.data
+        })
+        .catch((err) => {
+          console.error(err)
+          // TODO: handle errors
+          return err
+        })
+    }
+
+    userTableBody.addEventListener('click', async (e) => {
+      let target = e.target
+      let task = target.dataset['target']
+      let id = target.dataset['id']
+      let rid = target.dataset['rid']
+      let user = await getUser(id, rid)
+
+      if (typeof user === 'string') {
+        message('error', user)
+      } else {
+        switch (task) {
+          case 'edit':
+            editUser(user)
+            break
+          case 'trash':
+            deleteUser(user)
+            break
+          case 'lock':
+            userBan(user)
+            break
+          case 'unlock':
+            userBan(user)
+            break
+          default:
+            break
+        }
+      }
+    })
 
     /** This function is called when the form is submitted*/
     submit.addEventListener('click', (e) => {
@@ -97,130 +285,68 @@ import { nanoid } from 'nanoid'
       toggleFormAdd()
     })
 
-    /**  */
-    const validateFields = (field, body) => {
-      message('error', body)
-      field.focus()
+    // === === === === === === === === === === === ===
+    // PAGINATE
+    // === === === === === === === === === === === ===
+
+    let page = 1
+    let total = 10
+
+    function getDocumentHeight() {
+      const body = document.body
+      const html = document.documentElement
+
+      return Math.max(
+        body.scrollHeight,
+        body.offsetHeight,
+        html.clientHeight,
+        html.scrollHeight,
+        html.offsetHeight,
+      )
     }
 
-    let update = () => {
-      let user = username.value,
-        emailUpdated = email.value //,
-      // pass = password.value //,
-      // obj = { _id: _id.value, csrf: csrf, rid: rid }
-      console.log('⚡ user && email::', user && emailUpdated)
-      if (user === '') validateFields(username, langError.username)
-      if (user && email) {
-        if (user)
-          axios
-            .post('/users/update', {
-              username: user,
-              email: emailUpdated,
-              password: password.value,
-              group: group.value,
-              quota: quota.value,
-              id: _id.value,
-              csrf: csrf,
-              rid: rid,
-            })
-            .then((res) => {
-              console.log('⚡ res::', res)
-              // rid = ''
-              console.log('⚡ rid::', rid)
-            })
-            .catch((err) => console.error(err))
-      }
+    function getScrollTop() {
+      return window.pageYOffset !== undefined
+        ? window.pageYOffset
+        : (
+            document.documentElement ||
+            document.body.parentNode ||
+            document.body
+          ).scrollTop
     }
 
-    let add = () => {
-      let user = username.value,
-        pass = password.value
-      if (user === '') validateFields(username, langError.username)
-      if (pass === '') validateFields(password, langError.password)
-      if (user !== '' && pass !== '') {
-        axios
-          .post('/users/create', {
-            // target: hidden.value,
-            username: user,
-            email: email.value,
-            password: pass,
-            group: group.value,
-            quota: quota.value,
-            id: nanoid(),
-            csrf: csrf,
-          })
-          .then((res) => {
-            let data = res.data
-            let id
-            if (data.status === 200) {
-              message('success', 'Your account has been created')
-              /** Скрываем форму добавления пользователя*/
-              toggleFormAdd()
-              /** Добавляем данные о пользователе в таблицу */
-              userTableBody.insertAdjacentHTML('afterbegin', data.html)
-              /** Находим id добавляемого элемента в таблицу для анимации */
-              id = doc.getElementById(data.id)
-              /** Добавляем class к элементу для анимации */
-              id.classList.add('animate__zoomIn')
-              /** Очищаем форму от данных */
-              // formAdd._form.reset()
-            } else {
-              message('error', data.message)
-            }
-          })
-          .catch((err) => {
-            console.log('⚡ err::', err)
-          })
-      }
+    let addPage = async (num) => {
+      axios
+        .post('/users/page-' + num, { rid: lastRid, csrf: csrf })
+        .then((res) => {
+          let data = res.data
+          if (data.status === 200 && data.total > 0) {
+            total += data.total
+            lastRid = data.last
+            ulUserTableBody.insertAdjacentHTML('beforeend', data.page)
+            let li = ulUserTableBody.querySelector(
+              '[data-number="' + num + '"]',
+            )
+            li.classList.add('animate__zoomInDown')
+            message(
+              'success',
+              'Загружено! <br/> Всего пользователей на странице ' + total,
+            )
+          } else {
+            message('success', 'Все пользователи загружены')
+            window.removeEventListener('scroll', onScroll, false)
+          }
+        })
+        .catch((err) => {
+          console.log('⚡ err::', err)
+        })
     }
 
-    /** Редактирование данных пользователя */
-    const editUser = (user) => {
-      console.log('⚡ user::', user)
-      userFormTitle.textContent = 'Редактировать пользователя'
-      toggleFormAdd()
-      hidden.value = 'update'
-      _id.value = user._id
-      username.value = user.username
-      email.value = user.email
-      quota.value = _$.gb(user.quota)
-      group.value = user.group
-
-      rid = user.rid
-
-      // console.log('⚡ user.quota::', user.quota)
-      // console.log('⚡ _$.gb(user.quota)::', _$.gb(user.quota))
-      // console.log('⚡ user._id::', user._id)
+    let onScroll = () => {
+      if (getScrollTop() < getDocumentHeight() - window.innerHeight) return
+      addPage(++page)
     }
 
-    /** Удаляем пользователя */
-    const deleteUser = (user) => {
-      // user = JSON.parse(user)
-    }
-
-    /** Блокируем или разблокируем пользователя */
-    const userBan = (user) => {
-      // user = JSON.parse(user)
-    }
-
-    userTableBody.addEventListener('click', (e) => {
-      let target = e.target
-      let task = target.dataset['target']
-      let id = target.dataset['id']
-      let user = JSON.parse(target.dataset['user'])
-      switch (task) {
-        case 'edit':
-          editUser(user)
-          break
-        case 'delete':
-          deleteUser(user)
-          break
-        case 'ban':
-          userBan(user)
-          break
-      }
-      // console.log('⚡ target::', target)
-      // console.log('⚡ task::', task)
-    })
+    window.addEventListener('scroll', onScroll, false)
   })
 })()

@@ -28,6 +28,10 @@
   align-items: center;
 }
 
+.user-table-body {
+  padding: 0;
+}
+
 .user-table-body__line-none {
   text-align: center;
   font: 1.5rem/2rem var(--bs-font-sans-serif);
@@ -36,7 +40,7 @@
 
 .user-table-body-line {
   text-align: left;
-  line-height: 3em;
+  line-height: 4em;
 }
 .user-table-body-line:nth-child(even) {
   border-top: 1px solid var(--cl-border-color);
@@ -116,4 +120,8 @@
 }
 .user-form-title__close:hover {
   color: var(--cl-gray-500);
+}
+
+.user-list {
+  list-style: none;
 }

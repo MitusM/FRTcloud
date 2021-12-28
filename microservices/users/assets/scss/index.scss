@@ -25,6 +25,10 @@
   align-items: center;
 }
 
+.user-table-body {
+  padding: 0;
+}
+
 .user-table-body__line-none {
   text-align: center;
   font: 1.5rem/2rem var(--bs-font-sans-serif);
@@ -33,7 +37,7 @@
 
 .user-table-body-line {
   text-align: left;
-  line-height: 3em;
+  line-height: 4em;
 
   &:nth-child(even) {
     border-top: 1px solid var(--cl-border-color);
@@ -52,7 +56,7 @@
   .ban {
     width: 32px;
     height: 32px;
-    background: url("../images/ban.svg");
+    background: url('../images/ban.svg');
     cursor: pointer;
   }
 }
@@ -73,22 +77,22 @@
 .actions__edit {
   width: 32px;
   height: 32px;
-  background: url("../images/edit.svg");
+  background: url('../images/edit.svg');
 }
 .actions__trash {
   width: 32px;
   height: 32px;
-  background: url("../images/trash.svg");
+  background: url('../images/trash.svg');
 }
 .actions_unlock {
   width: 32px;
   height: 32px;
-  background: url("../images/unlock.svg");
+  background: url('../images/unlock.svg');
 }
 .actions_lock {
   width: 32px;
   height: 32px;
-  background: url("../images/lock.svg");
+  background: url('../images/lock.svg');
 }
 // ----------------------------------------------------------------
 // USER FORM ADD
@@ -96,7 +100,7 @@
 .user-form-add {
   display: grid;
   grid-template-columns: auto 860px auto;
-  grid-template-areas: ". form .";
+  grid-template-areas: '. form .';
 }
 
 .user-form__add {
@@ -120,4 +124,11 @@
   &:hover {
     color: var(--cl-gray-500);
   }
+}
+
+// ----------------------------------------------------------------
+// PAGINATE
+// ----------------------------------------------------------------
+.user-list {
+  list-style: none;
 }

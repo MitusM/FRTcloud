@@ -1,0 +1,10 @@
+{
+  "name": "assets",
+  "version": "1.0.0",
+  "description": "",
+  "author": "MitusM",
+  "license": "MIT",
+  "dependencies": {
+    "dialog-polyfill": "^0.5.6"
+  }
+}

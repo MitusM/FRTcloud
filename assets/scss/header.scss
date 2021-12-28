@@ -34,7 +34,8 @@
 
 .header-top-widget {
   display: flex;
-  align-content: center;
+  // align-content: center;
+  align-items: center;
   line-height: 1rem;
 
   svg {
@@ -53,14 +54,22 @@
 
 .header-top-user-panel {
   display: flex;
-  align-content: center;
-  color: #000;
-
+  span,
+  a {
+    display: flex;
+    align-items: center;
+  }
   line-height: 2rem;
+  color: var(--cl-header-logo-background-color);
 }
 
 .header-top-user-panel-name {
   margin: 0 1rem;
+
+  // filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+  svg {
+    fill: var(--cl-header-logo-background-color);
+  }
 }
 
 .header-top-user-panel__logut {
