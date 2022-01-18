@@ -23,7 +23,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _scss_index_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../scss/index.scss */ "./microservices/users/assets/scss/index.scss");
-/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! nanoid */ "./node_modules/nanoid/index.dev.js");
+/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! nanoid */ "./node_modules/nanoid/index.dev.js");
+/* harmony import */ var dropzone__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! dropzone */ "./node_modules/dropzone/dist/dropzone.js");
+
 
 
 
@@ -127,6 +129,8 @@ __webpack_require__.r(__webpack_exports__);
               message('error', body);
               field.focus();
             };
+            /** Обновляем данные пользователя */
+
 
             var update = function update() {
               var user = username.value,
@@ -181,6 +185,8 @@ __webpack_require__.r(__webpack_exports__);
                 });
               }
             };
+            /** Добавляем пользователя */
+
 
             var add = function add() {
               var user = username.value,
@@ -189,13 +195,13 @@ __webpack_require__.r(__webpack_exports__);
               if (pass === '') validateFields(password, langError.password);
 
               if (user !== '' && pass !== '') {
-                axios.post('/users/create', {
+                axios.put('/users/create', {
                   username: user,
                   email: email.value,
                   password: pass,
                   group: group.value,
                   quota: quota.value,
-                  id: (0,nanoid__WEBPACK_IMPORTED_MODULE_3__.nanoid)(),
+                  id: (0,nanoid__WEBPACK_IMPORTED_MODULE_4__.nanoid)(),
                   csrf: csrf
                 }).then(function (res) {
                   var data = res.data;
@@ -273,7 +279,39 @@ __webpack_require__.r(__webpack_exports__);
             /** Блокируем или разблокируем пользователя */
 
 
-            var userBan = function userBan(user) {// user = JSON.parse(user)
+            var userBan = function userBan(user, lock) {
+              // TODO: Для будущей совместимости
+              var page = lock ? 'lock' : 'unlock';
+              var id;
+              var s;
+              var data;
+              axios.put('/users/' + page + '-' + user._id + '.html', {
+                rid: user.rid,
+                lock: lock,
+                csrf: csrf
+              }).then(function (res) {
+                data = res.data;
+
+                if (data.status === 201 && data.count > 0) {
+                  id = doc.getElementById(user._id);
+                  s = id.querySelectorAll('[data-target="' + page + '"]');
+                  Array.prototype.slice.call(s, 0, s.length).forEach(function (el) {
+                    if (el.classList.contains('unlock')) {
+                      el.classList.remove('unlock');
+                      el.classList.add('lock');
+
+                      _$.data(el, 'target', 'lock');
+                    } else {
+                      el.classList.remove('lock');
+                      el.classList.add('unlock');
+
+                      _$.data(el, 'target', 'unlock');
+                    }
+                  });
+                } else {}
+              })["catch"](function (err) {
+                console.error(err); // TODO: handle errors
+              });
             };
             /** Получаем с сервера данные пользователя */
 
@@ -332,11 +370,11 @@ __webpack_require__.r(__webpack_exports__);
                         return _context.abrupt("break", 23);
 
                       case 18:
-                        userBan(user);
+                        userBan(user, true);
                         return _context.abrupt("break", 23);
 
                       case 20:
-                        userBan(user);
+                        userBan(user, false);
                         return _context.abrupt("break", 23);
 
                       case 22:
@@ -380,8 +418,7 @@ __webpack_require__.r(__webpack_exports__);
             // PAGINATE
             // === === === === === === === === === === === ===
 
-            var page = 1;
-            var total = 10;
+            var page = 1; // let total = 10
 
             function getDocumentHeight() {
               var body = document.body;
@@ -406,12 +443,14 @@ __webpack_require__.r(__webpack_exports__);
                           var data = res.data;
 
                           if (data.status === 200 && data.total > 0) {
-                            total += data.total;
+                            // total += data.total
                             lastRid = data.last;
                             ulUserTableBody.insertAdjacentHTML('beforeend', data.page);
                             var li = ulUserTableBody.querySelector('[data-number="' + num + '"]');
-                            li.classList.add('animate__zoomInDown');
-                            message('success', 'Загружено! <br/> Всего пользователей на странице ' + total);
+                            li.classList.add('animate__zoomInDown'); // message(
+                            //   'success',
+                            //   'Загружено! <br/> Всего пользователей на странице ' + total,
+                            // )
                           } else {
                             message('success', 'Все пользователи загружены');
                             window.removeEventListener('scroll', onScroll, false);

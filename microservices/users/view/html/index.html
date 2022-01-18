@@ -52,7 +52,11 @@
       src="https://unpkg.com/axios/dist/axios.min.js"
     ></script>
     <script src="/public/js/style.js"></script>
+    {% if breadcrumb === "settings" %}
+    <script src="/public/js/settings.js"></script>
+    {% elif breadcrumb === "users" %}
     <script src="/public/js/users.js"></script>
+    {% endif %}
     <script>
       {# const config = {{ config | dump }}; #}
       const lang = {{ lang | dump }};

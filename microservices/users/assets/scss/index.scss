@@ -53,7 +53,7 @@
 }
 
 .block {
-  .ban {
+  .unlock {
     width: 32px;
     height: 32px;
     background: url('../images/ban.svg');
@@ -73,27 +73,28 @@
     cursor: pointer;
     display: flex;
   }
+  .actions__edit {
+    width: 32px;
+    height: 32px;
+    background: url('../images/edit.svg');
+  }
+  .actions__trash {
+    width: 32px;
+    height: 32px;
+    background: url('../images/trash.svg');
+  }
+  .unlock {
+    width: 32px;
+    height: 32px;
+    background: url('../images/unlock.svg');
+  }
+  .lock {
+    width: 32px;
+    height: 32px;
+    background: url('../images/lock.svg');
+  }
 }
-.actions__edit {
-  width: 32px;
-  height: 32px;
-  background: url('../images/edit.svg');
-}
-.actions__trash {
-  width: 32px;
-  height: 32px;
-  background: url('../images/trash.svg');
-}
-.actions_unlock {
-  width: 32px;
-  height: 32px;
-  background: url('../images/unlock.svg');
-}
-.actions_lock {
-  width: 32px;
-  height: 32px;
-  background: url('../images/lock.svg');
-}
+
 // ----------------------------------------------------------------
 // USER FORM ADD
 // ----------------------------------------------------------------
@@ -131,4 +132,19 @@
 // ----------------------------------------------------------------
 .user-list {
   list-style: none;
+}
+
+// ----------------------------------------------------------------
+// SETTINGS
+// ----------------------------------------------------------------
+.settings-form__content {
+  // display: flex;
+  // flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  align-items: center;
+  justify-items: center;
+}
+.settings-form-item {
+  margin: 1rem;
 }

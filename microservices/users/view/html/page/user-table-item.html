@@ -21,10 +21,17 @@
   <div class="user-table-body-line-item block d-flex justify-center">
     {% if user.block === true %}
     <span
-      class="ban"
+      class="unlock"
       data-id="{{user._id}}"
       data-rid="{{user.rid}}"
       data-target="unlock"
+    ></span>
+    {% else %}
+    <span
+      class="lock"
+      data-id="{{user._id}}"
+      data-rid="{{user.rid}}"
+      data-target="lock"
     ></span>
     {% endif %}
   </div>
@@ -44,14 +51,14 @@
     <div class="actions__lock">
       {% if user.block === true %}
       <span
-        class="actions_unlock"
+        class="unlock"
         data-id="{{user._id}}"
         data-target="unlock"
         data-rid="{{user.rid}}"
       ></span>
       {% else %}
       <span
-        class="actions_lock"
+        class="lock"
         data-id="{{user._id}}"
         data-target="lock"
         data-rid="{{user.rid}}"

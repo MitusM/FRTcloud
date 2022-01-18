@@ -1,32 +1,33 @@
-const path = require("path");
-const { merge } = require("webpack-merge");
-const webpack = require("webpack");
+const path = require('path')
+const { merge } = require('webpack-merge')
+const webpack = require('webpack')
 // const CopyPlugin = require('copy-webpack-plugin')
 
 // const svg = require("./svg");
-const images = require("./images");
-const sass = require("./sass");
-const babel = require("./babel");
+const images = require('./images')
+const sass = require('./sass')
+const babel = require('./babel')
 
-var appRoot = require("app-root-path");
+var appRoot = require('app-root-path')
 
 const pathList = {
   // source: path.join(appRoot.path, 'developer', 'js'),
-  build: path.join(appRoot.path, "public", "js"),
-};
+  build: path.join(appRoot.path, 'public', 'js'),
+}
 
 const common = merge([
   {
     // context:
     entry: {
-      style: "./assets/js/index.js",
-      users: "./microservices/users/assets/js/index.js",
-      login: "./microservices/auth/assets/js/index.js",
+      style: './assets/js/index.js',
+      settings: ['./microservices/users/assets/js/settings.js'],
+      users: './microservices/users/assets/js/index.js',
+      login: './microservices/auth/assets/js/index.js',
       // files: './microservices/files/assets/js/index.js',
     },
 
     optimization: {
-      runtimeChunk: "single",
+      runtimeChunk: 'single',
       splitChunks: {
         minSize: 0,
         minChunks: 2,
@@ -35,9 +36,9 @@ const common = merge([
         cacheGroups: {
           vendors: {
             test: /[\\/]node_modules[\\/]/,
-            name: "vendors",
+            name: 'vendors',
             enforce: true,
-            chunks: "all",
+            chunks: 'all',
           },
         },
       },
@@ -45,14 +46,14 @@ const common = merge([
 
     output: {
       path: pathList.build,
-      filename: "[name].js",
-      chunkFilename: "[name].bundle.js",
+      filename: '[name].js',
+      chunkFilename: '[name].bundle.js',
       publicPath: pathList.build,
-      assetModuleFilename: "[name][ext]",
+      assetModuleFilename: '[name][ext]',
     },
     devtool: false,
     watchOptions: {
-      ignored: ["node_modules/**"],
+      ignored: ['node_modules/**'],
     },
     stats: {
       assets: true,
@@ -74,9 +75,9 @@ const common = merge([
       // }),
 
       new webpack.DefinePlugin({
-        "process.env": {
+        'process.env': {
           // This has effect on the react lib size
-          NODE_ENV: JSON.stringify(process.env.NODE_ENV || "development"),
+          NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
         },
       }),
     ],
@@ -84,19 +85,19 @@ const common = merge([
   images(),
   // svg(),
   babel(),
-]);
+])
 
 module.exports = function (env) {
-  console.log("env", env);
-  console.log("⚡ process.env.NODE_ENV", process.env.NODE_ENV);
+  console.log('env', env)
+  console.log('⚡ process.env.NODE_ENV', process.env.NODE_ENV)
   return merge([
     {
-      mode: "development",
+      mode: 'development',
       // watch: true
     },
     sass(),
     common,
 
     // analyzer
-  ]);
-};
+  ])
+}

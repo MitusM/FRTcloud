@@ -1,5 +1,6 @@
 import '../scss/index.scss'
 import { nanoid } from 'nanoid'
+import { prototype } from 'dropzone'
 ;(async () => {
   let doc = document
   doc.addEventListener('DOMContentLoaded', () => {
@@ -78,6 +79,7 @@ import { nanoid } from 'nanoid'
       field.focus()
     }
 
+    /** Обновляем данные пользователя */
     let update = () => {
       let user = username.value,
         emailUpdated = email.value
@@ -128,7 +130,7 @@ import { nanoid } from 'nanoid'
             .catch((err) => console.error(err))
       }
     }
-
+    /** Добавляем пользователя */
     let add = () => {
       let user = username.value,
         pass = password.value
@@ -136,7 +138,7 @@ import { nanoid } from 'nanoid'
       if (pass === '') validateFields(password, langError.password)
       if (user !== '' && pass !== '') {
         axios
-          .post('/users/create', {
+          .put('/users/create', {
             username: user,
             email: email.value,
             password: pass,
@@ -214,8 +216,41 @@ import { nanoid } from 'nanoid'
     }
 
     /** Блокируем или разблокируем пользователя */
-    const userBan = (user) => {
-      // user = JSON.parse(user)
+    const userBan = (user, lock) => {
+      // TODO: Для будущей совместимости
+      let page = lock ? 'lock' : 'unlock'
+      let id
+      let s
+      let data
+      axios
+        .put('/users/' + page + '-' + user._id + '.html', {
+          rid: user.rid,
+          lock: lock,
+          csrf: csrf,
+        })
+        .then((res) => {
+          data = res.data
+          if (data.status === 201 && data.count > 0) {
+            id = doc.getElementById(user._id)
+            s = id.querySelectorAll('[data-target="' + page + '"]')
+            Array.prototype.slice.call(s, 0, s.length).forEach((el) => {
+              if (el.classList.contains('unlock')) {
+                el.classList.remove('unlock')
+                el.classList.add('lock')
+                _$.data(el, 'target', 'lock')
+              } else {
+                el.classList.remove('lock')
+                el.classList.add('unlock')
+                _$.data(el, 'target', 'unlock')
+              }
+            })
+          } else {
+          }
+        })
+        .catch((err) => {
+          console.error(err)
+          // TODO: handle errors
+        })
     }
 
     /** Получаем с сервера данные пользователя */
@@ -251,10 +286,10 @@ import { nanoid } from 'nanoid'
             deleteUser(user)
             break
           case 'lock':
-            userBan(user)
+            userBan(user, true)
             break
           case 'unlock':
-            userBan(user)
+            userBan(user, false)
             break
           default:
             break
@@ -290,7 +325,7 @@ import { nanoid } from 'nanoid'
     // === === === === === === === === === === === ===
 
     let page = 1
-    let total = 10
+    // let total = 10
 
     function getDocumentHeight() {
       const body = document.body
@@ -321,17 +356,17 @@ import { nanoid } from 'nanoid'
         .then((res) => {
           let data = res.data
           if (data.status === 200 && data.total > 0) {
-            total += data.total
+            // total += data.total
             lastRid = data.last
             ulUserTableBody.insertAdjacentHTML('beforeend', data.page)
             let li = ulUserTableBody.querySelector(
               '[data-number="' + num + '"]',
             )
             li.classList.add('animate__zoomInDown')
-            message(
-              'success',
-              'Загружено! <br/> Всего пользователей на странице ' + total,
-            )
+            // message(
+            //   'success',
+            //   'Загружено! <br/> Всего пользователей на странице ' + total,
+            // )
           } else {
             message('success', 'Все пользователи загружены')
             window.removeEventListener('scroll', onScroll, false)
