@@ -1,7 +1,7 @@
 const path = require('path')
 const { merge } = require('webpack-merge')
 const webpack = require('webpack')
-// const CopyPlugin = require('copy-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 
 // const svg = require("./svg");
 const images = require('./images')
@@ -23,7 +23,7 @@ const common = merge([
       settings: ['./microservices/users/assets/js/settings.js'],
       users: './microservices/users/assets/js/index.js',
       login: './microservices/auth/assets/js/index.js',
-      // files: './microservices/files/assets/js/index.js',
+      article: './microservices/article/assets/js/index.js',
     },
 
     optimization: {
@@ -78,6 +78,45 @@ const common = merge([
         'process.env': {
           // This has effect on the react lib size
           NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+        },
+      }),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: 'node_modules/tinymce/plugins',
+            to: path.join(pathList.build, '/plugins'),
+          },
+          {
+            from: 'node_modules/tinymce/skins',
+            to: path.join(pathList.build, '/skins'),
+          },
+          {
+            from: 'assets/js/tinymce/langs',
+            to: path.join(pathList.build, '/langs'),
+          },
+          {
+            from: 'node_modules/tinymce/themes',
+            to: path.join(pathList.build, '/themes'),
+          },
+          {
+            from: 'node_modules/tinymce/tinymce.min.js',
+            to: path.join(pathList.build),
+          },
+          {
+            from: 'node_modules/tinymce/icons',
+            to: path.join(pathList.build, '/icons'),
+          },
+          {
+            from: 'node_modules/tinymce/models',
+            to: path.join(pathList.build, '/models'),
+          },
+          {
+            from: 'assets/js/tinymce/oxide-icon-pack-template/dist/icons/',
+            to: path.join(pathList.build, '/icons'),
+          },
+        ],
+        options: {
+          concurrency: 100,
         },
       }),
     ],

@@ -16,7 +16,7 @@ const templateDir = path.join(appRoot, process.env.VIEW_DIR)
 const Redis = new Cache({ db: 1 })
 
 const errorHandler = (res, message) => {
-  // {"message":{}}
+  // get: {"message":{}}
   return res.status(200).json({ message: message })
 }
 
@@ -33,6 +33,11 @@ async function arrToObject(arr) {
       return err.message
     })
 }
+/**
+ * Удаляем страницы из кэша (Redis)
+ * @returns {Promise }
+ */
+let delCachePage = () => Redis.delPattern('userPage:Admin:*')
 
 let extend = function () {
   let merged = {}
@@ -64,10 +69,9 @@ const endpoints = async (app) => {
       let quota
       let page
       // let del = await Redis.delPattern('userPage:Admin:*')
-      // console.log('⚡ del::', del)
       // FIXME: this settings limit paginate
       let multi = await Redis.multi()
-        .get('users:settings')
+        .get('settings:users')
         .get('userPage:Admin:list:1')
         .exec()
 
@@ -140,7 +144,7 @@ const endpoints = async (app) => {
       /**  */
       let settings
       let page = await Redis.multi()
-        .get('users:settings')
+        .get('settings:users')
         .get('userPage:Admin:settings')
         .exec()
 
@@ -190,150 +194,6 @@ const endpoints = async (app) => {
   /*************************************
    *  * * * * * * POST * * * * * * *  *
    *************************************/
-
-  // async function emailValidate(body, arr) {
-  //   let email = await db.validateFields('email', body.email)
-  //   email = email
-  //     ? Promise.reject('Email уже используется')
-  //     : new Promise((resolve) => resolve(body.email))
-  //   arr.push({ email: await email })
-  //   return arr
-  // }
-
-  // async function valPassword(body, arr) {
-  //   let passSALT = body.password + process.env.SALT
-
-  //   let data = await db.hashPassword(passSALT)
-  //   arr.push({ hashedPassword: data.password })
-  //   arr.push({ salt: data.salt })
-  //   return arr
-  // }
-
-  //   async function userName(body, arr) {
-  //     let username = await db.validateFields('username', body.username)
-  //     // ------------------->
-  //     username = username
-  //       ? Promise.reject('Логин занят')
-  //       : new Promise((resolve) => resolve(body.username))
-  //     arr.push({ username: await username })
-  //     return arr
-  //   }
-  // })
-
-  app.post('/users/update', async (req, res) => {
-    try {
-      const body = req.body
-      if (body.csrf === req.session.csrfSecret) {
-        let rid = body.rid
-        let arr = []
-        let set = []
-
-        if (rid) {
-          let quota = body.quota * (1024 * 1024 * 1024)
-          let user = await db.getUser(rid)
-          console.log('⚡ user::', user)
-          if (user.username !== body.username) {
-            let username = await db.validateFields('username', body.username)
-            username = username
-              ? Promise.reject('Логин занят')
-              : new Promise((resolve) => resolve(body.username))
-            arr.push({ username: await username })
-
-            set.push('username =:username')
-          }
-
-          if (user.email !== body.email) {
-            // arr = emailValidate(body, arr)
-
-            let email = await db.validateFields('email', body.email)
-            email = email
-              ? Promise.reject('Email уже используется')
-              : new Promise((resolve) => resolve(body.email))
-            arr.push({ email: await email })
-            set.push('email =:email')
-          }
-
-          if (quota !== user.quota) {
-            // console.log('⚡ quota !== user.quota::', quota !== user.quota)
-            arr.push({ quota: await new Promise((resolve) => resolve(quota)) })
-            set.push('quota =:quota')
-          }
-
-          if (body.group !== user.group) {
-            arr.push({
-              group: await new Promise((resolve) => resolve(body.group)),
-            })
-            set.push('group =:group')
-          }
-
-          if (body.password !== '') {
-            // arr = valPassword(body, arr)
-
-            let passSALT = body.password + process.env.SALT
-            let data = await db.hashPassword(passSALT)
-            arr.push({ hashedPassword: data.password })
-            arr.push({ salt: data.salt })
-            set.push('password =:password, salt =:salt')
-          }
-
-          let obj = await arrToObject(arr)
-          let userUpdated = await db.update(set.toString(), rid, obj)
-          // FIXME: Убрать hashPassword, salt
-          let newUser = extend(user, obj)
-          //   {
-          //     username: user.username,
-          //     email: user.email,
-          //     group: user.group,
-          //     block: user.block,
-          //     quota: user.quota,
-          //     rid: user.rid,
-          //     _id: user._id,
-          //   },
-          //   obj,
-          // )
-
-          if (userUpdated.count > 0) {
-            res.status(200).json({
-              status: 200,
-              // html: response.html,
-              id: user._id,
-              user: obj,
-              attr: newUser,
-            })
-          }
-        } else {
-          errorHandler(res, 'No rid')
-        }
-      }
-    } catch (err) {
-      errorHandler(res, err)
-    }
-  })
-
-  app.post('/users/delete/:id', async (req, res) => {
-    try {
-      const body = req.body
-      if (body.csrf === req.session.csrfSecret) {
-        if (body.rid) {
-          /**
-           * @type {Object} count: 1
-           **/
-          let user = await db.deleteUser(body.rid).catch((err) => {
-            return errorHandler(res, err)
-          })
-
-          if (user.count > 0) {
-            res.status(200).json({ status: 200, count: user })
-          } else {
-            errorHandler(res, 'No User delete')
-          }
-        }
-      }
-    } catch (err) {
-      errorHandler(res, err)
-    }
-  })
-
   app.post('/users/page-:num', async (req, res) => {
     // TODO: num is not supported
     try {
@@ -345,7 +205,7 @@ const endpoints = async (app) => {
         let quota
         let obj = {}
         let multi = await Redis.multi()
-          .get('users:settings')
+          .get('settings:users')
           .get(usersPage)
           .exec()
 
@@ -405,10 +265,8 @@ const endpoints = async (app) => {
             obj.total = length
           }
           Redis.set(usersPage, JSON.stringify(obj))
-          // res.status(200).json({ status: 200, ...obj })
         } else {
           obj = JSON.parse(multi[1][1])
-          // res.status(200).json({ status: 200, ...o })
         }
 
         res.status(200).json({ status: 200, ...obj })
@@ -459,7 +317,7 @@ const endpoints = async (app) => {
         /** Сохраняем или обновляем настройки в БД */
         let settings = await db.setSettings(obj)
         /** Сохраняем или обновляем настройки в Redis */
-        let setRedis = await Redis.set('users:settings', JSON.stringify(obj))
+        let setRedis = await Redis.set('settings:users', JSON.stringify(obj))
         /** Удаляем страницы из Redis - кэш */
         let del = await Redis.delPattern('userPage:Admin:*')
         // console.log('⚡ del::', del)
@@ -550,17 +408,6 @@ const endpoints = async (app) => {
         }
         // ------------------->
         let obj = await arrToObject(arr)
-          // let obj = await Promise.all(arr)
-          //   .then((arrs) => {
-          //     return arrs.reduce((o, v) => {
-          //       let key = Object.keys(v)
-          //       let val = v[key]
-          //       return (o[key] = val), o
-          //     }, {})
-          //   })
-          .catch((err) => {
-            return err.message
-          })
         // <-------------------
 
         let user = await db.setCreated(obj)
@@ -582,7 +429,7 @@ const endpoints = async (app) => {
           },
         })
 
-        res.status(200).json({ status: 200, html: response.html, id: user._id })
+        res.status(200).json({ status: 201, html: response.html, id: user._id })
         // <-------------------
       } else {
         // crf token is no
@@ -593,6 +440,120 @@ const endpoints = async (app) => {
     }
   })
 
+  // async function emailValidate(body, arr) {
+  //   let email = await db.validateFields('email', body.email)
+  //   email = email
+  //     ? Promise.reject('Email уже используется')
+  //     : new Promise((resolve) => resolve(body.email))
+  //   arr.push({ email: await email })
+  //   return arr
+  // }
+
+  // async function valPassword(body, arr) {
+  //   let passSALT = body.password + process.env.SALT
+
+  //   let data = await db.hashPassword(passSALT)
+  //   arr.push({ hashedPassword: data.password })
+  //   arr.push({ salt: data.salt })
+  //   return arr
+  // }
+
+  //   async function userName(body, arr) {
+  //     let username = await db.validateFields('username', body.username)
+  //     // ------------------->
+  //     username = username
+  //       ? Promise.reject('Логин занят')
+  //       : new Promise((resolve) => resolve(body.username))
+  //     arr.push({ username: await username })
+  //     return arr
+  //   }
+  // })
+
+  /** @update */
+  app.put('/users/update', async (req, res) => {
+    try {
+      const body = req.body
+      if (body.csrf === req.session.csrfSecret) {
+        let rid = body.rid
+        let arr = []
+        let set = []
+
+        if (rid) {
+          let quota = body.quota * (1024 * 1024 * 1024)
+          let user = await db.getUser(rid)
+
+          if (user.username !== body.username) {
+            let username = await db.validateFields('username', body.username)
+            username = username
+              ? Promise.reject('Логин занят')
+              : new Promise((resolve) => resolve(body.username))
+            arr.push({ username: await username })
+
+            set.push('username =:username')
+          }
+
+          if (user.email !== body.email) {
+            // arr = emailValidate(body, arr)
+
+            let email = await db.validateFields('email', body.email)
+            email = email
+              ? Promise.reject('Email уже используется')
+              : new Promise((resolve) => resolve(body.email))
+            arr.push({ email: await email })
+            set.push('email =:email')
+          }
+
+          if (quota !== user.quota) {
+            arr.push({ quota: await new Promise((resolve) => resolve(quota)) })
+            set.push('quota =:quota')
+          }
+
+          if (body.group !== user.group) {
+            arr.push({
+              group: await new Promise((resolve) => resolve(body.group)),
+            })
+            set.push('group =:group')
+          }
+
+          if (body.password !== '') {
+            // arr = valPassword(body, arr)
+
+            let passSALT = body.password + process.env.SALT
+            let data = await db.hashPassword(passSALT)
+            arr.push({ hashedPassword: data.password })
+            arr.push({ salt: data.salt })
+            set.push('password =:password, salt =:salt')
+          }
+
+          let obj = await arrToObject(arr)
+          let userUpdated = await db.update(set.toString(), rid, obj)
+          // FIXME: Убрать hashPassword, salt
+          let newUser = extend(user, obj)
+
+          if (userUpdated.count > 0) {
+            /** Удаляем страницы из Redis - кэш */
+            let del = await Redis.delPattern('userPage:Admin:*')
+            res.status(200).json({
+              status: 201,
+              // html: response.html,
+              id: user._id,
+              user: obj,
+              attr: newUser,
+            })
+          }
+        } else {
+          errorHandler(res, 'No rid')
+        }
+      }
+    } catch (err) {
+      errorHandler(res, err)
+    }
+  })
+
+  /**
+   *  Блокируем или разблокируем пользователя
+   * @note Block or unlock the user
+   */
   app.put('/users/(lock|unlock)-:id(.*)', async (req, res) => {
     // TODO: lock unlock and id is not supported
     try {
@@ -621,6 +582,36 @@ const endpoints = async (app) => {
         }
       } else {
         // no CSRF protection
+      }
+    } catch (err) {
+      errorHandler(res, err)
+    }
+  })
+
+  /*************************************
+   * * * * * * * DELETE * * * * * * * * *
+   *************************************/
+
+  app.delete('/users/delete/:id', async (req, res) => {
+    try {
+      const body = req.body
+      if (body.csrf === req.session.csrfSecret) {
+        if (body.rid) {
+          /**
+           * @type {Object} count: 1
+           **/
+          let user = await db.deleteUser(body.rid).catch((err) => {
+            return errorHandler(res, err)
+          })
+
+          if (user.count > 0) {
+            res.status(200).json({ status: 201, count: user })
+            /** Удаляем страницы из Redis - кэш */
+            await delCachePage()
+          } else {
+            errorHandler(res, 'No User delete')
+          }
+        }
       }
     } catch (err) {
       errorHandler(res, err)

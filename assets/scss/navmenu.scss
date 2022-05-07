@@ -1,8 +1,6 @@
 // === === === === === === === === === === === ===
 //* LEFT MENU
 // === === === === === === === === === === === ===
-// .sidebar {
-// }
 
 .navbar-left-ul {
   // @include d-flex;
@@ -21,7 +19,8 @@
     align-content: center;
     line-height: 1.5rem;
     color: #000;
-    font-family: "Lobster";
+    font-family: 'Lobster';
+    align-items: center;
 
     &:hover,
     &:visited {

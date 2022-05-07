@@ -1,0 +1,53 @@
+<div class="container-fluid">
+  {# animate__animated animate__backOutLeft #}
+  <div class="row">{% include "./breadcrumb.html" %}</div>
+  <div class="article">
+    <div class="container-fluid">
+      <div class="row card">
+        <div id="{{breadcrumb}}" class="animate__animated create-country">
+          <form action="/article/create-{{breadcrumb}}" id="add" method="post">
+            <div class="article-form-row">
+              <fieldset class="form-group-row form-group__title">
+                <label for="country-name" class="country-title">
+                  {{lang.add.country.title}}
+                </label>
+                <input
+                  type="text"
+                  class="form-group-input form-control country-name"
+                  name="title"
+                  tabindex="1"
+                  required
+                  autofocus
+                />
+              </fieldset>
+
+              <fieldset class="form-group-row form-group__url">
+                <label for="country-url" class="country-url"
+                  >{{lang.add.country.url}}</label
+                >
+                <input
+                  type="text"
+                  class="form-group-input form-control country-url"
+                  name="url"
+                />
+              </fieldset>
+            </div>
+
+            <fieldset class="form-group__content">
+              <textarea name="content" id="content" tabindex="2"></textarea>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+      <!-- DROPZONE -->
+      {#
+      <div class="dropzone-area">
+        <form action="/target" class="dropzone"></form>
+      </div>
+      #} {#
+      <div class="my-dropzone"></div>
+      #}
+      <form action="/target" class="dropzone" id="my-dropzone"></form>
+    </div>
+  </div>
+</div>

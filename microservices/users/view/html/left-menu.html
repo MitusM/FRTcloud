@@ -21,6 +21,7 @@
         Пользователи
       </a>
     </li>
+    {% if breadcrumb === "users" %}
     <li class="navbar-left-ul__li navbar-left-ul-li__item">
       <a id="url-user-add" href="/users/create.html">
         <svg
@@ -57,5 +58,6 @@
         Добавить пользователя
       </a>
     </li>
+    {% endif %}
   </ul>
 </nav>

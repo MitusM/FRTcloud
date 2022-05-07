@@ -89,7 +89,7 @@ import { prototype } from 'dropzone'
       if (user && email) {
         if (user)
           axios
-            .post('/users/update', {
+            .put('/users/update', {
               username: user,
               email: emailUpdated,
               password: password.value,
@@ -104,7 +104,7 @@ import { prototype } from 'dropzone'
               let id
               let dataObj
 
-              if (data.status === 200) {
+              if (data.status === 201) {
                 dataObj = data.user
                 message('success', 'Your account has been updated')
                 /** Скрываем форму добавления пользователя*/
@@ -150,7 +150,7 @@ import { prototype } from 'dropzone'
           .then((res) => {
             let data = res.data
             let id
-            if (data.status === 200) {
+            if (data.status === 201) {
               message('success', 'Your account has been created')
               /** Скрываем форму добавления пользователя*/
               toggleFormAdd()
@@ -194,9 +194,9 @@ import { prototype } from 'dropzone'
       dialog.header('Удалить пользователя').show((bool) => {
         if (bool === 'true') {
           axios
-            .post('/users/delete/' + id, { rid: rid, csrf: csrf })
+            .delete('/users/delete/' + id, { rid: rid, csrf: csrf })
             .then((res) => {
-              if (res.data.status === 200) {
+              if (res.data.status === 201) {
                 dialog.close()
                 let el = document.getElementById(id)
                 el.classList.add('animate__fadeOutLeft')

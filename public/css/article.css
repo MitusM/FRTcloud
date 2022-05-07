@@ -1,0 +1,155 @@
+/*!***************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./microservices/article/assets/scss/index.scss ***!
+  \***************************************************************************************************************************************/
+:root {
+  --cl-user-table-thead: #fff;
+}
+
+.img-country {
+  background-image: url(../images/36x36_russia.png);
+  width: 36px;
+  height: 36px;
+  margin-right: 0.5em;
+  background-size: contain;
+}
+
+.img-add {
+  background-image: url(../images/add.svg);
+  width: 33px;
+  height: 33px;
+  background-size: contain;
+  margin-right: 0.5em;
+  background-repeat: no-repeat;
+}
+
+.img-geo-object {
+  background-image: url(../images/cil-terrain.svg);
+  width: 36px;
+  height: 36px;
+  background-size: contain;
+  margin-right: 0.5em;
+}
+
+.navbar-left-ul-li__title {
+  font: 1.1rem/1.5rem var(--cl--font-sans-serif);
+  text-align: center;
+  margin: 1rem 0;
+  text-decoration: underline;
+  color: var(--cl-red);
+}
+
+.article-form-row {
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-areas: "left right";
+  grid-auto-flow: column;
+}
+
+.form-group-row {
+  grid-area: "top";
+}
+
+.form-group__title {
+  grid-area: left;
+}
+.form-group__url {
+  grid-area: right;
+}
+
+#add .form-group-row {
+  margin: 1rem;
+}
+
+.dropzone {
+  box-shadow: var(--bs-header-top-box-shadow);
+  border: 4px solid rgba(0, 0, 0, 0.3) !important;
+}
+
+.user-table {
+  margin-bottom: 30px;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.user-table-thead {
+  height: 60px;
+  background: var(--bs-header-logo-background-color);
+}
+
+.user-table-thead-item {
+  text-align: center;
+  color: var(--cl-user-table-thead);
+}
+
+.user-table-thead,
+.user-table-body-line {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+.user-table-body {
+  padding: 0;
+}
+
+.user-table-body__line-none {
+  text-align: center;
+  font: 1.5rem/2rem var(--bs-font-sans-serif);
+  color: var(--bs-gray-600);
+}
+
+.user-table-body-line {
+  text-align: left;
+  line-height: 4em;
+}
+.user-table-body-line:nth-child(even) {
+  border-top: 1px solid var(--cl-border-color);
+  border-bottom: 1px solid var(--cl-border-color);
+}
+
+.user-table-body-line-item:nth-child(2n+1), .user-table-body-line-item:nth-child(6) {
+  text-align: center;
+}
+
+.user-form-add {
+  display: grid;
+  grid-template-columns: auto 860px auto;
+  grid-template-areas: ". form .";
+}
+
+.user-form__add {
+  grid-area: form;
+}
+.user-form__add fieldset {
+  padding: 1.5em;
+}
+.user-form__add legend {
+  background-color: var(--bs-header-logo-background-color);
+  font: 1.5em/2em var(--cl--font-sans-serif);
+  color: var(--cl-user-table-thead);
+  position: relative;
+}
+
+.user-form-title__close {
+  position: absolute;
+  right: 1em;
+  cursor: pointer;
+}
+.user-form-title__close:hover {
+  color: var(--cl-gray-500);
+}
+
+.user-list {
+  list-style: none;
+}
+
+.settings-form__content {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  align-items: center;
+  justify-items: center;
+}
+
+.settings-form-item {
+  margin: 1rem;
+}

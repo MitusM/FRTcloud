@@ -23,7 +23,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _scss_index_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../scss/index.scss */ "./microservices/users/assets/scss/index.scss");
-/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! nanoid */ "./node_modules/nanoid/index.dev.js");
+/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! nanoid */ "./node_modules/nanoid/index.browser.js");
 /* harmony import */ var dropzone__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! dropzone */ "./node_modules/dropzone/dist/dropzone.js");
 
 
@@ -139,7 +139,7 @@ __webpack_require__.r(__webpack_exports__);
               if (emailUpdated === '') validateFields(email, langError.email);
 
               if (user && email) {
-                if (user) axios.post('/users/update', {
+                if (user) axios.put('/users/update', {
                   username: user,
                   email: emailUpdated,
                   password: password.value,
@@ -153,7 +153,7 @@ __webpack_require__.r(__webpack_exports__);
                   var id;
                   var dataObj;
 
-                  if (data.status === 200) {
+                  if (data.status === 201) {
                     dataObj = data.user;
                     message('success', 'Your account has been updated');
                     /** Скрываем форму добавления пользователя*/
@@ -207,7 +207,7 @@ __webpack_require__.r(__webpack_exports__);
                   var data = res.data;
                   var id;
 
-                  if (data.status === 200) {
+                  if (data.status === 201) {
                     message('success', 'Your account has been created');
                     /** Скрываем форму добавления пользователя*/
 
@@ -255,11 +255,11 @@ __webpack_require__.r(__webpack_exports__);
               var id = user._id;
               dialog.header('Удалить пользователя').show(function (bool) {
                 if (bool === 'true') {
-                  axios.post('/users/delete/' + id, {
+                  axios["delete"]('/users/delete/' + id, {
                     rid: rid,
                     csrf: csrf
                   }).then(function (res) {
-                    if (res.data.status === 200) {
+                    if (res.data.status === 201) {
                       dialog.close();
                       var el = document.getElementById(id);
                       el.classList.add('animate__fadeOutLeft');
