@@ -1,19 +1,17 @@
-var crypto = require('crypto');
-
-
+import * as crypto from 'crypto'
 
 /**
- * Фильтруем размеры. Оставляем только те что меньше заданного 
+ * Фильтруем размеры. Оставляем только те что меньше заданного
  * @param {array} arr массив с размерами по ширине
  * @param {number} width ширина относительно которого фильтруем
  */
 const minFilter = (arr, width) => {
-  return arr.filter(w => w <= width)
+  return arr.filter((w) => w <= width)
 }
 
 const arrayToObject = (arr, name) => {
   return arr.reduce((obj, item) => {
-    return (obj[item[name]] = item, obj)
+    return (obj[item[name]] = item), obj
   }, {})
 }
 
@@ -37,11 +35,14 @@ let extend = function () {
  * @example const user = {id: 100, name: 'Howard Moon', password: 'query'}
 
  */
-const removeProperty = prop => ({
-  // eslint-disable-next-line no-unused-vars
-  [prop]: _,
-  ...rest
-}) => rest
+const removeProperty =
+  (prop) =>
+  ({
+    // eslint-disable-next-line no-unused-vars
+    [prop]: _,
+    ...rest
+  }) =>
+    rest
 
 // [].concat.apply([], [sizes[0], sizes[1]]))
 const concat = function (args) {
@@ -50,7 +51,7 @@ const concat = function (args) {
 }
 
 /**
- *  
+ *
  * @param  {...any} args arguments
  * @returns {array}
  */
@@ -61,13 +62,16 @@ const arrArguments = function (...args) {
 
 const promisify = function promisify(func, args) {
   return new Promise((resolve, reject) => {
-    func.apply(null, [...args, (err, result) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(result)
-      }
-    }])
+    func.apply(null, [
+      ...args,
+      (err, result) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+        }
+      },
+    ])
   })
 }
 
@@ -75,7 +79,7 @@ const generateChecksum = function (str, algorithm, encoding) {
   return crypto
     .createHash(algorithm || 'md5')
     .update(str, 'utf8')
-    .digest(encoding || 'hex');
+    .digest(encoding || 'hex')
 }
 
 const util = {}
@@ -89,4 +93,5 @@ util.arrArguments = arrArguments
 util.promisify = promisify
 util.generateChecksum = generateChecksum
 
-module.exports = util
+// module.exports = util
+export default util

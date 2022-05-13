@@ -1,15 +1,19 @@
-const fs = require('fs')
+// const fs = require('fs')
+import fs from 'fs'
+// const mime = require('mime-types')
+import mime from 'mime-types'
+import pkg from 'app-root-path'
+// const root = require('app-root-path').path
+// const path = require('path')
+import path from 'path'
+// const util = require('../util/index')
+import util from '../util/index.js'
 const fsPromises = fs.promises
+const root = pkg.path
 // const shell = require('child_process').execSync
 // const {
 //     constants
 // } = require('fs')
-const mime = require('mime-types')
-
-const root = require('app-root-path').path
-const path = require('path')
-const util = require('../util/index')
-
 
 // TODO: [].slice.call(arg, 0) - Вынести в отдельный метод или util
 class Base {
@@ -19,7 +23,29 @@ class Base {
     this.util = util
     this.fs = fsPromises
     this.path = path
-    this.extImg = ['.bmp', '.cur', '.dds', '.gif', '.icns', '.ico', '.jpeg', '.jpg', '.png', '.jpg', '.ktx', '.pnm', '.pam', '.pbm', '.pfm', '.pgm', '.ppm', '.psd', '.svg', '.tiff', '.webp']
+    this.extImg = [
+      '.bmp',
+      '.cur',
+      '.dds',
+      '.gif',
+      '.icns',
+      '.ico',
+      '.jpeg',
+      '.jpg',
+      '.png',
+      '.jpg',
+      '.ktx',
+      '.pnm',
+      '.pam',
+      '.pbm',
+      '.pfm',
+      '.pgm',
+      '.ppm',
+      '.psd',
+      '.svg',
+      '.tiff',
+      '.webp',
+    ]
   }
 
   //* ?
@@ -35,7 +61,7 @@ class Base {
    */
   absolute(...segments) {
     const home = root.split('/')
-    const arr = (segments.length > 1) ? [...segments] : [...home, ...segments]
+    const arr = segments.length > 1 ? [...segments] : [...home, ...segments]
     const parts = arr.reduce((parts, segment) => {
       // Remove leading slashes from non-first part.
       if (parts.length > 0) {
@@ -86,10 +112,10 @@ class Base {
 
   /**
    * Переименовать файл, папку
-   * @param {string} path1 Относительный или абсолютный путь до файла или папки которую переименовываем   
+   * @param {string} path1 Относительный или абсолютный путь до файла или папки которую переименовываем
    * @param {*} path2 Относительный или абсолютный путь до файла или папки с новым именем
-   * @returns {Promise} Если успешно Promise вернёт true, или error 
-   * @example: 
+   * @returns {Promise} Если успешно Promise вернёт true, или error
+   * @example:
    * - Переименовываем файл или папку.
    * await Base.rename({absolutePathFile}1.jpg, '../resize/new/123.jpg') // => true
    * - Перемещаем файл или папку в новое место с переименовыванием оригинала
@@ -98,12 +124,14 @@ class Base {
    * await Base.rename({absolutePathFile}1.jpg, '/resize/new/123.jpg') // => true
    */
   async rename(...args) {
-    // FIXME: Вынести в отдельный метод src/path/base.js 
+    // FIXME: Вынести в отдельный метод src/path/base.js
     args = [].slice.call(arguments, 0)
     /**  */
     let path1 = this.resolve(args[0])
     /**  */
-    let path2 = (!path.isAbsolute(args[1])) ? this.absolute(path.dirname(path1), args[1]) : this.resolve(path.dirname(path1), args[1])
+    let path2 = !path.isAbsolute(args[1])
+      ? this.absolute(path.dirname(path1), args[1])
+      : this.resolve(path.dirname(path1), args[1])
     /**  */
     this.mkDir(path.dirname(path2))
 
@@ -116,15 +144,15 @@ class Base {
   }
 
   formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return '0 Bytes'
 
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
 
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
   }
 
   // /**
@@ -149,30 +177,31 @@ class Base {
   stat(...arg) {
     arg = [].slice.call(arg, 0)
 
-    return fsPromises.stat(arg[0]).then(stats => {
-      let isFile = stats.isFile()
-      let isDirectory = stats.isDirectory()
+    return fsPromises
+      .stat(arg[0])
+      .then((stats) => {
+        let isFile = stats.isFile()
+        let isDirectory = stats.isDirectory()
 
-      const obj = {
-        isFile: isFile,
-        isDirectory: isDirectory,
-        size: isFile ? this.formatBytes(stats.size) : stats.size, // 
-        bytes: stats.size,
-        create: stats.birthtime, // время создания файла. Устанавливается один раз при создании файла. В файловых системах, где время рождения недоступно, это поле может вместо этого содержать либо ctime, либо 1970-01-01T00: 00Z (т.е. временную метку эпохи Unix 0). В этом случае это значение может быть больше, чем atime или mtime. В Darwin и других вариантах FreeBSD также устанавливается, если atime явно установлено на более раннее значение, чем текущее время рождения, с помощью системного вызова utimes(2).
+        const obj = {
+          isFile: isFile,
+          isDirectory: isDirectory,
+          size: isFile ? this.formatBytes(stats.size) : stats.size, //
+          bytes: stats.size,
+          create: stats.birthtime, // время создания файла. Устанавливается один раз при создании файла. В файловых системах, где время рождения недоступно, это поле может вместо этого содержать либо ctime, либо 1970-01-01T00: 00Z (т.е. временную метку эпохи Unix 0). В этом случае это значение может быть больше, чем atime или mtime. В Darwin и других вариантах FreeBSD также устанавливается, если atime явно установлено на более раннее значение, чем текущее время рождения, с помощью системного вызова utimes(2).
 
-        atime: stats.atime, // «Время доступа»: время последнего доступа к данным файла. Изменяется системными вызовами mknod(2), utimes(2) и read(2).
+          atime: stats.atime, // «Время доступа»: время последнего доступа к данным файла. Изменяется системными вызовами mknod(2), utimes(2) и read(2).
 
-        ctime: stats.ctime, // «Время изменения»: время последнего изменения статуса файла (изменение данных inode). Изменено системными вызовами chmod(2), chown(2), link(2), mknod(2), rename(2), unlink(2), utimes(2), read(2) и write(2) .
+          ctime: stats.ctime, // «Время изменения»: время последнего изменения статуса файла (изменение данных inode). Изменено системными вызовами chmod(2), chown(2), link(2), mknod(2), rename(2), unlink(2), utimes(2), read(2) и write(2) .
 
-        mtime: stats.mtime, // «Время изменения»: время последнего изменения данных файла. Изменяется системными вызовами mknod(2), utimes(2) и write(2).
-      }
+          mtime: stats.mtime, // «Время изменения»: время последнего изменения данных файла. Изменяется системными вызовами mknod(2), utimes(2) и write(2).
+        }
 
-
-
-      return obj
-    }).catch(err => {
-      return err
-    })
+        return obj
+      })
+      .catch((err) => {
+        return err
+      })
   }
 
   async md5Checksum(file) {
@@ -183,10 +212,7 @@ class Base {
   extMimeTypes(ext) {
     return mime.lookup(ext)
   }
-
-
-
-
 }
 
-module.exports = Base
+// module.exports = Base
+export default Base

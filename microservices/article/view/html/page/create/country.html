@@ -41,13 +41,21 @@
       </div>
       <!-- DROPZONE -->
       {#
-      <div class="dropzone-area">
-        <form action="/target" class="dropzone"></form>
-      </div>
-      #} {#
-      <div class="my-dropzone"></div>
+      <div class="dropzone-area"></div>
       #}
-      <form action="/target" class="dropzone" id="my-dropzone"></form>
+      <form action="/target" class="dropzone"></form>
+      <div class="my-dropzone"></div>
+      {#
+      <form
+        action="/upload/article-country"
+        type="file"
+        name="country_file"
+        method="POST"
+        enctype="multipart/form-data"
+        class="dropzone"
+        id="my-dropzone"
+      ></form>
+      #}
     </div>
   </div>
 </div>

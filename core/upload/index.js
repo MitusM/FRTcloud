@@ -7,8 +7,6 @@ import { constants } from 'fs'
 
 import { mkDir } from './mkDir.js'
 
-// console.log('⚡ path::', path)
-
 const require = createRequire(import.meta.url)
 const fsPromises = fs.promises
 const config = require('./config/upload.json')
@@ -24,27 +22,15 @@ let readStream
 const getDescriptor = Object.getOwnPropertyDescriptor
 let uploadFile = (req, options) => {
   return new Promise((resolve, reject) => {
-    // console.log('⚡ req::', req)
-    //
     /**  */
     options = typeof options === 'string' ? config[options] : options
-    console.log('⚡ options::', options)
-    // console.log('⚡ config::', config)
 
     /** Функция загрузки файла, заменяющая функцию загрузки файла по умолчанию */
     const customOnFile =
       typeof options.onFile === 'function' ? options.onFile : false
-
     let headers = options.headers || req.headers
-    // header = Object.keys(headers).reduce((newHeaders, key) => {
-    //   console.log('⚡ key::', key)
-    //   console.log('⚡ key.toLowerCase()::', key.toLowerCase())
-    //   newHeaders[key.toLowerCase()] = headers[key]
-    //   return newHeaders
-    // }, {})
-    // console.log('⚡ header::', headers)
-    saveToFile = options.path || os.tmpdir()
 
+    saveToFile = options.path || os.tmpdir()
     mimeTypeLimit = options.mimeTypeLimit
       ? !Array.isArray(options.mimeTypeLimit)
         ? [options.mimeTypeLimit]
@@ -52,20 +38,16 @@ let uploadFile = (req, options) => {
       : null
 
     upload = options.upload || false
-    console.log('⚡ upload::', upload)
-
     readStream = options.readStream || false
-    // console.log('⚡ headers::', headers)
-    var busboy = Busboy({
+
+    const busboy = Busboy({
       headers: headers,
     })
-    // console.log('⚡ busboy::', busboy)
-    // console.log('⚡ Busboy::', Busboy())
     const fields = {}
     const filePromises = []
 
     busboy
-      .on('file', onFile.bind(null, filePromises))
+      .on('file', onFile.bind(null, filePromises, options))
       .on('field', onField.bind(null, fields))
       .on('end', onEnd)
       .on('close', onEnd)
@@ -118,7 +100,6 @@ let uploadFile = (req, options) => {
           .then((obj) => obj)
           .catch(reject)
       }
-      // })
     }
 
     function onError(err) {
@@ -142,29 +123,25 @@ let uploadFile = (req, options) => {
     /**  */
     async function onFile(
       filePromises,
+      options,
       fieldname,
       file,
       filename,
       encoding,
       mimetype,
     ) {
-      console.log('==============================')
       let csrf = req.session.csrfSecret
-      console.log('⚡ csrf::', csrf)
       if (csrf === fields.csrf) {
         let newName
         /** Создаём новое уникальное имя файлу, если options.basename: false */
-        console.log('⚡ options.basename::', options.basename)
         if (options.basename) {
           newName = file.tmpName = filename
         } else {
           newName = file.tmpName =
             Math.random().toString(16).substring(2) + '-' + filename
-          console.log('⚡ newName::.', newName.filename)
         }
 
         /** Папка в которую сохраняем файл. Если она не существует то она будет создана */
-        // let join = path.join(process.cwd(), saveToFile)
         mkDir(path.join(process.cwd(), saveToFile))
         /** относительный путь до файла */
         let relativePath = path.join(saveToFile, newName.filename)
@@ -179,15 +156,13 @@ let uploadFile = (req, options) => {
         if (access) {
           let { name, ext } = path.parse(saveTo)
           newName = `${name}-${Math.random().toString(36).substring(2)}${ext}`
-          saveTo = path.join(process.cwd(), saveToFile, newName.filename)
+          saveTo = path.join(process.cwd(), saveToFile, newName)
         }
 
         // Create a write stream of the new file
         const writeStream = fs.createWriteStream(saveTo, {
           mode: '644',
         })
-
-        console.log('⚡ newName::', newName)
 
         const filePromise = new Promise((resolve, reject) =>
           writeStream
@@ -205,14 +180,24 @@ let uploadFile = (req, options) => {
                     resolve(readStream)
                   } else {
                     const stream = {
+                      // имя поля
                       fieldname: fieldname,
+                      // папка в которую загрузили (относительный путь до файла)
                       path: relativePath,
+                      // папка в которую загрузили (абсолютный путь до файла)
                       isAbsolute: saveTo,
+                      // пака в которую загрузили (относительный путь)
                       folder: saveToFile,
-                      basename: filename.mimeType,
+                      // папка для уменьшенных копий
+                      resize: options.resize,
+                      // исходное имя
+                      basename: filename.filename,
                       mimeType: filename.mimeType,
                       encoding: filename.encoding,
-                      newName: newName.filename,
+                      // новое имя
+                      newName: newName.filename || newName,
+                      limits: options.limits.fileSize,
+                      mimeTypeLimit: options.mimeTypeLimit,
                     }
                     resolve(stream)
                   }

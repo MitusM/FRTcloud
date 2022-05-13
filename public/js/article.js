@@ -331,7 +331,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // import { prototype } from 'dropzone'
 
 
 
@@ -368,6 +367,9 @@ __webpack_require__.r(__webpack_exports__);
                 }
               }
             };
+            var message = lang.ru.message;
+            var position = 'topRight';
+            var maxfilesexceeded = false;
             var cyrillicToTranslit = new cyrillic_to_translit_js__WEBPACK_IMPORTED_MODULE_3__();
             /** Add settings form for id  */
 
@@ -431,8 +433,7 @@ __webpack_require__.r(__webpack_exports__);
                *  quickimage
                */
               toolbar: 'fullscreen preview print searchreplace undo redo cut copy paste | bold italic underline strikethrough forecolor backcolor link anchor image media alignleft aligncenter alignright alignjustify numlist bullist table | emoticons wordcount visualblocks visualchars template pagebreak | typograf format',
-              // quickbars_selection_toolbar:
-              //   'bold italic | blocks | quicklink blockquote',
+              quickbars_selection_toolbar: 'bold italic | blocks | quicklink blockquote',
               setup: function setup(editor) {
                 /** Пункты меню пересоздаются при закрытии и открытии меню, поэтому нам нужна переменная для хранения состояния переключаемого пункта меню */
                 var toggleState = false; //* ************************************
@@ -456,34 +457,66 @@ __webpack_require__.r(__webpack_exports__);
                   }
                 });
               }
-            });
-            Dropzone.options.myDropzone = {
+            }); // ───────────────────────────────────────────────────────────────────────
+
+            Dropzone.autoDiscover = false;
+            var dropzone = new Dropzone('.dropzone', {
               dictDefaultMessage: lang.ru.dropzone,
               url: '/upload/article-country',
               method: 'post',
+              timeout: 60000,
               acceptedFiles: 'image/*',
-              // maxFiles: 3, //* лимит на загрузку файлов. Сколько всего можно загрузить файлов
-              uploadMultiple: false,
-              parallelUploads: 1,
-              addRemoveLinks: true,
-              withCredentials: true,
-              timeout: 3000,
-              // url: '/article/upload-country',
-              sending: function sending(file, xhr, formData) {
-                var csrf = doc.querySelector('meta[name=csrf-token]').getAttributeNode('content').value; // BUG:🐞 Если добавляется несколько файлов то к каждому файлу добавляется значение
-                // FIXME: Ко всем файлам один csrf-token
-                //TODO: Ко всем файлам один csrf-token
+              clickable: true
+            });
+            /**
+             *  Вызывается непосредственно перед отправкой каждого файла. Получает объект xhr и объекты formData в качестве второго и третьего параметров, поэтому имеется возможность добавить дополнительные данные. Например, добавить токен CSRF
+             */
 
-                formData.append('csrf', csrf);
-              },
-              success: function success(file, response) {
-                console.log('⚡ file::', file);
-                console.log('⚡ response::', response);
-              },
-              complete: function complete(file) {
-                console.log('⚡ file::complete', file);
+            dropzone.on('sending', function (file, xhr, formData) {
+              var csrf = document.querySelector('meta[name=csrf-token]').getAttributeNode('content').value; // BUG:🐞 Если добавляется несколько файлов то к каждому файлу добавляется значение
+              // FIXME: Ко всем файлам один csrf-token
+              //TODO: Ко всем файлам один csrf-token
+
+              formData.append('csrf', csrf);
+            });
+            /** Вызывается для каждого файла, который был отклонен, поскольку количество файлов превышает ограничение maxFiles. */
+
+            dropzone.on('maxfilesexceeded', function () {
+              //* NOTE: Удаляем файлы к загрузки превысившие лимит по количеству добавляемых к загрузке за один раз
+              // upload.removeFile(file)
+              maxfilesexceeded = true;
+
+              _$.message('error', {
+                title: message.limit.title,
+                message: message.limit.success,
+                position: position
+              });
+            }); // === === === === === === === === === === === ===
+            // Вызывается, когда загрузка была успешной или ошибочной.
+            // === === === === === === === === === === === ===
+
+            dropzone.on('complete', function (file) {
+              // FIX: DROPZONE - добавить всплывающее сообщение об неудачной или удачной загрузки файла
+              // console.log('⚡ file.status', file.status)
+              if (file.status === 'error' && maxfilesexceeded === false) {
+                // console.log('⚡ maxfilesexceeded::error', maxfilesexceeded)
+                // console.log('complete')
+                // console.log('⚡ file', file)
+                _$.message('error', {
+                  title: message.error.title,
+                  message: message.error.success,
+                  position: position
+                });
+
+                dropzone.removeFile(file);
+              } else if (file.status === 'success') {
+                _$.message('success', {
+                  title: message.success.title,
+                  message: message.success.done,
+                  position: position
+                });
               }
-            };
+            });
           });
 
         case 2:

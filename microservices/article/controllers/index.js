@@ -5,6 +5,10 @@ import { createRequire } from 'module'
 
 import { Cache } from '../service/cacheServices.js'
 
+// import Files from '../../../core/cloud/index.js'
+import File from '../core/images/index.js'
+import { stat } from 'fs/promises'
+
 const require = createRequire(import.meta.url)
 const appRoot = pkg.path
 dotenv.config()
@@ -20,19 +24,19 @@ const errorHandler = (res, message) => {
   return res.status(200).json({ message: message })
 }
 
-async function arrToObject(arr) {
-  return await Promise.all(arr)
-    .then((arrs) => {
-      return arrs.reduce((o, v) => {
-        let key = Object.keys(v)
-        let val = v[key]
-        return (o[key] = val), o
-      }, {})
-    })
-    .catch((err) => {
-      return err.message
-    })
-}
+// async function arrToObject(arr) {
+//   return await Promise.all(arr)
+//     .then((arrs) => {
+//       return arrs.reduce((o, v) => {
+//         let key = Object.keys(v)
+//         let val = v[key]
+//         return (o[key] = val), o
+//       }, {})
+//     })
+//     .catch((err) => {
+//       return err.message
+//     })
+// }
 /**
  * Удаляем страницы из кэша (Redis)
  * @returns {Promise }
@@ -64,6 +68,7 @@ const endpoints = async (app) => {
   /**  */
   app.get('/article/', async (req, res) => {
     try {
+      console.log('⚡ req.params::/article/', req.params)
       // let users
       let limit
       let quota
@@ -147,15 +152,11 @@ const endpoints = async (app) => {
         .exec()
 
       let settings = JSON.parse(multi[0][1])
-      // console.log('⚡ multi::', multi)
-      // console.log('=== === === === === === === === === === === ===')
-      // console.log('⚡ settings::', settings)
 
       if (settings === null) {
         let s = await db.getSettings()
 
         if (s === undefined) {
-          // console.log('⚡ process.env::', process.env)
           articleLimit = process.env.ARTICLE_LIMIT
           cacheServices = process.env.CACHE
           articleQuota = process.env.ARTICLE_QUOTA
@@ -262,25 +263,94 @@ const endpoints = async (app) => {
   /*************************************
    *  * * * * * * POST * * * * * * *  *
    *************************************/
-  app.post('/article/upload-:upload(.*)', async (req, res) => {
-    console.log('⚡ req.params::', req.params)
-    // console.log('⚡ req.pipes::', req.pipes)
-    console.log('⚡ req.body::', req.body)
-    //   // // console.log('⚡ process.env.UPLOAD_DIR::', process.env.UPLOAD_DIR)
-    //   // // FIXME: Перенести в настройки
-    //   // let options = {
-    //   //   upload: true,
-    //   //   path: process.env.UPLOAD_DIR,
-    //   //   resize: process.env.UPLOAD_RESIZE,
-    //   //   basename: true,
-    //   //   limits: {
-    //   //     fileSize: process.env.UPLOAD_FILESIZE,
-    //   //   },
-    //   //   mimeTypeLimit: process.env.UPLOAD_MIMETYPE,
-    //   // }
-    //   // console.log('⚡ options::', options)
-    //   // let file = await upload(req, options)
-    //   // console.log('⚡ file::', file)
+  app.post('/upload/article-country', async (req, res) => {
+    try {
+      console.log('⚡ req.params::/upload/article-country', req.params)
+
+      const body = req.body
+      const files = body.files[0]
+      /** Папка для уменьшенных копий */
+      const resizeFolder = files.resize
+
+      let Images = new File({
+        webQuality: 50,
+        jpgQuality: 70,
+      })
+      /** абсолютный путь до файла*/
+      let absolutePathFile = files.isAbsolute
+      // /**
+      //  * Статистика файла
+      //  */
+      // let statFile = await Images.statFile(absolutePathFile)
+      // /** Ширина изображения */
+      // let imgWidth = statFile.width
+      /** webp the images */
+      let webpFolder = process.env.WEBP_FOLDER_COUNTRY
+      /** Создаём копию оригинала в webp */
+      let webp = await Images.webp(absolutePathFile, webpFolder)
+      let wepFile = webp[0].destinationPath
+      /**
+       * Статистика файла
+       */
+      let statFile = await Images.statFile(wepFile)
+      /** Ширина изображения */
+      let imgWidth = statFile.width
+
+      /**
+       * Resize the image
+       */
+      let resolutionsArr = [360, 480, 768, 960, 1024, 1280, 1536]
+      /**  */
+      let minResolution = Images.util.minFilter(resolutionsArr, imgWidth)
+      let img = await Images.resizeWEBP(minResolution, wepFile, resizeFolder)
+      /** Превращаем массив с данными уменьшенных копий в объект */
+      let obj = await Images.util.arrayToObject(img, 'width')
+      /** Записываем данные оригинального webp изображения */
+      obj[imgWidth] = {
+        originalName: statFile.name,
+        name: statFile.name,
+        pathFile: wepFile.split(appRoot)[1],
+        format: statFile.type,
+        size: statFile.size,
+        bytes: statFile.bytes,
+        height: statFile.height,
+        width: imgWidth,
+      }
+      /** Папки в которые сохраняем изображения */
+      let folder = {
+        webp: webpFolder,
+        original: files.folder,
+        resize: resizeFolder,
+      }
+      /** Оригинальное изображение */
+      let statOriginalFile = await Images.metadata(files.isAbsolute)
+      let file = {
+        name: files.newName,
+        pathFile: files.path,
+        ...statOriginalFile,
+      }
+
+      console.log('⚡ files::', files)
+      console.log('⚡ statFile::', statFile)
+      console.log('⚡ folder::', folder)
+      console.log('⚡ r::', minResolution)
+      console.log('⚡ obj::', obj)
+      console.log('⚡ f::', statOriginalFile)
+      console.log('⚡ file::', file)
+
+      res.status(200).json({
+        status: 200,
+        body: {
+          folder: folder,
+          original: file,
+          resize: obj,
+          resolution: minResolution,
+        },
+      })
+    } catch (err) {
+      console.log('⚡ err::upload', err)
+      res.status(500).json({ status: 500, message: 'Server error' })
+    }
   })
 
   /*************************************

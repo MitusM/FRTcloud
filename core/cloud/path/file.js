@@ -1,10 +1,8 @@
-const fs = require('fs')
-const {
-  constants
-} = require('fs')
+// const fs = require('fs')
+import fs from 'fs'
+import { constants } from 'fs'
 
-
-const Dir = require('./dir')
+import Dir from './dir.js'
 
 // ✨ 📌
 class Files extends Dir {
@@ -18,13 +16,10 @@ class Files extends Dir {
    * @returns {object} {ext, name}
    */
   name(file) {
-    const {
-      ext,
-      name
-    } = this.path.parse(file)
+    const { ext, name } = this.path.parse(file)
     return {
       ext,
-      name
+      name,
     }
   }
 
@@ -37,7 +32,6 @@ class Files extends Dir {
     return this.path.extname(file)
   }
 
-
   /**
    * Проверка существования файла, а так же проверка на то что он не занят другими процессами
    * @param {string} path Абсолютный путь до файлами
@@ -46,12 +40,12 @@ class Files extends Dir {
   isExists(path) {
     // await fsPromises.access(saveTo, constants.F_OK | constants.R_).then((access) => true).catch((err) => false)
     return new Promise((resolve, reject) => {
-      fs.access(path, constants.F_OK | constants.R_OK, err => {
-        if (!err) return resolve(true);
-        if (err.code === 'ENOENT') return resolve(false);
-        reject(err);
-      });
-    });
+      fs.access(path, constants.F_OK | constants.R_OK, (err) => {
+        if (!err) return resolve(true)
+        if (err.code === 'ENOENT') return resolve(false)
+        reject(err)
+      })
+    })
   }
 
   /**
@@ -60,8 +54,8 @@ class Files extends Dir {
    * @returns {boolean}
    */
   isFile(path) {
-    path = this.resolve(path);
-    return this.fs.stat(path).then(stat => stat.isFile())
+    path = this.resolve(path)
+    return this.fs.stat(path).then((stat) => stat.isFile())
   }
 
   /**
@@ -70,8 +64,8 @@ class Files extends Dir {
    * @returns {string}
    */
   size(path) {
-    path = this.resolve(path);
-    return this.fs.stat(path).then(stat => this.formatBytes(stat.size))
+    path = this.resolve(path)
+    return this.fs.stat(path).then((stat) => this.formatBytes(stat.size))
   }
 
   /**
@@ -87,7 +81,7 @@ class Files extends Dir {
           if (err) {
             reject({
               ok: false,
-              error: err
+              error: err,
             })
           } else {
             resolve(true)
@@ -96,14 +90,13 @@ class Files extends Dir {
       } else {
         reject(false)
       }
-
     })
   }
 
   /**
    * Удаление массива файлов.
    * @param {array} arr Массив с файлами. Каждый путь до файла должен быть абсолютным
-   * @returns {boolean|Promise} true - Все файлы удалены успешно 
+   * @returns {boolean|Promise} true - Все файлы удалены успешно
    */
   deleteArrayFiles(arr) {
     let arrPromise = []
@@ -112,12 +105,11 @@ class Files extends Dir {
       let file = this.absolute(arr[i])
       arrPromise.push(this.delete(file))
     }
-    return Promise.all(arrPromise).then(del => del.every(bool => bool === true)).catch(error => error)
+    return Promise.all(arrPromise)
+      .then((del) => del.every((bool) => bool === true))
+      .catch((error) => error)
   }
-
-
-
-
 }
 
-module.exports = Files
+// module.exports = Files
+export default Files

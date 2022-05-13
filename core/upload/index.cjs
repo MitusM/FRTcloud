@@ -29,7 +29,7 @@ exports = module.exports = (req, options) => {
     //
     /**  */
     options = typeof options === 'string' ? config[options] : options
-    console.log('⚡ options::', options)
+    // console.log('⚡ options::', options)
     // console.log('⚡ config::', config)
 
     /** Функция загрузки файла, заменяющая функцию загрузки файла по умолчанию */
@@ -37,12 +37,12 @@ exports = module.exports = (req, options) => {
       typeof options.onFile === 'function' ? options.onFile : false
 
     let headers = options.headers || req.headers
-    // header = Object.keys(headers).reduce((newHeaders, key) => {
-    //   console.log('⚡ key::', key)
-    //   console.log('⚡ key.toLowerCase()::', key.toLowerCase())
-    //   newHeaders[key.toLowerCase()] = headers[key]
-    //   return newHeaders
-    // }, {})
+    header = Object.keys(headers).reduce((newHeaders, key) => {
+      console.log('⚡ key::', key)
+      console.log('⚡ key.toLowerCase()::', key.toLowerCase())
+      newHeaders[key.toLowerCase()] = headers[key]
+      return newHeaders
+    }, {})
     console.log('⚡ header::', headers)
     saveToFile = options.path || os.tmpdir()
 
@@ -53,10 +53,9 @@ exports = module.exports = (req, options) => {
       : null
 
     upload = options.upload || false
-    console.log('⚡ upload::', upload)
 
     readStream = options.readStream || false
-    // console.log('⚡ headers::', headers)
+    console.log('⚡ headers::', headers)
     var busboy = Busboy({
       headers: headers,
     })
@@ -66,7 +65,7 @@ exports = module.exports = (req, options) => {
     const filePromises = []
 
     busboy
-      .on('file', onFile.bind(null, filePromises))
+      .on('file', customOnFile || onFile.bind(null, filePromises))
       .on('field', onField.bind(null, fields))
       .on('end', onEnd)
       .on('close', onEnd)
@@ -156,12 +155,12 @@ exports = module.exports = (req, options) => {
       // console.log('⚡ fields.csrf', fields.csrf)
       // if (csrf === fields.csrf) {
       console.log('⚡ fieldname::', fieldname)
-      // if (
-      //   !upload ||
-      //   (mimeTypeLimit && !mimeTypeLimit.some((type) => type === mimetype))
-      // ) {
-      //   return file.resume()
-      // }
+      if (
+        !upload ||
+        (mimeTypeLimit && !mimeTypeLimit.some((type) => type === mimetype))
+      ) {
+        return file.resume()
+      }
       let newName
       /** Создаём новое уникальное имя файлу, если options.basename: false */
       if (options.basename) {
@@ -173,7 +172,6 @@ exports = module.exports = (req, options) => {
 
       /** Папка в которую сохраняем файл. Если она не существует то она будет создана */
       // const writePath =
-      console.log('⚡ mkDir::', mkDir)
       mkDir(path.join(process.cwd(), saveToFile))
       /** относительный путь до файла */
       let relativePath = path.join(saveToFile, newName)

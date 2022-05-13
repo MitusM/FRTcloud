@@ -60,9 +60,10 @@ middlewares(app)
 // === === === === === === === === === === === ===
 app.post('/upload/:microservice-:upload(.*)', async (req, res) => {
   try {
-    console.log('⚡ req.session.auth::1', req.session.auth)
+    // console.log('⚡ req.session.auth::1', req.session.auth)
+    // FIXME: добавить проверку csrfSecret
     if (req.session.auth === true) {
-      console.log('⚡ req.params::1', req.params)
+      // console.log('⚡ req.params::1', req.params)
       let microservice = req.params.microservice
       let mi = req.params.upload
       let options = {
@@ -76,23 +77,13 @@ app.post('/upload/:microservice-:upload(.*)', async (req, res) => {
           process.env.UPLOAD_RESIZE,
         basename: true,
         limits: {
-          fileSize: 100 * 1024 * 1024,
+          fileSize: process.env.UPLOAD_FILESIZE,
         },
         mimeTypeLimit: process.env.UPLOAD_MIMETYPE,
       }
-      console.log(
-        '⚡ process.env.UPLOAD_MIMETYPE::',
-        process.env.UPLOAD_MIMETYPE,
-      )
-      // try {
-      // req.body = await upload(req, 'article')
+
       req.body = await uploadFile(req, options)
-      console.log('⚡ req.body::gateway', req.body)
-      // await res.delegate(microservice)
-      await res.json({ ok: 200 })
-      // } catch (err) {
-      //   console.log('🌡 Error:upload:gateway', err)
-      // }
+      await res.delegate(microservice)
     } else {
       await res.status(403).end({
         message: 'Unauthorized',
