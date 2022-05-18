@@ -384,7 +384,6 @@ __webpack_require__.r(__webpack_exports__);
             var bodyEditor;
             titleInput.addEventListener('change', function (e) {
               var titleVal = e.target.value;
-              console.log('⚡ titleVal::', titleVal.length);
               var trn = cyrillicToTranslit.transform(titleVal, '-').toLowerCase();
               urlInput.value = titleVal.length > 0 ? 'country-' + trn + '.html' : titleVal;
             }); // ------------------->
@@ -516,6 +515,13 @@ __webpack_require__.r(__webpack_exports__);
                   position: position
                 });
               }
+            }); // === === === === === === === === === === === ===
+            // Файл был успешно загружен. Получает ответ сервера в качестве второго аргумента.
+            // === === === === === === === === === === === ===
+
+            dropzone.on('success', function (file, response) {
+              console.log('⚡ file::', file);
+              console.log('⚡ response::', response);
             });
           });
 

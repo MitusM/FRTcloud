@@ -268,12 +268,13 @@ const endpoints = async (app) => {
       console.log('⚡ req.params::/upload/article-country', req.params)
 
       const body = req.body
+      /** Оригинальное загруженное изображение */
       const files = body.files[0]
       /** Папка для уменьшенных копий */
       const resizeFolder = files.resize
 
       let Images = new File({
-        webQuality: 50,
+        webQuality: 70,
         jpgQuality: 70,
       })
       /** абсолютный путь до файла*/
@@ -302,6 +303,7 @@ const endpoints = async (app) => {
       let resolutionsArr = [360, 480, 768, 960, 1024, 1280, 1536]
       /**  */
       let minResolution = Images.util.minFilter(resolutionsArr, imgWidth)
+      /** Создание уменьшенных копий */
       let img = await Images.resizeWEBP(minResolution, wepFile, resizeFolder)
       /** Превращаем массив с данными уменьшенных копий в объект */
       let obj = await Images.util.arrayToObject(img, 'width')
@@ -322,27 +324,39 @@ const endpoints = async (app) => {
         original: files.folder,
         resize: resizeFolder,
       }
-      /** Оригинальное изображение */
-      let statOriginalFile = await Images.metadata(files.isAbsolute)
-      let file = {
-        name: files.newName,
-        pathFile: files.path,
-        ...statOriginalFile,
-      }
 
-      console.log('⚡ files::', files)
-      console.log('⚡ statFile::', statFile)
-      console.log('⚡ folder::', folder)
-      console.log('⚡ r::', minResolution)
-      console.log('⚡ obj::', obj)
-      console.log('⚡ f::', statOriginalFile)
-      console.log('⚡ file::', file)
+      /** Оригинальное изображение */
+      // let statOriginalFile = await Images.metadata(files.isAbsolute)
+      // let file = {
+      //   name: files.newName,
+      //   pathFile: files.path,
+      //   // ...statOriginalFile,
+      // }
+
+      // console.log('⚡ files::', files)
+      // console.log('⚡ statFile::', statFile)
+      // console.log('⚡ folder::', folder)
+      // console.log('⚡ minResolution::', minResolution)
+      // console.log('⚡ obj::', obj)
+      // console.log('⚡ img::', img)
+      // console.log('⚡ statOriginalFile::', statOriginalFile)
+      // console.log('⚡ file::', file)
+      let imgR = img.map((file, index) => {
+        return file.pathFile
+      })
+      console.log('⚡ imgR::', imgR)
+      await Images.optimazition(imgR, resizeFolder)
 
       res.status(200).json({
         status: 200,
         body: {
           folder: folder,
-          original: file,
+          // original: { name: file.newName, folder: files.folder },
+          original: {
+            name: files.newName,
+            pathFile: files.path,
+            // ...statOriginalFile,
+          },
           resize: obj,
           resolution: minResolution,
         },

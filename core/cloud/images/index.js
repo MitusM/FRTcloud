@@ -156,6 +156,7 @@ class Images extends File {
 
   //
   async optimazition(file, folder) {
+    file = typeof file === 'string' ? [file] : file
     // FIXME: extend default options
     const jpgQuality = this.options.jpgQuality
       ? {
@@ -221,7 +222,6 @@ class Images extends File {
           // FIXME: extend default options
           quality: 50,
         }
-    console.log('⚡ webpQuality::', webpQuality)
     // FIXME: Вынести в отдельный метод
     folder = this.isAbsolute(folder)
       ? folder

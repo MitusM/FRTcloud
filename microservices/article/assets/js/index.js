@@ -51,7 +51,6 @@ import { htmlFormatting, validElements } from './html-formatting/index.js'
 
     titleInput.addEventListener('change', (e) => {
       let titleVal = e.target.value
-      console.log('⚡ titleVal::', titleVal.length)
       let trn = cyrillicToTranslit.transform(titleVal, '-').toLowerCase()
       urlInput.value =
         titleVal.length > 0 ? 'country-' + trn + '.html' : titleVal
@@ -192,6 +191,14 @@ import { htmlFormatting, validElements } from './html-formatting/index.js'
           position: position,
         })
       }
+    })
+
+    // === === === === === === === === === === === ===
+    // Файл был успешно загружен. Получает ответ сервера в качестве второго аргумента.
+    // === === === === === === === === === === === ===
+    dropzone.on('success', (file, response) => {
+      console.log('⚡ file::', file)
+      console.log('⚡ response::', response)
     })
   })
 })()
