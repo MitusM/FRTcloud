@@ -40,12 +40,12 @@
         </div>
       </div>
       <!-- DROPZONE -->
-      {#
-      <div class="dropzone-area"></div>
-      #}
-      <form action="/target" class="dropzone"></form>
-      <div class="my-dropzone"></div>
-      {#
+      <div class="d-flex upload-totals">
+        <div class="upload-totals-title" id="">
+          {{lang.upload.total}}:
+          <span class="upload-totals-title__number" id="js-count">0</span>
+        </div>
+      </div>
       <form
         action="/upload/article-country"
         type="file"
@@ -53,9 +53,8 @@
         method="POST"
         enctype="multipart/form-data"
         class="dropzone"
-        id="my-dropzone"
       ></form>
-      #}
+      <div class="my-dropzone"></div>
     </div>
   </div>
 </div>

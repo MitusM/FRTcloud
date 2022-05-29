@@ -328,6 +328,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var cyrillic_to_translit_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! cyrillic-to-translit-js */ "./node_modules/cyrillic-to-translit-js/CyrillicToTranslit.js");
 /* harmony import */ var _typograf_index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./typograf/index.js */ "./microservices/article/assets/js/typograf/index.js");
 /* harmony import */ var _html_formatting_index_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./html-formatting/index.js */ "./microservices/article/assets/js/html-formatting/index.js");
+/* harmony import */ var _upload_picture_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./upload/picture.js */ "./microservices/article/assets/js/upload/picture.js");
+
 
 
 
@@ -381,7 +383,18 @@ __webpack_require__.r(__webpack_exports__);
             /** url */
 
             var urlInput = elementForm[3];
+            /**  */
+
             var bodyEditor;
+            /** Счётчик сколько всего загруженно изображений */
+
+            var count = 0;
+            /** Элемент на странице в котором отображаем количество загруженных изображений */
+
+            var total = doc.getElementById('js-count');
+            /** CSRF protection value */
+
+            var csrf = document.querySelector('meta[name=csrf-token]').getAttributeNode('content').value;
             titleInput.addEventListener('change', function (e) {
               var titleVal = e.target.value;
               var trn = cyrillicToTranslit.transform(titleVal, '-').toLowerCase();
@@ -465,17 +478,21 @@ __webpack_require__.r(__webpack_exports__);
               method: 'post',
               timeout: 60000,
               acceptedFiles: 'image/*',
-              clickable: true
+              // clickable: true,
+              thumbnailWidth: 240,
+              thumbnailHeight: 240
             });
             /**
              *  Вызывается непосредственно перед отправкой каждого файла. Получает объект xhr и объекты formData в качестве второго и третьего параметров, поэтому имеется возможность добавить дополнительные данные. Например, добавить токен CSRF
              */
 
             dropzone.on('sending', function (file, xhr, formData) {
-              var csrf = document.querySelector('meta[name=csrf-token]').getAttributeNode('content').value; // BUG:🐞 Если добавляется несколько файлов то к каждому файлу добавляется значение
+              // const csrf = document
+              //   .querySelector('meta[name=csrf-token]')
+              //   .getAttributeNode('content').value
+              // BUG:🐞 Если добавляется несколько файлов то к каждому файлу добавляется значение
               // FIXME: Ко всем файлам один csrf-token
               //TODO: Ко всем файлам один csrf-token
-
               formData.append('csrf', csrf);
             });
             /** Вызывается для каждого файла, который был отклонен, поскольку количество файлов превышает ограничение maxFiles. */
@@ -520,9 +537,87 @@ __webpack_require__.r(__webpack_exports__);
             // === === === === === === === === === === === ===
 
             dropzone.on('success', function (file, response) {
-              console.log('⚡ file::', file);
-              console.log('⚡ response::', response);
+              try {
+                count++; // console.log('⚡ file::', file)
+
+                console.log('⚡ response::', response);
+                var create = Dropzone.createElement;
+                /** исходный размер фото */
+
+                var width = file.width;
+                var height = file.height;
+                /** Object с уменьшенными копиями изображения */
+
+                var resizeImgObj = response.body.resize;
+                /** контейнер в котором отображаются детали фото */
+
+                var details = file.previewElement.querySelector('.dz-details');
+                /** кнопка Удалить */
+
+                var removeButton = create('<div class="d-flex delete-img"><button type="button" class="remove btn btn-primary btn-sm">Удалить файл</button></div>');
+                /** Элемент в котором отображаются превью фото, кнопка удалить и детали фото */
+
+                var preview = file.previewElement;
+                var size = create("<div class=\"prev-img-wigth-height\"><span>".concat(width, " x ").concat(height, " px.</span></div>"));
+                /** добавляем в детали размер изображения */
+
+                details.appendChild(size);
+                /** добавляем кнопку удалить фото */
+
+                preview.appendChild(removeButton);
+                /** Устанавливаем обработчик события, для вставки изображения в редактор. По клику на изображения */
+
+                _$.delegate(preview, '.dz-image', 'click', clickImage.bind(null, resizeImgObj, response.body.webpOriginal, width, height), false);
+
+                _$.delegate(preview, '.dz-details', 'click', clickImage.bind(null, resizeImgObj, response.body.webpOriginal, width, height));
+                /** Удаление изображения */
+
+
+                removeButton.addEventListener('click', function (e) {
+                  e.preventDefault();
+
+                  _$.ajax('/article/delete-image', {
+                    method: 'delete',
+                    body: {
+                      files: response.body.files,
+                      fields: {
+                        csrf: csrf
+                      }
+                    }
+                  }).then(function (done) {
+                    deleteUploadFiles(done, file);
+                  })["catch"](function (error) {
+                    return error;
+                  });
+                });
+                /**  */
+
+                total.innerHTML = count;
+              } catch (err) {
+                console.log('⚡ err::', err);
+              }
             });
+            /** Вставляем изображение в редактор */
+
+            function clickImage(resizeImgObj, webpOriginal, width, height) {
+              var img = (0,_upload_picture_js__WEBPACK_IMPORTED_MODULE_6__.picture)(resizeImgObj, webpOriginal, width, height);
+              tinyMCE.activeEditor.execCommand('mceInsertContent', false, img);
+            }
+            /** Удаляем изображения. */
+
+
+            function deleteUploadFiles(done, file) {
+              if (done.status === 201) {
+                _$.message('success', {
+                  title: message["delete"].title,
+                  message: message["delete"].body,
+                  position: position
+                });
+
+                dropzone.removeFile(file);
+                console.clear();
+              }
+            }
           });
 
         case 2:
@@ -605,6 +700,74 @@ tp.setSetting('common/punctuation/quote', 'ru', {
   removeDuplicateQuotes: true
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (tp);
+
+/***/ }),
+
+/***/ "./microservices/article/assets/js/upload/picture.js":
+/*!***********************************************************!*\
+  !*** ./microservices/article/assets/js/upload/picture.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "picture": () => (/* binding */ picture)
+/* harmony export */ });
+/* eslint-disable no-prototype-builtins */
+var hash = function hash(obj, _int) {
+  return obj.hasOwnProperty(_int);
+};
+/**
+ * Создаём элемент picture
+ * @param {Object} obj
+ * @param {Object} obj.name имя файла
+ * @param {Object} obj.size объём изображения
+ * @param {Object} obj.width ширина изображения
+ * @param {*} width ширина исходного изображения
+ */
+
+
+var picture = function picture(obj, webpOriginal, width, height) {
+  'use strict';
+
+  var pictureElem = '<picture>';
+  console.log('⚡ obj::', obj);
+  var hash480 = hash(obj, 480);
+  var hash960 = hash(obj, 960);
+  var hash1280 = hash(obj, 1280);
+  var hash1920 = hash(obj, 1920);
+  var hash2700 = hash(obj, 2700);
+  var img480;
+  var img960;
+  var img1280;
+  var img1920;
+
+  if (hash1280) {
+    img1280 = hash1280 && hash2700 ? "".concat(obj[1280].pathFile, " 1920w, ").concat(obj[2700].pathFile, " 2700w") : "".concat(obj[1280].pathFile);
+    pictureElem += " <source\n    type=\"image/webp\"\n    media=\"(min-width: 1024px) and (max-width: 1920px)\"\n    srcset=\"".concat(img1280, "\"/>");
+  } //* > 480 (phone landscape & smaller)
+
+
+  img480 = hash480 && hash960 ? "".concat(obj[480].pathFile, " 480w, ").concat(obj[960].pathFile, " 960w") : "".concat(obj[480].pathFile, " 480w"); //
+
+  pictureElem += " <source\n    type=\"image/webp\"\n    media=\"(max-width: 480px)\"\n    srcset=\"".concat(img480, "\"/>");
+
+  if (hash960) {
+    img960 = hash960 && hash1920 ? "".concat(obj[960].pathFile, " 960w, ").concat(obj[1920].pathFile, " 1920w") : "".concat(obj[960].pathFile, " 960w");
+    pictureElem += " <source\n    type=\"image/webp\"\n    media=\"(min-width: 480px) and (max-width: 1023px)\"\n    srcset=\"".concat(img960, "\"/>");
+  }
+
+  if (hash1920) {
+    img1920 = hash1920 && hash2700 ? "".concat(obj[1920], " 1920w, ").concat(obj[2700], " 2700w") : "".concat(obj[1920]);
+    pictureElem += " <source\n    type=\"image/webp\"\n    media=\"min-width: 1921px\"\n    srcset=\"".concat(img1920, "\"/>");
+  }
+
+  pictureElem += "<img type=\"image/webp\" src=\"".concat(webpOriginal.pathFile, "\" alt=\"").concat(webpOriginal.originalName, "\"\">"); //  srcset="${webpOriginal.pathFile} 2x
+
+  pictureElem += '</picture>';
+  return pictureElem; // return `<img src="${webpOriginal.pathFile}" alt="${webpOriginal.originalName}" srcset="${webpOriginal.pathFile} 2x">`
+};
 
 /***/ })
 

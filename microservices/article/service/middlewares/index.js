@@ -12,6 +12,7 @@ const middlewares = (app) => {
       '/article/settings(.*)',
       '/article/create-:add.:html',
       '/article/upload-:upload(.*)',
+      '/article/delete-:endpoint(.*)',
     ],
     async (req, res, next) => {
       if (!req.session.auth) {

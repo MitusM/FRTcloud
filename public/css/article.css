@@ -65,6 +65,41 @@
   border: 4px solid rgba(0, 0, 0, 0.3) !important;
 }
 
+.dropzone .dz-preview .dz-image {
+  width: 240px !important;
+  height: 240px !important;
+}
+
+.dz-details .prev-img-wigth-height {
+  font: 2em sans-serif;
+}
+
+.dz-image,
+.dz-details {
+  cursor: pointer !important;
+}
+.dz-image img,
+.dz-details img {
+  cursor: pointer !important;
+}
+
+.delete-img {
+  margin: 1em 0;
+  justify-content: center;
+}
+
+.upload-totals {
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin: 1rem 0;
+}
+
+.upload-totals-title__number {
+  color: var(--bs-header-logo-background-color);
+  font: 1.5em var(--cl--font-sans-serif);
+}
+
 .user-table {
   margin-bottom: 30px;
   transition: box-shadow 0.2s ease-in-out;

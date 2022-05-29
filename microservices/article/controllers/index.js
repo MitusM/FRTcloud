@@ -266,7 +266,6 @@ const endpoints = async (app) => {
   app.post('/upload/article-country', async (req, res) => {
     try {
       console.log('⚡ req.params::/upload/article-country', req.params)
-
       const body = req.body
       /** Оригинальное загруженное изображение */
       const files = body.files[0]
@@ -274,17 +273,11 @@ const endpoints = async (app) => {
       const resizeFolder = files.resize
 
       let Images = new File({
-        webQuality: 70,
-        jpgQuality: 70,
+        webQuality: 80,
+        jpgQuality: 80,
       })
       /** абсолютный путь до файла*/
       let absolutePathFile = files.isAbsolute
-      // /**
-      //  * Статистика файла
-      //  */
-      // let statFile = await Images.statFile(absolutePathFile)
-      // /** Ширина изображения */
-      // let imgWidth = statFile.width
       /** webp the images */
       let webpFolder = process.env.WEBP_FOLDER_COUNTRY
       /** Создаём копию оригинала в webp */
@@ -300,24 +293,25 @@ const endpoints = async (app) => {
       /**
        * Resize the image
        */
-      let resolutionsArr = [360, 480, 768, 960, 1024, 1280, 1536]
+      // let resolutionsArr = [360, 480, 768, 960, 1024, 1280, 1536, 2700]
+      let resolutionsArr = [480, 960, 1280, 1920, 2700]
       /**  */
       let minResolution = Images.util.minFilter(resolutionsArr, imgWidth)
       /** Создание уменьшенных копий */
       let img = await Images.resizeWEBP(minResolution, wepFile, resizeFolder)
       /** Превращаем массив с данными уменьшенных копий в объект */
       let obj = await Images.util.arrayToObject(img, 'width')
-      /** Записываем данные оригинального webp изображения */
-      obj[imgWidth] = {
-        originalName: statFile.name,
-        name: statFile.name,
-        pathFile: wepFile.split(appRoot)[1],
-        format: statFile.type,
-        size: statFile.size,
-        bytes: statFile.bytes,
-        height: statFile.height,
-        width: imgWidth,
-      }
+      // /** Записываем данные оригинального webp изображения */
+      // obj[imgWidth] = {
+      //   originalName: statFile.name,
+      //   name: statFile.name,
+      //   pathFile: wepFile.split(appRoot)[1],
+      //   format: statFile.type,
+      //   size: statFile.size,
+      //   bytes: statFile.bytes,
+      //   height: statFile.height,
+      //   width: imgWidth,
+      // }
       /** Папки в которые сохраняем изображения */
       let folder = {
         webp: webpFolder,
@@ -333,32 +327,49 @@ const endpoints = async (app) => {
       //   // ...statOriginalFile,
       // }
 
-      // console.log('⚡ files::', files)
-      // console.log('⚡ statFile::', statFile)
-      // console.log('⚡ folder::', folder)
-      // console.log('⚡ minResolution::', minResolution)
-      // console.log('⚡ obj::', obj)
-      // console.log('⚡ img::', img)
-      // console.log('⚡ statOriginalFile::', statOriginalFile)
-      // console.log('⚡ file::', file)
       let imgR = img.map((file, index) => {
         return file.pathFile
       })
-      console.log('⚡ imgR::', imgR)
+
+      /** Оптимизируем  изображения */
       await Images.optimazition(imgR, resizeFolder)
+
+      // let arrFiles = [
+      //   ...img,
+      // {
+      //   originalName: statFile.name,
+      //   name: statFile.name,
+      //   pathFile: wepFile.split(appRoot)[1],
+      //   format: statFile.type,
+      //   size: statFile.size,
+      //   bytes: statFile.bytes,
+      //   height: statFile.height,
+      //   width: imgWidth,
+      // },
+      // ]
 
       res.status(200).json({
         status: 200,
         body: {
-          folder: folder,
-          // original: { name: file.newName, folder: files.folder },
+          // folder: folder,
           original: {
             name: files.newName,
             pathFile: files.path,
-            // ...statOriginalFile,
           },
           resize: obj,
+          webpOriginal: {
+            originalName: statFile.name,
+            name: statFile.name,
+            pathFile: wepFile.split(appRoot)[1],
+            format: statFile.type,
+            size: statFile.size,
+            bytes: statFile.bytes,
+            height: statFile.height,
+            width: imgWidth,
+          },
+          // resize: arrFiles,
           resolution: minResolution,
+          files: [...imgR, files.path, statFile.path],
         },
       })
     } catch (err) {
@@ -421,6 +432,27 @@ const endpoints = async (app) => {
   /*************************************
    * * * * * * * DELETE * * * * * * * * *
    *************************************/
+  app.delete('/article/delete-:endpoint(.*)', async (req, res) => {
+    console.log('⚡ req.params::', req.params)
+    try {
+      const body = req.body
+      const authorized = req.session.auth
+      // console.log('⚡ body::', body)
+      // console.log('⚡ authorized::', authorized)
+      if (body.fields.csrf === req.session.csrfSecret && authorized === true) {
+        let deleteFile = await new File().deleteArrayFiles(body.files)
+        console.log('⚡ deleteFile::', deleteFile)
+        let status = deleteFile === true ? 201 : 200
+        res.status(200).json({
+          status: status,
+
+          // body: req.body
+        })
+      }
+    } catch (err) {
+      errorHandler(res, err)
+    }
+  })
 
   return app
 }

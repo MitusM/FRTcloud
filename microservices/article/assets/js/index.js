@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid'
 import CyrillicToTranslit from 'cyrillic-to-translit-js'
 import tp from './typograf/index.js'
 import { htmlFormatting, validElements } from './html-formatting/index.js'
+import { picture } from './upload/picture.js'
 
 // === === === === === === === === === === === ===
 //
@@ -47,7 +48,16 @@ import { htmlFormatting, validElements } from './html-formatting/index.js'
     let titleInput = elementForm[1]
     /** url */
     let urlInput = elementForm[3]
+    /**  */
     let bodyEditor
+    /** Счётчик сколько всего загруженно изображений */
+    let count = 0
+    /** Элемент на странице в котором отображаем количество загруженных изображений */
+    let total = doc.getElementById('js-count')
+    /** CSRF protection value */
+    const csrf = document
+      .querySelector('meta[name=csrf-token]')
+      .getAttributeNode('content').value
 
     titleInput.addEventListener('change', (e) => {
       let titleVal = e.target.value
@@ -140,16 +150,18 @@ import { htmlFormatting, validElements } from './html-formatting/index.js'
       method: 'post',
       timeout: 60000,
       acceptedFiles: 'image/*',
-      clickable: true,
+      // clickable: true,
+      thumbnailWidth: 240,
+      thumbnailHeight: 240,
     })
 
     /**
      *  Вызывается непосредственно перед отправкой каждого файла. Получает объект xhr и объекты formData в качестве второго и третьего параметров, поэтому имеется возможность добавить дополнительные данные. Например, добавить токен CSRF
      */
     dropzone.on('sending', (file, xhr, formData) => {
-      const csrf = document
-        .querySelector('meta[name=csrf-token]')
-        .getAttributeNode('content').value
+      // const csrf = document
+      //   .querySelector('meta[name=csrf-token]')
+      //   .getAttributeNode('content').value
       // BUG:🐞 Если добавляется несколько файлов то к каждому файлу добавляется значение
       // FIXME: Ко всем файлам один csrf-token
       //TODO: Ко всем файлам один csrf-token
@@ -197,8 +209,99 @@ import { htmlFormatting, validElements } from './html-formatting/index.js'
     // Файл был успешно загружен. Получает ответ сервера в качестве второго аргумента.
     // === === === === === === === === === === === ===
     dropzone.on('success', (file, response) => {
-      console.log('⚡ file::', file)
-      console.log('⚡ response::', response)
+      try {
+        count++
+        // console.log('⚡ file::', file)
+        console.log('⚡ response::', response)
+
+        const create = Dropzone.createElement
+        /** исходный размер фото */
+        const width = file.width
+        const height = file.height
+        /** Object с уменьшенными копиями изображения */
+        const resizeImgObj = response.body.resize
+        /** контейнер в котором отображаются детали фото */
+        const details = file.previewElement.querySelector('.dz-details')
+        /** кнопка Удалить */
+        const removeButton = create(
+          '<div class="d-flex delete-img"><button type="button" class="remove btn btn-primary btn-sm">Удалить файл</button></div>',
+        )
+        /** Элемент в котором отображаются превью фото, кнопка удалить и детали фото */
+        const preview = file.previewElement
+        const size = create(
+          `<div class="prev-img-wigth-height"><span>${width} x ${height} px.</span></div>`,
+        )
+        /** добавляем в детали размер изображения */
+        details.appendChild(size)
+        /** добавляем кнопку удалить фото */
+        preview.appendChild(removeButton)
+        /** Устанавливаем обработчик события, для вставки изображения в редактор. По клику на изображения */
+        _$.delegate(
+          preview,
+          '.dz-image',
+          'click',
+          clickImage.bind(
+            null,
+            resizeImgObj,
+            response.body.webpOriginal,
+            width,
+            height,
+          ),
+          false,
+        )
+        _$.delegate(
+          preview,
+          '.dz-details',
+          'click',
+          clickImage.bind(
+            null,
+            resizeImgObj,
+            response.body.webpOriginal,
+            width,
+            height,
+          ),
+        )
+        /** Удаление изображения */
+        removeButton.addEventListener('click', (e) => {
+          e.preventDefault()
+          _$.ajax('/article/delete-image', {
+            method: 'delete',
+            body: {
+              files: response.body.files,
+              fields: {
+                csrf: csrf,
+              },
+            },
+          })
+            .then((done) => {
+              deleteUploadFiles(done, file)
+            })
+            .catch((error) => error)
+        })
+        /**  */
+        total.innerHTML = count
+      } catch (err) {
+        console.log('⚡ err::', err)
+      }
     })
+
+    /** Вставляем изображение в редактор */
+    function clickImage(resizeImgObj, webpOriginal, width, height) {
+      const img = picture(resizeImgObj, webpOriginal, width, height)
+      tinyMCE.activeEditor.execCommand('mceInsertContent', false, img)
+    }
+
+    /** Удаляем изображения. */
+    function deleteUploadFiles(done, file) {
+      if (done.status === 201) {
+        _$.message('success', {
+          title: message.delete.title,
+          message: message.delete.body,
+          position: position,
+        })
+        dropzone.removeFile(file)
+        console.clear()
+      }
+    }
   })
 })()
