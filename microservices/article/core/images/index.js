@@ -16,7 +16,7 @@ class File extends Files {
    * @example:new Images().resize([400, 600], absolutePathFile.ext, /images)
    */
   // resizePreview
-  async resizeArrayJPG(
+  async resizeJPG(
     resolutionArray,
     file,
     folder,
@@ -33,17 +33,22 @@ class File extends Files {
       const newName = resNewName
         ? this.newName(name, resolution, reteniva) + ext
         : name + ext
+      const resizeFilePath = this.path.resolve(writePath, newName)
       let promisesPush = new Promise((resolve, reject) => {
         this.sharp(file)
           .resize(resolution)
-          // .jpeg({ mozjpeg: true })
-          //   [ext]()
-          .toFormat('jpg')
+          .jpeg({ mozjpeg: true })
+          .toFormat('jpg', { progressive: true, quality: 80 })
           .toFile(this.path.resolve(writePath, newName))
           .then((info) => {
             resolve({
-              ...info,
+              originalName: name,
               name: newName,
+              pathFile: resizeFilePath.split(this.root)[1],
+              format: info.format,
+              width: info.width,
+              height: info.height,
+              size: info.size,
             })
           })
           .catch((err) => reject(err))
@@ -65,6 +70,7 @@ class File extends Files {
    * @param {String} folder Папка в которую сохраняем изменённое изображение
    * @param {boolean} resNewName false Если к имени файла не добавлять ширину изображение. По умолчанию true.
    * @param {boolean} reteniva false не добавлять к имени файла приставку @2х. По умолчанию true.
+   * @returns {Promise}
    *
    * @example:new Images().resize([400, 600], absolutePathFile.ext, /images)
    */
@@ -90,7 +96,9 @@ class File extends Files {
       let promisesPush = new Promise((resolve, reject) => {
         this.sharp(file)
           .resize(resolution)
-          .toFormat('webp')
+          .toFormat('webp', {
+            quality: 50,
+          })
           .toFile(resizeFilePath)
           .then((info) => {
             resolve({

@@ -366,9 +366,18 @@ __webpack_require__.r(__webpack_exports__);
                     title: '',
                     body: 'Файл успешно удалён.'
                   }
+                },
+                save: {
+                  required: 'Обязательно для заполнения',
+                  error: {
+                    title: 'Не указан заголовок статьи'
+                  }
                 }
               }
             };
+            /** lang SAVE */
+
+            var save = lang.ru.save;
             var message = lang.ru.message;
             var position = 'topRight';
             var maxfilesexceeded = false;
@@ -383,6 +392,12 @@ __webpack_require__.r(__webpack_exports__);
             /** url */
 
             var urlInput = elementForm[3];
+            /** Название папки в которую загружаются изображения, используемые в статье */
+
+            var folder = elementForm.folder;
+            /**  */
+
+            var totalInput = elementForm.total;
             /**  */
 
             var bodyEditor;
@@ -395,11 +410,22 @@ __webpack_require__.r(__webpack_exports__);
             /** CSRF protection value */
 
             var csrf = document.querySelector('meta[name=csrf-token]').getAttributeNode('content').value;
-            titleInput.addEventListener('change', function (e) {
-              var titleVal = e.target.value;
-              var trn = cyrillicToTranslit.transform(titleVal, '-').toLowerCase();
-              urlInput.value = titleVal.length > 0 ? 'country-' + trn + '.html' : titleVal;
-            }); // ------------------->
+            /** Контейнер с dropzone */
+
+            var dropZoneForm;
+            /** Кнопка закрытия dropzone */
+
+            var divCloseDropZone;
+            /** css class position dropzone */
+
+            var positionDropAbsolute = 'dropzone-absolute';
+            /** Зона затемнения вокруг dropzone, для фокусировки внимания  */
+
+            var wrapper = doc.querySelector('.wrapper-dropzone');
+            /**  */
+
+            var submit = doc.getElementById('submit');
+            console.log('⚡ elementForm::', elementForm); // ------------------->
             // TyneMCE
             // ------------------->
 
@@ -412,8 +438,8 @@ __webpack_require__.r(__webpack_exports__);
               icons_url: '/public/js/icons/cloudFRT/icons.js',
               icons: 'cloudFRT',
               // use icon pack
-              min_height: 600,
-              placeholder: 'Ну что начнём творить...',
+              min_height: 400,
+              // placeholder: 'Ну что начнём творить...',
               plugins: 'lists advlist anchor link autolink image table preview wordcount searchreplace emoticons fullscreen visualblocks media visualchars quickbars template autoresize pagebreak',
               // Настройки bullist
               advlist_bullet_styles: 'square circle disc',
@@ -422,6 +448,8 @@ __webpack_require__.r(__webpack_exports__);
               link_default_target: '_blank',
               link_context_toolbar: true,
               link_default_protocol: 'https',
+              // Этот параметр позволяет указать, должен ли редактор анализировать и сохранять условные комментарии.
+              allow_conditional_comments: true,
               // === === === === === === === === === === === ===
               //
               // === === === === === === === === === === === ===
@@ -444,8 +472,56 @@ __webpack_require__.r(__webpack_exports__);
                * anchor - якорь
                *  quickimage
                */
-              toolbar: 'fullscreen preview print searchreplace undo redo cut copy paste | bold italic underline strikethrough forecolor backcolor link anchor image media alignleft aligncenter alignright alignjustify numlist bullist table | emoticons wordcount visualblocks visualchars template pagebreak | typograf format',
+              toolbar: 'fullscreen preview print searchreplace undo redo cut copy paste | bold italic underline strikethrough forecolor backcolor link anchor image media alignleft aligncenter alignright alignjustify numlist bullist table | emoticons wordcount visualblocks visualchars template pagebreak | dropzone typograf format',
               quickbars_selection_toolbar: 'bold italic | blocks | quicklink blockquote',
+              paste_tab_spaces: 2,
+              // Этот параметр определяет, сколько пробелов используется для представления символа табуляции в HTML при вставке обычного текстового содержимого. По умолчанию плагин Paste преобразует каждый символ табуляции в 4 последовательных символа пробела.
+              paste_data_images: true,
+              //* -------------------> IMAGES <--------------------------------
+              file_picker_types: 'file image media',
+              // image_caption: true, // figure ->caption
+
+              /* enable title field in the Image dialog*/
+              image_title: true,
+              // title=""
+              image_advtab: true,
+              // Эта опция добавляет в диалоговое окно изображения вкладку «Дополнительно», позволяющую добавлять к изображениям собственные стили, интервалы и границы.
+              a11ychecker_allow_decorative_images: true,
+              //?
+              file_picker_callback: function file_picker_callback(callback, value, meta) {
+                console.log('⚡ callback::', callback);
+                console.log('⚡ value::', value);
+                console.log('⚡ meta::', meta);
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                /* Note: In modern browsers input[type="file"] is functional without even adding it to the DOM, but that might not be the case in some older or quirky browsers like IE, so you might want to add it to the DOM just in case, and visually hide it. And do not forget do remove it once you do not need it anymore. */
+
+                input.onchange = function () {
+                  var file = this.files[0];
+                  var reader = new FileReader();
+
+                  reader.onload = function () {
+                    /* Note: Now we need to register the blob in TinyMCEs image blob registry. In the next release this part hopefully won't be necessary, as we are looking to handle it internally. */
+                    var id = 'blobid' + new Date().getTime();
+                    var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(',')[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+                    /* call the callback and populate the Title field with the file name */
+
+                    callback(blobInfo.blobUri(), {
+                      title: file.name
+                    });
+                  };
+
+                  reader.readAsDataURL(file);
+                };
+
+                input.click();
+              },
+              // -------------------> CSS <-------------------
+              content_style: 'figure { padding: 1rem; box-shadow: 0 2px 10px -1px rgba(69, 90, 100, 0.3);transition: box-shadow 0.2s ease-in-out; background-color: #fff;background-clip: border-box; border: 1px solid var(rgba(0, 0, 0, 0.125);}',
               setup: function setup(editor) {
                 /** Пункты меню пересоздаются при закрытии и открытии меню, поэтому нам нужна переменная для хранения состояния переключаемого пункта меню */
                 var toggleState = false; //* ************************************
@@ -468,8 +544,29 @@ __webpack_require__.r(__webpack_exports__);
                     (0,_html_formatting_index_js__WEBPACK_IMPORTED_MODULE_5__.htmlFormatting)(bodyEditor, _html_formatting_index_js__WEBPACK_IMPORTED_MODULE_5__.validElements);
                   }
                 });
+                editor.ui.registry.addButton('dropzone', {
+                  icon: 'drag_drop',
+                  tooltip: 'Зона загрузки изображений',
+                  onAction: function onAction() {
+                    dropZoneForm = dropZoneForm || doc.querySelector('.dropzone-file');
+                    dropZoneForm.classList.add(positionDropAbsolute);
+                    /** Кнопка закрыть dropzone */
+
+                    divCloseDropZone = divCloseDropZone || doc.createElement('div');
+                    divCloseDropZone.classList.add('dropzone-close');
+                    divCloseDropZone.id = 'dc';
+                    dropZoneForm.appendChild(divCloseDropZone);
+                    /** Устанавливаем класс для отображения */
+
+                    wrapper.classList.toggle('cover');
+                    divCloseDropZone.addEventListener('click', function (e) {
+                      dropZoneForm.classList.remove(positionDropAbsolute);
+                      wrapper.classList.toggle('cover');
+                    });
+                  }
+                });
               }
-            }); // ───────────────────────────────────────────────────────────────────────
+            }); // ──────────────────────────────── DROPZONE ─────────────────────────────────────
 
             Dropzone.autoDiscover = false;
             var dropzone = new Dropzone('.dropzone', {
@@ -477,23 +574,49 @@ __webpack_require__.r(__webpack_exports__);
               url: '/upload/article-country',
               method: 'post',
               timeout: 60000,
-              acceptedFiles: 'image/*',
-              // clickable: true,
+              // acceptedFiles: 'image/*',
+              acceptedFiles: 'image/jpeg, image/png , image/jpg, image/svg',
               thumbnailWidth: 240,
-              thumbnailHeight: 240
+              thumbnailHeight: 240,
+              clickable: true
+            });
+            dropzone.on('addedfile', function (file) {
+              // Add default option box for each preview.
+              // var defaultRadioButton = Dropzone.createElement(
+              //   '<div class="default_pic_container"><input type="radio" name="default_pic" value="' +
+              //     file.name +
+              //     '" /> Default</div>',
+              // )
+              // file.previewElement.appendChild(defaultRadioButton)
+              var val = titleInput.value;
+
+              if (val.length === 0) {
+                // dropzone.off('error')
+                dropzone.removeFile(file);
+                dropzone.disable();
+                titleInput.focus();
+
+                _$.message('error', {
+                  title: '❗',
+                  message: 'Перед загрузкой заполните заголовок',
+                  position: position
+                });
+              }
             });
             /**
              *  Вызывается непосредственно перед отправкой каждого файла. Получает объект xhr и объекты formData в качестве второго и третьего параметров, поэтому имеется возможность добавить дополнительные данные. Например, добавить токен CSRF
              */
 
             dropzone.on('sending', function (file, xhr, formData) {
-              // const csrf = document
-              //   .querySelector('meta[name=csrf-token]')
-              //   .getAttributeNode('content').value
               // BUG:🐞 Если добавляется несколько файлов то к каждому файлу добавляется значение
               // FIXME: Ко всем файлам один csrf-token
-              //TODO: Ко всем файлам один csrf-token
               formData.append('csrf', csrf);
+              formData.append('count', count);
+              var val = titleInput.value;
+
+              if (val.length > 0) {
+                formData.append('name', translit(titleInput.value));
+              }
             });
             /** Вызывается для каждого файла, который был отклонен, поскольку количество файлов превышает ограничение maxFiles. */
 
@@ -512,12 +635,7 @@ __webpack_require__.r(__webpack_exports__);
             // === === === === === === === === === === === ===
 
             dropzone.on('complete', function (file) {
-              // FIX: DROPZONE - добавить всплывающее сообщение об неудачной или удачной загрузки файла
-              // console.log('⚡ file.status', file.status)
               if (file.status === 'error' && maxfilesexceeded === false) {
-                // console.log('⚡ maxfilesexceeded::error', maxfilesexceeded)
-                // console.log('complete')
-                // console.log('⚡ file', file)
                 _$.message('error', {
                   title: message.error.title,
                   message: message.error.success,
@@ -538,9 +656,15 @@ __webpack_require__.r(__webpack_exports__);
 
             dropzone.on('success', function (file, response) {
               try {
-                count++; // console.log('⚡ file::', file)
+                folder.value = translit(titleInput.value);
+                /** Увеличиваем счётчик загруженных изображений на 1 */
 
-                console.log('⚡ response::', response);
+                count++;
+                /** Уникальный id к каждому изображению вставленному в редактор. (Для удаления изображения из редактора) */
+
+                var fileId = file.upload.uuid;
+                /**  */
+
                 var create = Dropzone.createElement;
                 /** исходный размер фото */
 
@@ -559,17 +683,22 @@ __webpack_require__.r(__webpack_exports__);
 
                 var preview = file.previewElement;
                 var size = create("<div class=\"prev-img-wigth-height\"><span>".concat(width, " x ").concat(height, " px.</span></div>"));
+                /** Описание фото исходя из заголовка статьи и количества загрузок */
+
+                var alt = count + '-' + translit(titleInput.value);
                 /** добавляем в детали размер изображения */
 
                 details.appendChild(size);
                 /** добавляем кнопку удалить фото */
 
                 preview.appendChild(removeButton);
-                /** Устанавливаем обработчик события, для вставки изображения в редактор. По клику на изображения */
+                totalInput.value = count;
+                total.innerHTML = count;
+                /** Устанавливаем обработчики события, для вставки изображения в редактор. По клику на изображение, или по его данным */
 
-                _$.delegate(preview, '.dz-image', 'click', clickImage.bind(null, resizeImgObj, response.body.webpOriginal, width, height), false);
+                _$.delegate(preview, '.dz-image', 'click', clickImage.bind(null, resizeImgObj, response.body.webpOriginal, alt, fileId));
 
-                _$.delegate(preview, '.dz-details', 'click', clickImage.bind(null, resizeImgObj, response.body.webpOriginal, width, height));
+                _$.delegate(preview, '.dz-details', 'click', clickImage.bind(null, resizeImgObj, response.body.webpOriginal, alt, fileId));
                 /** Удаление изображения */
 
 
@@ -585,14 +714,14 @@ __webpack_require__.r(__webpack_exports__);
                       }
                     }
                   }).then(function (done) {
-                    deleteUploadFiles(done, file);
+                    count--;
+                    total.innerHTML = count;
+                    totalInput.value = count;
+                    deleteUploadFiles(done, file, fileId);
                   })["catch"](function (error) {
                     return error;
                   });
                 });
-                /**  */
-
-                total.innerHTML = count;
               } catch (err) {
                 console.log('⚡ err::', err);
               }
@@ -606,18 +735,73 @@ __webpack_require__.r(__webpack_exports__);
             /** Удаляем изображения. */
 
 
-            function deleteUploadFiles(done, file) {
+            function deleteUploadFiles(done, file, fileId) {
               if (done.status === 201) {
                 _$.message('success', {
                   title: message["delete"].title,
                   message: message["delete"].body,
                   position: position
-                });
+                }); // count--
+
 
                 dropzone.removeFile(file);
-                console.clear();
+                var img = tinyMCE.activeEditor.iframeElement.contentWindow.document.getElementById(fileId);
+                img.parentNode.removeChild(img);
               }
             }
+            /**  */
+
+
+            function translit(val) {
+              return cyrillicToTranslit.transform(val, '-').toLowerCase();
+            }
+            /**  */
+
+
+            titleInput.addEventListener('change', function (e) {
+              var titleVal = e.target.value;
+              var trn = translit(titleVal);
+              urlInput.value = titleVal.length > 0 ? 'country-' + trn + '.html' : titleVal;
+              dropzone.enable();
+            });
+            /** Сохраняем статью  */
+
+            submit.addEventListener('click', function (e) {
+              var title = titleInput.value;
+              var content = tinyMCE.activeEditor.getContent();
+              var searchable = elementForm.searchable.checked;
+              var folderImage = folder.value;
+              var imageTotal = totalInput.value; // console.log('⚡ searchable::', searchable)
+
+              var obj = {};
+              var searchState;
+
+              if (title.length === 0) {
+                _$.message('error', {
+                  title: '⬅ ',
+                  message: save.error.title,
+                  position: position
+                });
+              } else {
+                obj.csrf = csrf;
+                obj.title = title;
+                obj.url = urlInput.value;
+                obj.searchable = content && searchable ? true : false;
+                obj.content = content;
+                obj.folder = folderImage;
+                obj.total = imageTotal;
+
+                if (folderImage !== '' && imageTotal !== '') {
+                  console.log('image');
+                  var img = tinyMCE.activeEditor.iframeElement.contentWindow.document; // .element.nodeName
+                  // element.nodeName === 'IMG'
+
+                  console.log('⚡ img::', img);
+                }
+
+                console.log('⚡ obj::', obj);
+              }
+            });
           });
 
         case 2:
@@ -728,11 +912,10 @@ var hash = function hash(obj, _int) {
  */
 
 
-var picture = function picture(obj, webpOriginal, width, height) {
+var picture = function picture(obj, webpOriginal, alt, fileId) {
   'use strict';
 
-  var pictureElem = '<picture>';
-  console.log('⚡ obj::', obj);
+  var pictureElem = "<figure id=\"".concat(fileId, "\" class=\"figure-picture-img\"><picture>");
   var hash480 = hash(obj, 480);
   var hash960 = hash(obj, 960);
   var hash1280 = hash(obj, 1280);
@@ -749,9 +932,11 @@ var picture = function picture(obj, webpOriginal, width, height) {
   } //* > 480 (phone landscape & smaller)
 
 
-  img480 = hash480 && hash960 ? "".concat(obj[480].pathFile, " 480w, ").concat(obj[960].pathFile, " 960w") : "".concat(obj[480].pathFile, " 480w"); //
+  if (hash480) {
+    img480 = hash480 && hash960 ? "".concat(obj[480].pathFile, " 480w, ").concat(obj[960].pathFile, " 960w") : "".concat(obj[480].pathFile, " 480w"); //
 
-  pictureElem += " <source\n    type=\"image/webp\"\n    media=\"(max-width: 480px)\"\n    srcset=\"".concat(img480, "\"/>");
+    pictureElem += " <source\n    type=\"image/webp\"\n    media=\"(max-width: 480px)\"\n    srcset=\"".concat(img480, "\"/>");
+  }
 
   if (hash960) {
     img960 = hash960 && hash1920 ? "".concat(obj[960].pathFile, " 960w, ").concat(obj[1920].pathFile, " 1920w") : "".concat(obj[960].pathFile, " 960w");
@@ -763,10 +948,11 @@ var picture = function picture(obj, webpOriginal, width, height) {
     pictureElem += " <source\n    type=\"image/webp\"\n    media=\"min-width: 1921px\"\n    srcset=\"".concat(img1920, "\"/>");
   }
 
-  pictureElem += "<img type=\"image/webp\" src=\"".concat(webpOriginal.pathFile, "\" alt=\"").concat(webpOriginal.originalName, "\"\">"); //  srcset="${webpOriginal.pathFile} 2x
+  pictureElem += "<img type=\"image/webp\" src=\"".concat(webpOriginal.pathFile, "\" alt=\"").concat(alt, "\"\">"); //  srcset="${webpOriginal.pathFile} 2x
 
-  pictureElem += '</picture>';
-  return pictureElem; // return `<img src="${webpOriginal.pathFile}" alt="${webpOriginal.originalName}" srcset="${webpOriginal.pathFile} 2x">`
+  pictureElem += " <figcaption>".concat(alt, "</figcaption>");
+  pictureElem += '</figure></picture>';
+  return pictureElem;
 };
 
 /***/ })

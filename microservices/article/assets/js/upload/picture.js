@@ -10,11 +10,9 @@ const hash = (obj, int) => obj.hasOwnProperty(int)
  * @param {Object} obj.width ширина изображения
  * @param {*} width ширина исходного изображения
  */
-export const picture = (obj, webpOriginal, width, height) => {
+export const picture = (obj, webpOriginal, alt, fileId) => {
   'use strict'
-  let pictureElem = '<picture>'
-
-  console.log('⚡ obj::', obj)
+  let pictureElem = `<figure id="${fileId}" class="figure-picture-img"><picture>`
 
   let hash480 = hash(obj, 480)
   let hash960 = hash(obj, 960)
@@ -39,15 +37,17 @@ export const picture = (obj, webpOriginal, width, height) => {
   }
 
   //* > 480 (phone landscape & smaller)
-  img480 =
-    hash480 && hash960
-      ? `${obj[480].pathFile} 480w, ${obj[960].pathFile} 960w`
-      : `${obj[480].pathFile} 480w`
-  //
-  pictureElem += ` <source
+  if (hash480) {
+    img480 =
+      hash480 && hash960
+        ? `${obj[480].pathFile} 480w, ${obj[960].pathFile} 960w`
+        : `${obj[480].pathFile} 480w`
+    //
+    pictureElem += ` <source
     type="image/webp"
     media="(max-width: 480px)"
     srcset="${img480}"/>`
+  }
 
   if (hash960) {
     img960 =
@@ -73,11 +73,10 @@ export const picture = (obj, webpOriginal, width, height) => {
     srcset="${img1920}"/>`
   }
 
-  pictureElem += `<img type="image/webp" src="${webpOriginal.pathFile}" alt="${webpOriginal.originalName}"">`
+  pictureElem += `<img type="image/webp" src="${webpOriginal.pathFile}" alt="${alt}"">`
   //  srcset="${webpOriginal.pathFile} 2x
-  pictureElem += '</picture>'
+  pictureElem += ` <figcaption>${alt}</figcaption>`
+  pictureElem += '</figure></picture>'
 
   return pictureElem
-
-  // return `<img src="${webpOriginal.pathFile}" alt="${webpOriginal.originalName}" srcset="${webpOriginal.pathFile} 2x">`
 }

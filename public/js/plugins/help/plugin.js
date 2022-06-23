@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.0.1 (2022-03-23)
+ * TinyMCE version 6.0.3 (2022-05-25)
  */
 
 (function () {
@@ -603,12 +603,7 @@
       },
       {
         key: 'editimage',
-        name: 'Edit Image',
-        type: 'premium'
-      },
-      {
-        key: 'export',
-        name: 'Export',
+        name: 'Enhanced Image Editing',
         type: 'premium'
       },
       {
@@ -616,6 +611,11 @@
         name: 'Enhanced Media Embed',
         type: 'premium',
         slug: 'introduction-to-mediaembed'
+      },
+      {
+        key: 'export',
+        name: 'Export',
+        type: 'premium'
       },
       {
         key: 'formatpainter',

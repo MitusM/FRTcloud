@@ -1,10 +1,7 @@
 /*!***************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./microservices/article/assets/scss/index.scss ***!
   \***************************************************************************************************************************************/
-:root {
-  --cl-user-table-thead: #fff;
-}
-
+@charset "UTF-8";
 .img-country {
   background-image: url(../images/36x36_russia.png);
   width: 36px;
@@ -34,32 +31,72 @@
   font: 1.1rem/1.5rem var(--cl--font-sans-serif);
   text-align: center;
   margin: 1rem 0;
-  text-decoration: underline;
   color: var(--cl-red);
 }
 
-.article-form-row {
+.article-form-row,
+.article-form-group2 {
   display: grid;
-  grid-template-columns: auto;
-  grid-template-areas: "left right";
-  grid-auto-flow: column;
 }
 
-.form-group-row {
-  grid-area: "top";
+@media (min-width: 768px) and (max-width: 1920px) {
+  .article-form-row {
+    grid-auto-flow: column;
+    grid-template-rows: repeat(3, 1fr);
+    justify-content: stretch;
+    align-content: center;
+    grid-template-columns: 50% auto;
+  }
+  .article-form-row label {
+    margin-top: 0;
+  }
+  .article-form-group2 {
+    grid-auto-flow: column;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 1rem 0;
+  }
+  .form-group__title {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .form-group__url {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .form-group-location-tags-searchable {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    align-items: flex-start;
+  }
+  .form-group__tags {
+    flex-grow: 1;
+  }
+  .form-group__description {
+    grid-column: 2;
+    grid-row: span 3;
+  }
+  .form-group__description textarea {
+    width: 100%;
+    min-height: 135px;
+  }
+  .form-group__keyword {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .form-group__content {
+    border-bottom: 1px solid #ccc;
+  }
+  #add .form-group-row {
+    margin: 1rem;
+  }
+  .form-group-checkbox__search {
+    grid-column: 1;
+  }
+  .form-input-desc {
+    color: rgba(4, 4, 4, 0.7019607843);
+  }
 }
-
-.form-group__title {
-  grid-area: left;
-}
-.form-group__url {
-  grid-area: right;
-}
-
-#add .form-group-row {
-  margin: 1rem;
-}
-
 .dropzone {
   box-shadow: var(--bs-header-top-box-shadow);
   border: 4px solid rgba(0, 0, 0, 0.3) !important;
@@ -100,82 +137,40 @@
   font: 1.5em var(--cl--font-sans-serif);
 }
 
-.user-table {
-  margin-bottom: 30px;
-  transition: box-shadow 0.2s ease-in-out;
+.dropzone-absolute {
+  position: fixed;
+  top: 10%;
+  width: 80%;
+  max-height: 90%;
+  z-index: 200;
+  overflow-x: scroll;
+  overflow-y: scroll; /* прокрутка по вертикали */
 }
-
-.user-table-thead {
-  height: 60px;
-  background: var(--bs-header-logo-background-color);
-}
-
-.user-table-thead-item {
-  text-align: center;
-  color: var(--cl-user-table-thead);
-}
-
-.user-table-thead,
-.user-table-body-line {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1rem;
-  align-items: center;
-}
-
-.user-table-body {
-  padding: 0;
-}
-
-.user-table-body__line-none {
-  text-align: center;
-  font: 1.5rem/2rem var(--bs-font-sans-serif);
-  color: var(--bs-gray-600);
-}
-
-.user-table-body-line {
-  text-align: left;
-  line-height: 4em;
-}
-.user-table-body-line:nth-child(even) {
-  border-top: 1px solid var(--cl-border-color);
-  border-bottom: 1px solid var(--cl-border-color);
-}
-
-.user-table-body-line-item:nth-child(2n+1), .user-table-body-line-item:nth-child(6) {
-  text-align: center;
-}
-
-.user-form-add {
-  display: grid;
-  grid-template-columns: auto 860px auto;
-  grid-template-areas: ". form .";
-}
-
-.user-form__add {
-  grid-area: form;
-}
-.user-form__add fieldset {
-  padding: 1.5em;
-}
-.user-form__add legend {
-  background-color: var(--bs-header-logo-background-color);
-  font: 1.5em/2em var(--cl--font-sans-serif);
-  color: var(--cl-user-table-thead);
-  position: relative;
-}
-
-.user-form-title__close {
+.dropzone-absolute .dropzone-close {
+  background-image: url(../images/md-close-circle-outline.svg);
+  background-repeat: no-repeat;
+  width: 44px;
+  height: 44px;
   position: absolute;
-  right: 1em;
+  right: 0;
+  top: 0;
   cursor: pointer;
-}
-.user-form-title__close:hover {
-  color: var(--cl-gray-500);
+  z-index: 1;
 }
 
-.user-list {
-  list-style: none;
+.wrapper-dropzone {
+  display: none;
+}
+
+.cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  background: rgba(0, 0, 0, 0.5215686275);
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .settings-form__content {

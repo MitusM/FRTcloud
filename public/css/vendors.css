@@ -518,13 +518,11 @@
   .iziToast-wrapper {
     padding: 10px 15px;
   }
-
   .iziToast {
     margin: 5px 0;
     border-radius: 3px;
     width: auto;
   }
-
   .iziToast:after {
     content: "";
     z-index: -1;
@@ -536,27 +534,21 @@
     border-radius: 3px;
     box-shadow: inset 0 -10px 20px -10px rgba(0, 0, 0, 0.2), inset 0 0 5px rgba(0, 0, 0, 0.1), 0 8px 8px -5px rgba(0, 0, 0, 0.25);
   }
-
   .iziToast:not(.iziToast-rtl) .iziToast-cover {
     border-radius: 3px 0 0 3px;
   }
-
   .iziToast.iziToast-rtl .iziToast-cover {
     border-radius: 0 3px 3px 0;
   }
-
   .iziToast.iziToast-color-dark:after {
     box-shadow: inset 0 -10px 20px -10px rgba(255, 255, 255, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
   }
-
   .iziToast.iziToast-balloon .iziToast-progressbar {
     background: transparent;
   }
-
   .iziToast.iziToast-balloon:after {
     box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.25), inset 0 10px 20px -5px rgba(0, 0, 0, 0.25);
   }
-
   .iziToast-target .iziToast:after {
     box-shadow: inset 0 -10px 20px -10px rgba(0, 0, 0, 0.2), inset 0 0 5px rgba(0, 0, 0, 0.1);
   }
