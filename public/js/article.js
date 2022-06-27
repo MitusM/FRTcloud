@@ -395,7 +395,7 @@ __webpack_require__.r(__webpack_exports__);
             /** Название папки в которую загружаются изображения, используемые в статье */
 
             var folder = elementForm.folder;
-            /**  */
+            /** Сколько всего загруженно изображений */
 
             var totalInput = elementForm.total;
             /**  */
@@ -767,14 +767,23 @@ __webpack_require__.r(__webpack_exports__);
             /** Сохраняем статью  */
 
             submit.addEventListener('click', function (e) {
+              /** Заголовок статьи */
               var title = titleInput.value;
-              var content = tinyMCE.activeEditor.getContent();
-              var searchable = elementForm.searchable.checked;
-              var folderImage = folder.value;
-              var imageTotal = totalInput.value; // console.log('⚡ searchable::', searchable)
+              /** Контент статьи */
 
+              var content = tinyMCE.activeEditor.getContent();
+              /** Статья участвует в поиске */
+
+              var searchable = elementForm.searchable.checked;
+              /** Папка в которую загружаются изображения */
+
+              var folderImage = folder.value;
+              /** Сколько всего загруженно изображений */
+
+              var imageTotal = totalInput.value;
+              var tags = elementForm.tags.value;
               var obj = {};
-              var searchState;
+              var i = 0;
 
               if (title.length === 0) {
                 _$.message('error', {
@@ -783,23 +792,55 @@ __webpack_require__.r(__webpack_exports__);
                   position: position
                 });
               } else {
+                /** csrf */
                 obj.csrf = csrf;
                 obj.title = title;
+                /** Ссылка статьи */
+
                 obj.url = urlInput.value;
+                /** Если нет материала, то не участвует в поиске */
+
                 obj.searchable = content && searchable ? true : false;
-                obj.content = content;
+                obj.content = content.trim();
                 obj.folder = folderImage;
-                obj.total = imageTotal;
+                obj.upload_total = imageTotal;
 
                 if (folderImage !== '' && imageTotal !== '') {
-                  console.log('image');
-                  var img = tinyMCE.activeEditor.iframeElement.contentWindow.document; // .element.nodeName
-                  // element.nodeName === 'IMG'
+                  var img = tinyMCE.activeEditor.iframeElement.contentWindow.document.querySelectorAll('img');
+                  var arr = Array.prototype.slice.call(img);
+                  /** Массив изображений вставленных в материал */
 
-                  console.log('⚡ img::', img);
+                  obj.image = arr.map(function (item, index) {
+                    i++;
+                    return item.src;
+                  });
+                  /** Сколько всего вставлено изображений в материал */
+
+                  obj.imageTotalArticle = i;
+                  /** Возможность оценить статью */
+
+                  obj.like = elementForm.like.checked;
+                  /** Ключевые слова */
+
+                  obj.keyword = elementForm.keyword.value;
+                  /** Описание материала */
+
+                  obj.description = elementForm.description.value;
+                  /** Локация */
+
+                  obj.location = elementForm.location.value;
+                  /** Отображать количество просмотров */
+
+                  obj.numberViews = elementForm.numberViews.checked;
+                  /** Возможность комментировать статью */
+
+                  obj.comments = elementForm.comments.checked;
+                  /** Тэги по которым можно найти */
+
+                  obj.tags = tags !== '' ? tags.split(',') : [];
                 }
 
-                console.log('⚡ obj::', obj);
+                console.log('⚡ obj::', obj); // console.log('⚡ i::', i)
               }
             });
           });

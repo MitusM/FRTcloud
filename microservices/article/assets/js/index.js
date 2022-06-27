@@ -57,7 +57,7 @@ import { picture } from './upload/picture.js'
     let urlInput = elementForm[3]
     /** Название папки в которую загружаются изображения, используемые в статье */
     let folder = elementForm.folder
-    /**  */
+    /** Сколько всего загруженно изображений */
     let totalInput = elementForm.total
     /**  */
     let bodyEditor
@@ -80,6 +80,7 @@ import { picture } from './upload/picture.js'
     /**  */
     let submit = doc.getElementById('submit')
     console.log('⚡ elementForm::', elementForm)
+
     // ------------------->
     // TyneMCE
     // ------------------->
@@ -431,15 +432,20 @@ import { picture } from './upload/picture.js'
 
     /** Сохраняем статью  */
     submit.addEventListener('click', function (e) {
+      /** Заголовок статьи */
       let title = titleInput.value
+      /** Контент статьи */
       let content = tinyMCE.activeEditor.getContent()
+      /** Статья участвует в поиске */
       let searchable = elementForm.searchable.checked
+      /** Папка в которую загружаются изображения */
       let folderImage = folder.value
+      /** Сколько всего загруженно изображений */
       let imageTotal = totalInput.value
-
-      // console.log('⚡ searchable::', searchable)
+      let tags = elementForm.tags.value
       let obj = {}
-      let searchState
+      let i = 0
+
       if (title.length === 0) {
         _$.message('error', {
           title: '⬅ ',
@@ -447,22 +453,47 @@ import { picture } from './upload/picture.js'
           position: position,
         })
       } else {
+        /** csrf */
         obj.csrf = csrf
         obj.title = title
+        /** Ссылка статьи */
         obj.url = urlInput.value
+        /** Если нет материала, то не участвует в поиске */
         obj.searchable = content && searchable ? true : false
-        obj.content = content
+        obj.content = content.trim()
         obj.folder = folderImage
-        obj.total = imageTotal
+        obj.upload_total = imageTotal
         if (folderImage !== '' && imageTotal !== '') {
-          console.log('image')
-          let img = tinyMCE.activeEditor.iframeElement.contentWindow.document
-          // .element.nodeName
-          // element.nodeName === 'IMG'
-          console.log('⚡ img::', img)
+          let img =
+            tinyMCE.activeEditor.iframeElement.contentWindow.document.querySelectorAll(
+              'img',
+            )
+          let arr = Array.prototype.slice.call(img)
+          /** Массив изображений вставленных в материал */
+          obj.image = arr.map((item, index) => {
+            i++
+            return item.src
+          })
+          /** Сколько всего вставлено изображений в материал */
+          obj.imageTotalArticle = i
+          /** Возможность оценить статью */
+          obj.like = elementForm.like.checked
+          /** Ключевые слова */
+          obj.keyword = elementForm.keyword.value
+          /** Описание материала */
+          obj.description = elementForm.description.value
+          /** Локация */
+          obj.location = elementForm.location.value
+          /** Отображать количество просмотров */
+          obj.numberViews = elementForm.numberViews.checked
+          /** Возможность комментировать статью */
+          obj.comments = elementForm.comments.checked
+          /** Тэги по которым можно найти */
+          obj.tags = tags !== '' ? tags.split(',') : []
         }
 
         console.log('⚡ obj::', obj)
+        // console.log('⚡ i::', i)
       }
     })
   })
