@@ -1,3 +1,8 @@
+@import '~preloader-js/assets/css/preloader.css';
+.preloader {
+  background: none !important;
+  height: 50%;
+}
 .img-country {
   background-image: url(../images/36x36_russia.png);
   width: 36px;
@@ -31,12 +36,173 @@
 // ARTICLE FORM
 // ----------------------------------------------------------------
 .article-form-row,
-.article-form-group2 {
+.article-form-group2,
+.division-column,
+.main-article {
   display: grid;
 }
 
 @media (min-width: 768px) and (max-width: 1920px) {
   // @media (min-width: 960px) and (max-width: 1920px) {
+  //=== === === === === === === === === === =
+  //
+  //=== === === === === === === === === === =
+  .division-column {
+    grid-auto-flow: column;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: stretch;
+    align-content: center;
+    grid-template-rows: repeat(1, 1fr);
+    grid-gap: 10px;
+    border-bottom: 1px solid var(--cl-border-color);
+    padding-bottom: 0.5em;
+    // &-title {}
+    &__country {
+      grid-column: 1;
+      grid-row: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    &__region {
+      grid-column: 2;
+      grid-row: 1;
+      display: none;
+      // overflow: hidden;
+      position: relative;
+      &.open {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+    &__city {
+      grid-column: 3;
+      grid-row: 1;
+      display: none;
+      position: relative;
+      &.open {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+
+  .chosen-value,
+  .value-list,
+  .region-value,
+  .region-list,
+  .city-value,
+  .city-list {
+    width: 100%;
+  }
+
+  .chosen-value,
+  .region-value,
+  .city-value {
+    // font-family: 'Ek Mukta';
+    // text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 4px;
+    height: 4rem;
+    font-size: 1.1rem;
+    padding: 1rem;
+    background-color: #fafcfd;
+    border: 3px solid transparent;
+    transition: 0.3s ease-in-out;
+    margin-top: 1rem;
+
+    &::-webkit-input-placeholder {
+      color: #333;
+    }
+
+    &:hover {
+      background-color: #ff908b;
+      cursor: pointer;
+
+      &::-webkit-input-placeholder {
+        color: #333;
+      }
+    }
+
+    &:focus,
+    &.open {
+      box-shadow: 0px 5px 8px 0px rgba(0, 0, 0, 0.2);
+      outline: 0;
+      background-color: #ff908b;
+      color: #000;
+
+      &::-webkit-input-placeholder {
+        color: #000;
+      }
+    }
+  }
+
+  .value-list,
+  .region-list,
+  .city-list {
+    list-style: none;
+    margin-top: 4rem;
+    box-shadow: 0px 5px 8px 0px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    max-height: 0;
+    transition: 0.3s ease-in-out;
+    position: absolute;
+    top: 40px;
+
+    &.open {
+      max-height: 320px;
+      overflow: auto;
+    }
+
+    li {
+      position: relative;
+      height: 4rem;
+      background-color: #fafcfd;
+      padding: 1rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      opacity: 1;
+
+      &:hover {
+        background-color: #ff908b;
+      }
+
+      &.closed {
+        max-height: 0;
+        overflow: hidden;
+        padding: 0;
+        opacity: 0;
+      }
+    }
+  }
+  //=== === === === === === === === === === =
+  //
+  //=== === === === === === === === === === =
+  .main-article {
+    grid-auto-flow: column;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    grid-gap: 30px;
+    border-top: 1px solid var(--cl-border-color);
+    border-bottom: 1px solid var(--cl-border-color);
+    &__checkbox {
+      grid-column: 1;
+      grid-row: 1;
+      display: flex;
+      font: 1.3rem/1rem all-petite-caps;
+      margin: 1rem 1rem;
+      padding: 1rem 0;
+      label {
+        margin-right: 20px;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+
   .article-form-row {
     // grid-template-areas: 'left right';
     grid-auto-flow: column;
@@ -184,6 +350,10 @@
   width: 100%;
   height: 100%;
   display: block;
+}
+.default-pic-container {
+  margin: 1em 0;
+  justify-content: center;
 }
 
 // ----------------------------------------------------------------

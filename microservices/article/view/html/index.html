@@ -16,6 +16,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     />
+    <script>
+      const lang = {{ lang | dump }};
+      const urlAdd = "{{ urlAdd }}";
+    </script>
   </head>
 
   <body>
@@ -46,8 +50,8 @@
     <script src="/public/js/style.js"></script>
     {% if breadcrumb === "settings" %}
     <script src="/public/js/settings.js"></script>
-    {% elif breadcrumb === "country" %}
-    <script src="/public/js/article.js"></script>
+    {% elif breadcrumb !== "settings" %}
+    <script rel="preload" src="/public/js/article.js"></script>
     <script src="/public/js/tinymce.min.js"></script>
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
     <link
@@ -58,9 +62,6 @@
 
     {% elif breadcrumb === "article" %}{% endif %}
 
-    <script>
-      {# const config = {{ config | dump }}; #}
-      const lang = {{ lang | dump }};
-    </script>
+    <script></script>
   </body>
 </html>

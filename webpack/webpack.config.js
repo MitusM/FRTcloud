@@ -13,6 +13,7 @@ var appRoot = require('app-root-path')
 const pathList = {
   // source: path.join(appRoot.path, 'developer', 'js'),
   build: path.join(appRoot.path, 'public', 'js'),
+  css: path.join(appRoot.path, 'public', 'css'),
 }
 
 const common = merge([
@@ -113,6 +114,10 @@ const common = merge([
           {
             from: 'assets/js/tinymce/oxide-icon-pack-template/dist/icons/',
             to: path.join(pathList.build, '/icons'),
+          },
+          {
+            from: 'node_modules/preloader-js/assets/css/preloader.css',
+            to: path.join(pathList.css),
           },
         ],
         options: {

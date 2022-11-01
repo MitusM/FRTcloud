@@ -1,5 +1,5 @@
-import { Dropzone } from 'dropzone'
-
+// import { Dropzone } from 'dropzone'
+// console.log('⚡ Dropzone::', Dropzone)
 const lang = {
   ru: {
     dropzone:
@@ -24,7 +24,7 @@ const lang = {
     },
   },
 }
-// ;(async () => {
+
 let maxfilesexceeded = false
 
 // Disabling autoDiscover, otherwise Dropzone will try to attach twice.
@@ -40,11 +40,10 @@ const upload = new Dropzone('div#dropzone', {
   addRemoveLinks: true,
   withCredentials: true,
   timeout: 600000,
-  thumbnailWidth: 240, //FIXME: Не срабатывает. Размер превью по умолчанию
-  thumbnailHeight: 240, //FIXME: Не срабатывает. Размер превью по умолчанию
+  thumbnailWidth: 240,
+  thumbnailHeight: 240,
   // previewTemplate: document.querySelector("#tpl").innerHTML
 })
-// })()
 
 // module.exports = Dropzone
 export default upload

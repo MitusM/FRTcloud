@@ -6,6 +6,46 @@
       <div class="row card">
         <div id="{{breadcrumb}}" class="animate__animated create-country">
           <form action="/article/create-{{breadcrumb}}" id="add" method="post">
+            <div class="division-column">
+              <div class="division-column__country">
+                <span class="division-column-title">Страна:</span>
+                <input
+                  class="chosen-value"
+                  type="text"
+                  value=""
+                  placeholder="Выберите страну"
+                  name="country"
+                />
+                <ul class="value-list">
+                  {% for item in country %}
+                  <li data-id="{{item.id}}">{{item.title}}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="division-column__region">
+                <span class="division-column-title">Регион:</span>
+                <input
+                  class="region-value"
+                  type="text"
+                  value=""
+                  placeholder="Выберите край и т.д."
+                  name="region"
+                />
+                <ul class="region-list"></ul>
+              </div>
+              <div class="division-column__city">
+                <span class="division-column-title">Город, посёлок, село:</span>
+                <input
+                  class="city-value"
+                  type="text"
+                  value=""
+                  placeholder="Выберите город"
+                  name="city"
+                />
+                <ul class="city-list"></ul>
+              </div>
+            </div>
+
             <div class="article-form-row">
               <fieldset class="form-group-row form-group__title">
                 <label for="country-name" class="country-title-label">
@@ -84,6 +124,13 @@
                   name="keyword"
                 />
               </fieldset>
+            </div>
+
+            <div class="main-article">
+              <div class="main-article__checkbox">
+                <label>Главная статья (Основная): </label>
+                <input type="checkbox" name="main" id="main" />
+              </div>
             </div>
 
             <fieldset class="form-group__content">
@@ -170,3 +217,7 @@
   </div>
 </div>
 <div class="wrapper-dropzone"></div>
+
+<div class="preloader">
+  <div class="animation animation-rotating-square"></div>
+</div>

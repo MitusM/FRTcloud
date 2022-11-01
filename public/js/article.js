@@ -322,13 +322,23 @@ var validElements = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
-/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _scss_index_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../scss/index.scss */ "./microservices/article/assets/scss/index.scss");
-/* harmony import */ var cyrillic_to_translit_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! cyrillic-to-translit-js */ "./node_modules/cyrillic-to-translit-js/CyrillicToTranslit.js");
-/* harmony import */ var _typograf_index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./typograf/index.js */ "./microservices/article/assets/js/typograf/index.js");
-/* harmony import */ var _html_formatting_index_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./html-formatting/index.js */ "./microservices/article/assets/js/html-formatting/index.js");
-/* harmony import */ var _upload_picture_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./upload/picture.js */ "./microservices/article/assets/js/upload/picture.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _scss_index_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../scss/index.scss */ "./microservices/article/assets/scss/index.scss");
+/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! nanoid */ "./node_modules/nanoid/index.browser.js");
+/* harmony import */ var cyrillic_to_translit_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! cyrillic-to-translit-js */ "./node_modules/cyrillic-to-translit-js/CyrillicToTranslit.js");
+/* harmony import */ var _typograf_index_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./typograf/index.js */ "./microservices/article/assets/js/typograf/index.js");
+/* harmony import */ var _html_formatting_index_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./html-formatting/index.js */ "./microservices/article/assets/js/html-formatting/index.js");
+/* harmony import */ var _upload_picture_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./upload/picture.js */ "./microservices/article/assets/js/upload/picture.js");
+/* harmony import */ var _input_filter_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./input-filter.js */ "./microservices/article/assets/js/input-filter.js");
+/* harmony import */ var preloader_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! preloader-js */ "./node_modules/preloader-js/preloader.js");
+
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 
 
@@ -338,13 +348,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-(0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.mark(function _callee() {
+
+
+(0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.mark(function _callee5() {
   var doc;
-  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.wrap(function _callee$(_context) {
+  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.wrap(function _callee5$(_context5) {
     while (1) {
-      switch (_context.prev = _context.next) {
+      switch (_context5.prev = _context5.next) {
         case 0:
           doc = document;
+          preloader_js__WEBPACK_IMPORTED_MODULE_9__.hide();
           doc.addEventListener('DOMContentLoaded', function () {
             var lang = {
               ru: {
@@ -370,8 +383,19 @@ __webpack_require__.r(__webpack_exports__);
                 save: {
                   required: 'Обязательно для заполнения',
                   error: {
-                    title: 'Не указан заголовок статьи'
+                    title: 'Не указан заголовок статьи',
+                    location: 'Не указаны географические координаты',
+                    country: 'Не выбрана страна',
+                    region: 'Не выбран регион (область, край и т.д.',
+                    city: 'Не выбран город поселок, село и т.д.'
+                  },
+                  success: {
+                    title: '',
+                    message: 'Страна добавлена'
                   }
+                },
+                error: {
+                  country: 'Перед созданием заголовка, выберете страну'
                 }
               }
             };
@@ -381,17 +405,17 @@ __webpack_require__.r(__webpack_exports__);
             var message = lang.ru.message;
             var position = 'topRight';
             var maxfilesexceeded = false;
-            var cyrillicToTranslit = new cyrillic_to_translit_js__WEBPACK_IMPORTED_MODULE_3__();
+            var cyrillicToTranslit = new cyrillic_to_translit_js__WEBPACK_IMPORTED_MODULE_4__();
             /** Add settings form for id  */
 
             var formAdd = new _$.Form('add');
             var elementForm = formAdd._form.elements;
             /** Поле ввода название страны */
 
-            var titleInput = elementForm[1];
+            var titleInput = elementForm.title;
             /** url */
 
-            var urlInput = elementForm[3];
+            var urlInput = elementForm.url;
             /** Название папки в которую загружаются изображения, используемые в статье */
 
             var folder = elementForm.folder;
@@ -422,12 +446,39 @@ __webpack_require__.r(__webpack_exports__);
             /** Зона затемнения вокруг dropzone, для фокусировки внимания  */
 
             var wrapper = doc.querySelector('.wrapper-dropzone');
+            /** Кнопка добавить статью. */
+
+            var submit = doc.getElementById('submit'); // let imgUpload = []
+
+            var imgUpload = {};
+            /** Выбор страны */
+
+            var countryField = elementForm.country;
+            /** Регионы */
+
+            var regionField = elementForm.region;
+            /** Города */
+
+            var cityField = elementForm.city;
+            var main = elementForm.main;
+            /** Блок в котором отображается выбор региона */
+
+            var divRegion = doc.querySelector('.division-column__region');
             /**  */
 
-            var submit = doc.getElementById('submit');
-            console.log('⚡ elementForm::', elementForm); // ------------------->
+            var objCountry;
+            var objRegions;
+            /** Переменная в которой храним заголовок статьи, если был указан заголовок, но не выбрана статья */
+
+            var titleArticle;
+            /** Заглавная буква */
+
+            function capitalize(s) {
+              return s && s[0].toUpperCase() + s.slice(1);
+            } // ------------------->
             // TyneMCE
             // ------------------->
+
 
             tinymce.init({
               /** Инициализируем редактор */
@@ -532,7 +583,7 @@ __webpack_require__.r(__webpack_exports__);
                   icon: 'typograf',
                   tooltip: 'Типографирование текста',
                   onAction: function onAction() {
-                    var tiny = _typograf_index_js__WEBPACK_IMPORTED_MODULE_4__["default"].execute(editor.getContent());
+                    var tiny = _typograf_index_js__WEBPACK_IMPORTED_MODULE_5__["default"].execute(editor.getContent());
                     tinyMCE.activeEditor.setContent(tiny);
                   }
                 });
@@ -541,7 +592,7 @@ __webpack_require__.r(__webpack_exports__);
                   tooltip: 'Приведение разметки текста к заданным параметрам',
                   onAction: function onAction() {
                     bodyEditor = tinyMCE.activeEditor.iframeElement.contentWindow.document.getElementById('tinymce');
-                    (0,_html_formatting_index_js__WEBPACK_IMPORTED_MODULE_5__.htmlFormatting)(bodyEditor, _html_formatting_index_js__WEBPACK_IMPORTED_MODULE_5__.validElements);
+                    (0,_html_formatting_index_js__WEBPACK_IMPORTED_MODULE_6__.htmlFormatting)(bodyEditor, _html_formatting_index_js__WEBPACK_IMPORTED_MODULE_6__.validElements);
                   }
                 });
                 editor.ui.registry.addButton('dropzone', {
@@ -581,13 +632,6 @@ __webpack_require__.r(__webpack_exports__);
               clickable: true
             });
             dropzone.on('addedfile', function (file) {
-              // Add default option box for each preview.
-              // var defaultRadioButton = Dropzone.createElement(
-              //   '<div class="default_pic_container"><input type="radio" name="default_pic" value="' +
-              //     file.name +
-              //     '" /> Default</div>',
-              // )
-              // file.previewElement.appendChild(defaultRadioButton)
               var val = titleInput.value;
 
               if (val.length === 0) {
@@ -656,6 +700,12 @@ __webpack_require__.r(__webpack_exports__);
 
             dropzone.on('success', function (file, response) {
               try {
+                // Add default option box for each preview.
+                var defaultRadioButton = Dropzone.createElement("<div class=\"d-flex default-pic-container\"><input type=\"radio\" class=\"file-img-default\" name=\"default_pic\" value=\"".concat(response.body.webpOriginal, "\" /> \u041E\u0441\u043D\u043E\u0432\u043D\u043E\u0435 \u0444\u043E\u0442\u043E</div>"));
+                file.previewElement.appendChild(defaultRadioButton);
+                console.log('⚡ file.previewElement::', file.previewElement); // file.previewElement.firstChild(defaultRadioButton)
+                // imgUpload.push(response.body)
+
                 folder.value = translit(titleInput.value);
                 /** Увеличиваем счётчик загруженных изображений на 1 */
 
@@ -685,13 +735,16 @@ __webpack_require__.r(__webpack_exports__);
                 var size = create("<div class=\"prev-img-wigth-height\"><span>".concat(width, " x ").concat(height, " px.</span></div>"));
                 /** Описание фото исходя из заголовка статьи и количества загрузок */
 
-                var alt = count + '-' + translit(titleInput.value);
+                var alt = count + '-' + titleInput.value;
                 /** добавляем в детали размер изображения */
 
                 details.appendChild(size);
                 /** добавляем кнопку удалить фото */
 
                 preview.appendChild(removeButton);
+                /**  */
+
+                imgUpload[fileId] = response.body;
                 totalInput.value = count;
                 total.innerHTML = count;
                 /** Устанавливаем обработчики события, для вставки изображения в редактор. По клику на изображение, или по его данным */
@@ -699,6 +752,10 @@ __webpack_require__.r(__webpack_exports__);
                 _$.delegate(preview, '.dz-image', 'click', clickImage.bind(null, resizeImgObj, response.body.webpOriginal, alt, fileId));
 
                 _$.delegate(preview, '.dz-details', 'click', clickImage.bind(null, resizeImgObj, response.body.webpOriginal, alt, fileId));
+
+                _$.delegate(preview, '.file-img-default', 'change', function (e) {
+                  console.log('⚡ e::', e);
+                });
                 /** Удаление изображения */
 
 
@@ -724,29 +781,32 @@ __webpack_require__.r(__webpack_exports__);
                 });
               } catch (err) {
                 console.log('⚡ err::', err);
-              }
+              } // console.log('⚡ imgUpload::', imgUpload)
+
             });
             /** Вставляем изображение в редактор */
 
             function clickImage(resizeImgObj, webpOriginal, width, height) {
-              var img = (0,_upload_picture_js__WEBPACK_IMPORTED_MODULE_6__.picture)(resizeImgObj, webpOriginal, width, height);
+              var img = (0,_upload_picture_js__WEBPACK_IMPORTED_MODULE_7__.picture)(resizeImgObj, webpOriginal, width, height);
               tinyMCE.activeEditor.execCommand('mceInsertContent', false, img);
             }
             /** Удаляем изображения. */
 
 
             function deleteUploadFiles(done, file, fileId) {
+              console.log('⚡ fileId::', fileId);
+
               if (done.status === 201) {
                 _$.message('success', {
                   title: message["delete"].title,
                   message: message["delete"].body,
                   position: position
-                }); // count--
-
+                });
 
                 dropzone.removeFile(file);
                 var img = tinyMCE.activeEditor.iframeElement.contentWindow.document.getElementById(fileId);
                 img.parentNode.removeChild(img);
+                delete imgUpload[fileId];
               }
             }
             /**  */
@@ -758,13 +818,138 @@ __webpack_require__.r(__webpack_exports__);
             /**  */
 
 
-            titleInput.addEventListener('change', function (e) {
-              var titleVal = e.target.value;
-              var trn = translit(titleVal);
-              urlInput.value = titleVal.length > 0 ? 'country-' + trn + '.html' : titleVal;
-              dropzone.enable();
-            });
+            titleInput.addEventListener('change', /*#__PURE__*/function () {
+              var _ref2 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.mark(function _callee(e) {
+                return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.wrap(function _callee$(_context) {
+                  while (1) {
+                    switch (_context.prev = _context.next) {
+                      case 0:
+                        _context.prev = 0;
+                        console.log('⚡ e::', e);
+                        _context.next = 4;
+                        return urlTranslit(e.target.value);
+
+                      case 4:
+                        _context.next = 9;
+                        break;
+
+                      case 6:
+                        _context.prev = 6;
+                        _context.t0 = _context["catch"](0);
+                        console.log('⚡ err::change', _context.t0);
+
+                      case 9:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }
+                }, _callee, null, [[0, 6]]);
+              }));
+
+              return function (_x) {
+                return _ref2.apply(this, arguments);
+              };
+            }());
+            titleInput.addEventListener('input', listenerTitleInput, false);
+
+            function listenerTitleInput(e) {
+              try {
+                e.preventDefault(); // console.log('⚡ event::', e)
+
+                var country = countryField.value;
+
+                if (country === '') {
+                  e.target.value = '';
+
+                  _$.message('error', {
+                    title: '🗺',
+                    message: lang.ru.error.country,
+                    position: position
+                  });
+                }
+              } catch (error) {
+                console.log('⚡ error::', error);
+              }
+            }
+
+            function urlTranslit(_x2) {
+              return _urlTranslit.apply(this, arguments);
+            }
+
+            function _urlTranslit() {
+              _urlTranslit = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.mark(function _callee4(input) {
+                var titleVal, country, trn, _total, done;
+
+                return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.wrap(function _callee4$(_context4) {
+                  while (1) {
+                    switch (_context4.prev = _context4.next) {
+                      case 0:
+                        titleVal = input.replace(/([,\-.!])/g, '');
+                        country = countryField.value.replace(/([,\-.!])/g, '');
+
+                        if (!(country === '')) {
+                          _context4.next = 7;
+                          break;
+                        }
+
+                        titleArticle = input.value;
+
+                        _$.message('error', {
+                          title: '🗺',
+                          message: lang.ru.error.country,
+                          position: position
+                        });
+
+                        _context4.next = 16;
+                        break;
+
+                      case 7:
+                        trn = translit(country + '-' + titleVal);
+                        _total = titleVal.length;
+                        urlInput.value = _total > 0 ? 'country-' + trn + '.html' : titleVal;
+                        dropzone.enable();
+
+                        if (!(_total > 0)) {
+                          _context4.next = 16;
+                          break;
+                        }
+
+                        _context4.next = 14;
+                        return validateUrl(urlInput.value);
+
+                      case 14:
+                        done = _context4.sent;
+
+                        if (done.total > 0) {
+                          urlInput.value = done.url;
+                        }
+
+                      case 16:
+                        console.log('⚡ titleArticle::', titleArticle);
+
+                      case 17:
+                      case "end":
+                        return _context4.stop();
+                    }
+                  }
+                }, _callee4);
+              }));
+              return _urlTranslit.apply(this, arguments);
+            }
+
+            function validateUrl(val) {
+              return _$.ajax('/article/validate', {
+                method: 'post',
+                body: {
+                  type: capitalize(urlAdd),
+                  params: 'url',
+                  value: val,
+                  csrf: csrf
+                }
+              });
+            }
             /** Сохраняем статью  */
+
 
             submit.addEventListener('click', function (e) {
               /** Заголовок статьи */
@@ -781,14 +966,63 @@ __webpack_require__.r(__webpack_exports__);
               /** Сколько всего загруженно изображений */
 
               var imageTotal = totalInput.value;
+              /** Тэги */
+
               var tags = elementForm.tags.value;
+              /** Локация */
+
+              var location = elementForm.location.value.trim();
+              /** Страна */
+
+              var country = countryField.value.trim();
+              /** id страны */
+
+              var country_id = Number(objCountry[country]);
+              /** Регион */
+
+              var region = regionField.value.trim();
+              /** Город посёлок и т.д. */
+
+              var city = cityField.value.trim(); // console.log('⚡ country_id::', country_id)
+              // console.log('⚡ typeof country_id::', typeof country_id)
+
               var obj = {};
               var i = 0;
+              /** Сколько всего вставлено изображений в материал */
+
+              obj.imageTotalArticle = i;
+              obj.folder = folderImage;
+              obj.upload_total = imageTotal;
+              obj.img_upload = imgUpload;
 
               if (title.length === 0) {
                 _$.message('error', {
-                  title: '⬅ ',
+                  title: '➡ ',
                   message: save.error.title,
+                  position: position
+                });
+              } else if (location === '') {
+                _$.message('error', {
+                  title: '➡ ',
+                  message: save.error.location,
+                  position: position
+                });
+              } else if (country_id === '') {
+                _$.message('error', {
+                  title: '➡ ',
+                  message: save.error.country,
+                  position: position
+                });
+              } else if (urlAdd === 'ate' && region === '') {
+                _$.message('error', {
+                  title: '➡ ',
+                  message: save.error.region,
+                  position: position
+                });
+              } else if (urlAdd === 'city' && city === '') {
+                _$.message('error', {
+                  title: '➡ ',
+                  message: save.error.city,
                   position: position
                 });
               } else {
@@ -797,13 +1031,26 @@ __webpack_require__.r(__webpack_exports__);
                 obj.title = title;
                 /** Ссылка статьи */
 
-                obj.url = urlInput.value;
+                obj.url = urlInput.value.trim();
                 /** Если нет материала, то не участвует в поиске */
 
                 obj.searchable = content && searchable ? true : false;
+                /** Локация */
+
+                obj.location = location.replace(/([, ])/g, ' ');
                 obj.content = content.trim();
-                obj.folder = folderImage;
-                obj.upload_total = imageTotal;
+                obj.country = country;
+                obj.country_id = country_id; // console.log('⚡ objCountry[country]::', objCountry[country])
+
+                if (urlAdd === 'ate') {
+                  obj.ate = region;
+                }
+
+                if (urlAdd === 'city') {
+                  obj.city = cityField.value.trim();
+                }
+
+                obj.main = main.checked ? true : false;
 
                 if (folderImage !== '' && imageTotal !== '') {
                   var img = tinyMCE.activeEditor.iframeElement.contentWindow.document.querySelectorAll('img');
@@ -814,44 +1061,285 @@ __webpack_require__.r(__webpack_exports__);
                     i++;
                     return item.src;
                   });
-                  /** Сколько всего вставлено изображений в материал */
-
-                  obj.imageTotalArticle = i;
-                  /** Возможность оценить статью */
-
-                  obj.like = elementForm.like.checked;
-                  /** Ключевые слова */
-
-                  obj.keyword = elementForm.keyword.value;
-                  /** Описание материала */
-
-                  obj.description = elementForm.description.value;
-                  /** Локация */
-
-                  obj.location = elementForm.location.value;
-                  /** Отображать количество просмотров */
-
-                  obj.numberViews = elementForm.numberViews.checked;
-                  /** Возможность комментировать статью */
-
-                  obj.comments = elementForm.comments.checked;
-                  /** Тэги по которым можно найти */
-
-                  obj.tags = tags !== '' ? tags.split(',') : [];
                 }
 
-                console.log('⚡ obj::', obj); // console.log('⚡ i::', i)
+                obj.image = obj.image || [];
+                /** Возможность оценить статью */
+
+                obj.like = elementForm.like.checked;
+                /** Ключевые слова */
+
+                obj.keyword = elementForm.keyword.value.trim();
+                /** Описание материала */
+
+                obj.description = elementForm.description.value.trim();
+                /** Отображать количество просмотров */
+
+                obj.numberViews = elementForm.numberViews.checked;
+                /** Возможность комментировать статью */
+
+                obj.comments = elementForm.comments.checked;
+                /** Тэги по которым можно найти */
+
+                obj.tags = tags; // !== '' ? tags.split(',') : []
+
+                obj.id = (0,nanoid__WEBPACK_IMPORTED_MODULE_10__.nanoid)(); // console.log('⚡ imgUpload-1::', imgUpload)
+
+                _$.ajax('/article/create-' + urlAdd, {
+                  method: 'put',
+                  body: _objectSpread({}, obj)
+                }).then(function (done) {
+                  preloader_js__WEBPACK_IMPORTED_MODULE_9__.hide();
+
+                  if (done.insert === true) {
+                    formAdd._form.reset();
+
+                    _$.message('success', {
+                      title: save.success.title,
+                      message: save.success.message,
+                      position: position
+                    });
+                  } else {
+                    console.log('⚡ done::', done);
+
+                    _$.message('error', {
+                      title: '🗺',
+                      message: done.message,
+                      position: position
+                    });
+                  }
+                })["catch"](function (error) {
+                  return error;
+                });
               }
             });
+            /** Выбор страны */
+            // ul
+
+            var dropdown = doc.querySelector('.value-list');
+            objCountry = (0,_input_filter_js__WEBPACK_IMPORTED_MODULE_8__["default"])(countryField, dropdown, 'страну');
+
+            if (urlAdd !== 'country') {
+              // Данные с сервера в json
+              // let objRegions
+              var clear = function clear(elem, input) {
+                elem.innerHTML = '';
+                input.value = '';
+              };
+
+              var insertRegion = function insertRegion(field, list, div, regionArr, language) {
+                var len = regionArr.length;
+                var i = 0;
+                clear(list, field);
+
+                for (i = 0; i < len; i++) {
+                  var li = doc.createElement('li');
+                  li.innerText = regionArr[i].title;
+                  li.dataset.id = regionArr[i].id;
+                  list.appendChild(li);
+                }
+
+                div.classList.add('open');
+                objRegions = (0,_input_filter_js__WEBPACK_IMPORTED_MODULE_8__["default"])(field, list, language);
+              };
+              /**
+               *
+               * @param {Number} id Страна по которому делаем выборку регионов страны из колонки country_id
+               */
+
+
+              var region = function region(id, field, list, div, language) {
+                var url = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 'regions';
+                preloader_js__WEBPACK_IMPORTED_MODULE_9__.show();
+
+                _$.ajax('/geo/' + url, {
+                  method: 'post',
+                  body: {
+                    csrf: csrf,
+                    id: id
+                  }
+                }).then(function (done) {
+                  clear(list, field);
+                  preloader_js__WEBPACK_IMPORTED_MODULE_9__.hide();
+                  insertRegion(field, list, div, done.regions, language);
+                })["catch"](function (error) {
+                  return error;
+                });
+              };
+
+              console.log('⚡ urlAdd::', urlAdd);
+              /**
+               * Регион
+               */
+
+              var dropdownRegion = doc.querySelector('.region-list');
+              countryField.addEventListener('change', /*#__PURE__*/function () {
+                var _ref3 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.mark(function _callee2(e) {
+                  var target, countryName, id;
+                  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.wrap(function _callee2$(_context2) {
+                    while (1) {
+                      switch (_context2.prev = _context2.next) {
+                        case 0:
+                          target = e.target;
+                          countryName = e.target.value.trim();
+                          id = objCountry[countryName];
+                          console.log('⚡ id::', id);
+                          region(id, regionField, dropdownRegion, divRegion, 'край и т.д.'); // await urlTranslit()
+
+                        case 5:
+                        case "end":
+                          return _context2.stop();
+                      }
+                    }
+                  }, _callee2);
+                }));
+
+                return function (_x3) {
+                  return _ref3.apply(this, arguments);
+                };
+              }());
+              dropdown.addEventListener('click', /*#__PURE__*/function () {
+                var _ref4 = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.mark(function _callee3(e) {
+                  var target, id;
+                  return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__.wrap(function _callee3$(_context3) {
+                    while (1) {
+                      switch (_context3.prev = _context3.next) {
+                        case 0:
+                          target = e.target;
+                          id = target.dataset.id;
+                          region(id, regionField, dropdownRegion, divRegion, 'край и т.д.'); // await urlTranslit()
+
+                        case 3:
+                        case "end":
+                          return _context3.stop();
+                      }
+                    }
+                  }, _callee3);
+                }));
+
+                return function (_x4) {
+                  return _ref4.apply(this, arguments);
+                };
+              }());
+
+              if (urlAdd === 'city') {
+                /** Регион */
+                var _cityField = doc.querySelector('.city-value');
+
+                var dropdownCities = doc.querySelector('.city-list');
+                var divCities = doc.querySelector('.division-column__city');
+                var objCity;
+                regionField.addEventListener('change', function (e) {
+                  var target = e.target;
+                  var regionName = e.target.value.trim();
+                  var id = objRegions[regionName];
+                  region(id, _cityField, dropdownCities, divCities, 'город, село и т.д.', 'cities');
+                });
+                dropdownRegion.addEventListener('click', function (e) {
+                  var target = e.target;
+                  var id = target.dataset.id;
+                  region(id, _cityField, dropdownCities, divCities, 'город, село и т.д.', 'cities');
+                });
+              }
+            }
           });
 
-        case 2:
+        case 3:
         case "end":
-          return _context.stop();
+          return _context5.stop();
       }
     }
-  }, _callee);
+  }, _callee5);
 }))();
+
+/***/ }),
+
+/***/ "./microservices/article/assets/js/input-filter.js":
+/*!*********************************************************!*\
+  !*** ./microservices/article/assets/js/input-filter.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
+
+
+/**
+ *
+ * @param {object} inputField
+ * @param {object} dropdown
+ */
+function inputFilter(inputField, dropdown, language) {
+  var dropdownArray = (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(dropdown.querySelectorAll('li')); // console.log(typeof dropdownArray)
+
+
+  dropdown.classList.add('open');
+  inputField.focus(); // Demo purposes only
+
+  var valueArray = [];
+  var obj = {};
+  dropdownArray.forEach(function (item) {
+    valueArray.push(item.textContent);
+    obj[item.textContent] = item.dataset.id;
+  });
+
+  var closeDropdown = function closeDropdown() {
+    dropdown.classList.remove('open');
+  };
+
+  inputField.addEventListener('input', function () {
+    dropdown.classList.add('open');
+    var inputValue = inputField.value.toLowerCase(); // let valueSubstring
+
+    if (inputValue.length > 0) {
+      for (var j = 0; j < valueArray.length; j++) {
+        if (!(inputValue.substring(0, inputValue.length) === valueArray[j].substring(0, inputValue.length).toLowerCase())) {
+          dropdownArray[j].classList.add('closed');
+        } else {
+          dropdownArray[j].classList.remove('closed');
+        }
+      }
+    } else {
+      for (var i = 0; i < dropdownArray.length; i++) {
+        dropdownArray[i].classList.remove('closed');
+      }
+    }
+  });
+  dropdownArray.forEach(function (item) {
+    item.addEventListener('click', function (evt) {
+      inputField.value = item.textContent;
+      dropdownArray.forEach(function (dropdown) {
+        dropdown.classList.add('closed');
+      });
+    });
+  });
+  inputField.addEventListener('focus', function () {
+    inputField.placeholder = 'Первая буква...';
+    dropdown.classList.add('open');
+    dropdownArray.forEach(function (dropdown) {
+      dropdown.classList.remove('closed');
+    });
+  });
+  inputField.addEventListener('blur', function () {
+    inputField.placeholder = 'Выберите ' + language;
+    dropdown.classList.remove('open');
+  });
+  document.addEventListener('click', function (evt) {
+    var isDropdown = dropdown.contains(evt.target);
+    var isInput = inputField.contains(evt.target);
+
+    if (!isDropdown && !isInput) {
+      dropdown.classList.remove('open');
+    }
+  });
+  return obj;
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (inputFilter);
 
 /***/ }),
 
@@ -956,6 +1444,7 @@ var hash = function hash(obj, _int) {
 var picture = function picture(obj, webpOriginal, alt, fileId) {
   'use strict';
 
+  alt.replace(/([,\-.!])/g, '');
   var pictureElem = "<figure id=\"".concat(fileId, "\" class=\"figure-picture-img\"><picture>");
   var hash480 = hash(obj, 480);
   var hash960 = hash(obj, 960);

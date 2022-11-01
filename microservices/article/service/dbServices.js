@@ -34,7 +34,7 @@ class PDO {
           max: 25,
         },
       });
-      console.log('Connected');
+      console.log('🙏🏻 Connected');
       return this;
     } catch (err) {
       console.log('⚡ err::PDO.connect', err);

@@ -51,10 +51,10 @@ class Model extends PDO {
       const session = await this.pool.acquire()
       const message = await session.command(query, json).one()
       session.close()
-      return message
+      return { message: message, type: 'insert', done: true }
     } catch (err) {
       console.log('⚡ err::PDO.insert => ', err)
-      return err
+      return { err: err, done: false }
     }
   }
 
@@ -109,6 +109,23 @@ class Model extends PDO {
 
   getSettings() {
     return this.queryOne('SELECT * FROM Settings WHERE microservice="article"')
+  }
+
+  setCreated(table, obj, location) {
+    return this.insert(
+      'INSERT INTO ' +
+        table +
+        ' SET title=:title, country=:country, country_id=:country_id,img_upload=:img_upload, created=sysdate(), id=:id, content=:content, description=:description, url=:url, keyword=:keyword, searchable=:searchable, tags=:tags, config=:config, image=:image, main=:main, location=ST_GeomFromText("POINT(' +
+        location +
+        ')")',
+      { params: { ...obj } },
+    )
+  }
+
+  select(table, params, value) {
+    return this.queryAll(
+      `SELECT ${params} FROM ${table} WHERE ${params} = "${value}"`,
+    )
   }
 }
 

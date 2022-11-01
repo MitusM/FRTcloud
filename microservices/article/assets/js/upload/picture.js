@@ -12,6 +12,7 @@ const hash = (obj, int) => obj.hasOwnProperty(int)
  */
 export const picture = (obj, webpOriginal, alt, fileId) => {
   'use strict'
+  alt.replace(/([,\-.!])/g, '')
   let pictureElem = `<figure id="${fileId}" class="figure-picture-img"><picture>`
 
   let hash480 = hash(obj, 480)

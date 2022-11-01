@@ -30,7 +30,7 @@ const timeout = process.env.TIMED_OUT || 5000
 // 1. Gateway connection
 // === === === === === === === === === === === ===
 const app = new Gateway({
-  microservices: ['auth', 'users', 'render', 'files', 'article'],
+  microservices: ['auth', 'users', 'render', 'files', 'article', 'geo'],
   rabbit: {
     url: rabbitUrl,
   },

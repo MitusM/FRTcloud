@@ -10,9 +10,11 @@ const middlewares = (app) => {
     [
       '/article/',
       '/article/settings(.*)',
-      '/article/create-:add.:html',
+      '/article/create-:add(.*)',
       '/article/upload-:upload(.*)',
       '/article/delete-:endpoint(.*)',
+      '/article/create-:add(.*)',
+      '/article/validate',
     ],
     async (req, res, next) => {
       if (!req.session.auth) {

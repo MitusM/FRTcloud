@@ -24,19 +24,6 @@ const errorHandler = (res, message) => {
   return res.status(200).json({ message: message })
 }
 
-// async function arrToObject(arr) {
-//   return await Promise.all(arr)
-//     .then((arrs) => {
-//       return arrs.reduce((o, v) => {
-//         let key = Object.keys(v)
-//         let val = v[key]
-//         return (o[key] = val), o
-//       }, {})
-//     })
-//     .catch((err) => {
-//       return err.message
-//     })
-// }
 /**
  * Удаляем страницы из кэша (Redis)
  * @returns {Promise }
@@ -68,7 +55,7 @@ const endpoints = async (app) => {
   /**  */
   app.get('/article/', async (req, res) => {
     try {
-      console.log('⚡ req.params::/article/', req.params)
+      // console.log('⚡ req.params::/article/', req.params)
       // let users
       let limit
       let quota
@@ -165,15 +152,24 @@ const endpoints = async (app) => {
           cacheServices = settings.cache
           articleQuota = settings.quota
         }
-
+        /** Получаем список стран */
+        const division = await res.app.ask('geo', {
+          server: {
+            action: 'geo:division:country',
+            meta: {
+              csrf: req.session.csrfSecret,
+              list: 'country',
+            },
+          },
+        })
+        // console.log('⚡ country::', division.response.country)
         /**
          * cacheServices => false
          * Если кэширование страницы отклонено в настройках
          */
         if (!!cacheServices) {
-          console.log('⚡ articleLimit::', articleLimit)
-          console.log('⚡ articleQuota::', articleQuota)
-          let title = lang.menu.add[add]
+          let title = lang.add.title[add]
+          console.log('⚡ add::', add)
           console.log('⚡ title::', title)
           const { response } = await res.app.ask('render', {
             server: {
@@ -187,9 +183,11 @@ const endpoints = async (app) => {
                   csrf: req.session.csrfSecret,
                   title: title,
                   lang: lang,
-                  page: `./page/create/${add}.html`,
+                  page: `./page/create/index.html`, //${add}
                   breadcrumb: add,
-                  settings: settings, //? -
+                  settings: settings,
+                  country: division.response.country,
+                  urlAdd: add,
                 },
               },
             },
@@ -255,7 +253,6 @@ const endpoints = async (app) => {
       res.status(200).end(page)
     } catch (err) {
       console.log('⚡ err::settings', err)
-      // {"message":{}}
       return errorHandler(res, err)
     }
   })
@@ -266,7 +263,7 @@ const endpoints = async (app) => {
   app.post('/upload/article-country', async (req, res) => {
     try {
       const body = req.body
-      console.log('⚡ body::', body)
+      // console.log('⚡ body::', body)
       /**
        * Дополнительные поля с файлом
        */
@@ -353,9 +350,150 @@ const endpoints = async (app) => {
     }
   })
 
+  app.post('/article/validate', async (req, res) => {
+    try {
+      const body = req.body
+      if (body.csrf === req.session.csrfSecret) {
+        let valid = await db.select(body.type, body.params, body.value)
+        let length = valid.length
+        let obj = {
+          total: length,
+          result: valid,
+        }
+        if (length > 0) {
+          let url = path.parse(valid[0].url)
+          obj.url = url.name + length + url.ext
+        }
+        res.status(200).json(obj)
+      } else {
+      }
+    } catch (err) {
+      console.log('⚡ err::validate::', err)
+      return errorHandler(res, err)
+    }
+  })
+
   /*************************************
    * * * * * * * * PUT * * * * * * * * *
    *************************************/
+
+  app.put('/article/create-:add(.*)', async (req, res) => {
+    try {
+      const body = req.body
+      let add = req.params.add
+      let table
+      console.log('⚡ req.params::create', req.params)
+
+      if (body.csrf === req.session.csrfSecret) {
+        let obj = {}
+        switch (add) {
+          case 'country':
+            table = 'Country'
+            if (body.country === '') {
+              res.status(200).json({
+                insert: false,
+                message: lang.error.country,
+              })
+              return
+            }
+            break
+          case 'ate':
+            table = 'Territorial'
+            if (body.ate === '') {
+              res.status(200).json({
+                insert: false,
+                message: lang.error.ate,
+              })
+
+              return
+            }
+            break
+          case 'city':
+            table = 'City'
+            if (body.ate === '') {
+              res.status(200).json({
+                insert: false,
+                message: lang.error.city,
+              })
+              return
+            }
+            break
+          default:
+            table = false
+            break
+        }
+        if (body.title !== '') {
+          // let obj = {
+          //   title: { ru: body.title.trim() },
+          //   id: body.id,
+          //   content: { ru: body.content.trim() },
+          //   description: { ru: body.description },
+          //   url: body.url,
+          //   keyword: body.keyword,
+          //   searchable: body.searchable,
+          //   tags: { ru: body.tags },
+          //   country: body.country,
+          //   country_id: body.country_id,
+          //   main: body.main,
+          //   config: {
+          //     commented: body.comments,
+          //     likely: body.like,
+          //     views: body.numberViews,
+          //   },
+          //   image: {
+          //     folder: body.folder.trim(),
+          //     total_article: body.imageTotalArticle,
+          //     uploaded_total: body.upload_total,
+          //     image: body.image.join(', '),
+          //   },
+          //   img_upload: body.img_upload,
+          // }
+          obj.title = { ru: body.title.trim() }
+          obj.id = body.id
+          obj.content = { ru: body.content.trim() }
+          obj.description = { ru: body.description }
+          obj.url = body.url
+          obj.keyword = body.keyword
+          obj.searchable = body.searchable
+          obj.tags = { ru: body.tags }
+          obj.country = body.country
+          obj.country_id = body.country_id
+          obj.main = body.main
+          obj.config = {
+            commented: body.comments,
+            likely: body.like,
+            views: body.numberViews,
+          }
+          obj.image = {
+            folder: body.folder.trim(),
+            total_article: body.imageTotalArticle,
+            uploaded_total: body.upload_total,
+            image: body.image.join(', '),
+          }
+          img_upload = body.img_upload
+
+          let country = table
+            ? await db.setCreated(table, obj, body.location)
+            : table
+          console.log('⚡ country::', country)
+
+          if (country.done) {
+            res.status(201).json({ insert: true })
+          } else {
+            res.status(200).json({ insert: false })
+          }
+        } else {
+          //* TODO: Если нет title Заголовка
+        }
+      } else {
+        // no CSRF protection
+        res.status(403).end('Forbidden')
+      }
+    } catch (err) {
+      console.log('⚡ err::add', err)
+      return errorHandler(res, err)
+    }
+  })
 
   app.put('/article/settings(.*)', async (req, res) => {
     try {
@@ -369,7 +507,7 @@ const endpoints = async (app) => {
         /** Сохраняем или обновляем настройки в БД */
         let settings = await db.setSettings(obj)
         /** Сохраняем или обновляем настройки в Redis */
-        let setRedis = await Redis.set('settings:users', JSON.stringify(obj))
+        let setRedis = await Redis.set('settings:article', JSON.stringify(obj))
         /** Удаляем страницы из Redis - кэш */
         let del = await Redis.delPattern('userPage:Admin:*')
         // console.log('⚡ del::', del)

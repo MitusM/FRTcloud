@@ -1,0 +1,61 @@
+<div class="container-fluid">
+  {# animate__animated animate__backOutLeft #}
+  <div class="row">
+    {% include "./breadcrumb.html" %}
+    <div class="user-table animate__animated">
+      <div id="user-table-thead" class="user-table-thead">
+        <div class="user-table-thead-item">{{ lang.login }}:</div>
+        <div class="user-table-thead-item">
+          {{ lang.Date_of_registration }}:
+        </div>
+        <div class="user-table-thead-item">{{ lang.Group }}:</div>
+        <div class="user-table-thead-item">{{ lang.Email }}:</div>
+        <div class="user-table-thead-item">{{ lang.Quota }}:</div>
+        <div class="user-table-thead-item">{{ lang.Locked }}:</div>
+        <div class="user-table-thead-item">{{ lang.Actions }}:</div>
+      </div>
+      <div class="user-table-body card" data-last-rid="{{ last_rid }}">
+        {% set lenght = users.length %}
+        <ul id="user-list" class="user-list">
+          {% include "./user-table-body.html" %}
+        </ul>
+        {% if lenght == 0 %} {# {{lenght }} #}
+        <div class="user-table-body__line-none">Нет пользователей</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% include "./form-add_and_update.html" %}
+
+    <dialog class="dialog" id="dialog" role="dialog">
+      <form method="dialog">
+        <input type="hidden" name="token" value="{{ csrf }}" />
+        <div class="dialog-header">
+          <div class="modal-title" id="modal-title"></div>
+        </div>
+        <div class="modal-content" id="modal-content"></div>
+        <div
+          class="modal-footer d-flex align-center justify-center"
+          id="modal-footer"
+        >
+          <button
+            class="btn btn-md btn-success waves-effect waves-light"
+            data-action="dialog-true"
+            value="true"
+            type="submit"
+          >
+            {{ lang.yes }}
+          </button>
+          <button
+            class="form-inline-button btn btn-primary waves-effect waves-light"
+            data-action="dialog-false"
+            value="false"
+            type="submit"
+          >
+            {{ lang.no }}
+          </button>
+        </div>
+      </form>
+    </dialog>
+  </div>
+</div>

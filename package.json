@@ -49,6 +49,7 @@
     "on-headers": "^1.0.2",
     "orientjs": "^3.0.11",
     "parseurl": "^1.3.3",
+    "preloader-js": "^1.0.1",
     "qs": "^6.10.3",
     "recursive-copy": "^2.0.14",
     "redis": "^3.1.2",

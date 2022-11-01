@@ -4,12 +4,15 @@ import CyrillicToTranslit from 'cyrillic-to-translit-js'
 import tp from './typograf/index.js'
 import { htmlFormatting, validElements } from './html-formatting/index.js'
 import { picture } from './upload/picture.js'
+import inputFilter from './input-filter.js'
+import preloader from 'preloader-js'
 
 // === === === === === === === === === === === ===
 //
 // === === === === === === === === === === === ===
 ;(async () => {
   let doc = document
+  preloader.hide()
   doc.addEventListener('DOMContentLoaded', () => {
     const lang = {
       ru: {
@@ -37,7 +40,18 @@ import { picture } from './upload/picture.js'
           required: 'Обязательно для заполнения',
           error: {
             title: 'Не указан заголовок статьи',
+            location: 'Не указаны географические координаты',
+            country: 'Не выбрана страна',
+            region: 'Не выбран регион (область, край и т.д.',
+            city: 'Не выбран город поселок, село и т.д.',
           },
+          success: {
+            title: '',
+            message: 'Страна добавлена',
+          },
+        },
+        error: {
+          country: 'Перед созданием заголовка, выберете страну',
         },
       },
     }
@@ -52,9 +66,9 @@ import { picture } from './upload/picture.js'
     let formAdd = new _$.Form('add')
     let elementForm = formAdd._form.elements
     /** Поле ввода название страны */
-    let titleInput = elementForm[1]
+    let titleInput = elementForm.title
     /** url */
-    let urlInput = elementForm[3]
+    let urlInput = elementForm.url
     /** Название папки в которую загружаются изображения, используемые в статье */
     let folder = elementForm.folder
     /** Сколько всего загруженно изображений */
@@ -77,9 +91,29 @@ import { picture } from './upload/picture.js'
     let positionDropAbsolute = 'dropzone-absolute'
     /** Зона затемнения вокруг dropzone, для фокусировки внимания  */
     let wrapper = doc.querySelector('.wrapper-dropzone')
-    /**  */
+    /** Кнопка добавить статью. */
     let submit = doc.getElementById('submit')
-    console.log('⚡ elementForm::', elementForm)
+    // let imgUpload = []
+    let imgUpload = {}
+    /** Выбор страны */
+    const countryField = elementForm.country
+    /** Регионы */
+    const regionField = elementForm.region
+    /** Города */
+    const cityField = elementForm.city
+    const main = elementForm.main
+    /** Блок в котором отображается выбор региона */
+    const divRegion = doc.querySelector('.division-column__region')
+    /**  */
+    let objCountry
+    let objRegions
+    /** Переменная в которой храним заголовок статьи, если был указан заголовок, но не выбрана статья */
+    let titleArticle
+
+    /** Заглавная буква */
+    function capitalize(s) {
+      return s && s[0].toUpperCase() + s.slice(1)
+    }
 
     // ------------------->
     // TyneMCE
@@ -238,14 +272,6 @@ import { picture } from './upload/picture.js'
     })
 
     dropzone.on('addedfile', (file) => {
-      // Add default option box for each preview.
-      // var defaultRadioButton = Dropzone.createElement(
-      //   '<div class="default_pic_container"><input type="radio" name="default_pic" value="' +
-      //     file.name +
-      //     '" /> Default</div>',
-      // )
-      // file.previewElement.appendChild(defaultRadioButton)
-
       let val = titleInput.value
       if (val.length === 0) {
         // dropzone.off('error')
@@ -311,6 +337,14 @@ import { picture } from './upload/picture.js'
     // === === === === === === === === === === === ===
     dropzone.on('success', (file, response) => {
       try {
+        // Add default option box for each preview.
+        var defaultRadioButton = Dropzone.createElement(
+          `<div class="d-flex default-pic-container"><input type="radio" class="file-img-default" name="default_pic" value="${response.body.webpOriginal}" /> Основное фото</div>`,
+        )
+        file.previewElement.appendChild(defaultRadioButton)
+        console.log('⚡ file.previewElement::', file.previewElement)
+        // file.previewElement.firstChild(defaultRadioButton)
+        // imgUpload.push(response.body)
         folder.value = translit(titleInput.value)
         /** Увеличиваем счётчик загруженных изображений на 1 */
         count++
@@ -335,11 +369,13 @@ import { picture } from './upload/picture.js'
           `<div class="prev-img-wigth-height"><span>${width} x ${height} px.</span></div>`,
         )
         /** Описание фото исходя из заголовка статьи и количества загрузок */
-        const alt = count + '-' + translit(titleInput.value)
+        const alt = count + '-' + titleInput.value
         /** добавляем в детали размер изображения */
         details.appendChild(size)
         /** добавляем кнопку удалить фото */
         preview.appendChild(removeButton)
+        /**  */
+        imgUpload[fileId] = response.body
 
         totalInput.value = count
         total.innerHTML = count
@@ -368,6 +404,9 @@ import { picture } from './upload/picture.js'
             fileId,
           ),
         )
+        _$.delegate(preview, '.file-img-default', 'change', function (e) {
+          console.log('⚡ e::', e)
+        })
         /** Удаление изображения */
         removeButton.addEventListener('click', (e) => {
           e.preventDefault()
@@ -391,6 +430,7 @@ import { picture } from './upload/picture.js'
       } catch (err) {
         console.log('⚡ err::', err)
       }
+      // console.log('⚡ imgUpload::', imgUpload)
     })
 
     /** Вставляем изображение в редактор */
@@ -401,13 +441,14 @@ import { picture } from './upload/picture.js'
 
     /** Удаляем изображения. */
     function deleteUploadFiles(done, file, fileId) {
+      console.log('⚡ fileId::', fileId)
       if (done.status === 201) {
         _$.message('success', {
           title: message.delete.title,
           message: message.delete.body,
           position: position,
         })
-        // count--
+
         dropzone.removeFile(file)
 
         let img =
@@ -415,6 +456,7 @@ import { picture } from './upload/picture.js'
             fileId,
           )
         img.parentNode.removeChild(img)
+        delete imgUpload[fileId]
       }
     }
     /**  */
@@ -422,13 +464,95 @@ import { picture } from './upload/picture.js'
       return cyrillicToTranslit.transform(val, '-').toLowerCase()
     }
     /**  */
-    titleInput.addEventListener('change', (e) => {
-      let titleVal = e.target.value
-      let trn = translit(titleVal)
-      urlInput.value =
-        titleVal.length > 0 ? 'country-' + trn + '.html' : titleVal
-      dropzone.enable()
+    titleInput.addEventListener('change', async (e) => {
+      try {
+        console.log('⚡ e::', e)
+        await urlTranslit(e.target.value)
+        // let titleVal = e.target.value.replace(/([,\-.!])/g, '')
+        // let country = countryField.value.replace(/([,\-.!])/g, '')
+        // console.log('⚡ countryField.value::', countryField.value)
+        // console.log('⚡ country::', country)
+        // if (country === '') {
+        //   console.log('TADA')
+        //   titleArticle = e.target.value
+        //   _$.message('error', {
+        //     title: '🗺',
+        //     message: lang.ru.error.country,
+        //     position: position,
+        //   })
+        // } else {
+        //   let trn = translit(country + '-' + titleVal)
+        //   let total = titleVal.length
+        //   urlInput.value = total > 0 ? 'country-' + trn + '.html' : titleVal
+        //   dropzone.enable()
+        //   if (total > 0) {
+        //     let done = await validateUrl(urlInput.value)
+        //     if (done.total > 0) {
+        //       urlInput.value = done.url
+        //     }
+        //   }
+        // }
+        // return countryField.value !== '' ? await urlTranslit() : ''
+      } catch (err) {
+        console.log('⚡ err::change', err)
+      }
     })
+
+    titleInput.addEventListener('input', listenerTitleInput, false)
+    function listenerTitleInput(e) {
+      try {
+        e.preventDefault()
+        // console.log('⚡ event::', e)
+        let country = countryField.value
+        if (country === '') {
+          e.target.value = ''
+          _$.message('error', {
+            title: '🗺',
+            message: lang.ru.error.country,
+            position: position,
+          })
+        }
+      } catch (error) {
+        console.log('⚡ error::', error)
+      }
+    }
+
+    async function urlTranslit(input) {
+      let titleVal = input.replace(/([,\-.!])/g, '')
+      let country = countryField.value.replace(/([,\-.!])/g, '')
+
+      if (country === '') {
+        titleArticle = input.value
+        _$.message('error', {
+          title: '🗺',
+          message: lang.ru.error.country,
+          position: position,
+        })
+      } else {
+        let trn = translit(country + '-' + titleVal)
+        let total = titleVal.length
+        urlInput.value = total > 0 ? 'country-' + trn + '.html' : titleVal
+        dropzone.enable()
+        if (total > 0) {
+          let done = await validateUrl(urlInput.value)
+          if (done.total > 0) {
+            urlInput.value = done.url
+          }
+        }
+      }
+      console.log('⚡ titleArticle::', titleArticle)
+    }
+    function validateUrl(val) {
+      return _$.ajax('/article/validate', {
+        method: 'post',
+        body: {
+          type: capitalize(urlAdd),
+          params: 'url',
+          value: val,
+          csrf: csrf,
+        },
+      })
+    }
 
     /** Сохраняем статью  */
     submit.addEventListener('click', function (e) {
@@ -442,14 +566,55 @@ import { picture } from './upload/picture.js'
       let folderImage = folder.value
       /** Сколько всего загруженно изображений */
       let imageTotal = totalInput.value
+      /** Тэги */
       let tags = elementForm.tags.value
+      /** Локация */
+      let location = elementForm.location.value.trim()
+      /** Страна */
+      let country = countryField.value.trim()
+      /** id страны */
+      let country_id = Number(objCountry[country])
+      /** Регион */
+      let region = regionField.value.trim()
+      /** Город посёлок и т.д. */
+      let city = cityField.value.trim()
+      // console.log('⚡ country_id::', country_id)
+      // console.log('⚡ typeof country_id::', typeof country_id)
       let obj = {}
       let i = 0
-
+      /** Сколько всего вставлено изображений в материал */
+      obj.imageTotalArticle = i
+      obj.folder = folderImage
+      obj.upload_total = imageTotal
+      obj.img_upload = imgUpload
       if (title.length === 0) {
         _$.message('error', {
-          title: '⬅ ',
+          title: '➡ ',
           message: save.error.title,
+          position: position,
+        })
+      } else if (location === '') {
+        _$.message('error', {
+          title: '➡ ',
+          message: save.error.location,
+          position: position,
+        })
+      } else if (country_id === '') {
+        _$.message('error', {
+          title: '➡ ',
+          message: save.error.country,
+          position: position,
+        })
+      } else if (urlAdd === 'ate' && region === '') {
+        _$.message('error', {
+          title: '➡ ',
+          message: save.error.region,
+          position: position,
+        })
+      } else if (urlAdd === 'city' && city === '') {
+        _$.message('error', {
+          title: '➡ ',
+          message: save.error.city,
           position: position,
         })
       } else {
@@ -457,12 +622,23 @@ import { picture } from './upload/picture.js'
         obj.csrf = csrf
         obj.title = title
         /** Ссылка статьи */
-        obj.url = urlInput.value
+        obj.url = urlInput.value.trim()
         /** Если нет материала, то не участвует в поиске */
         obj.searchable = content && searchable ? true : false
+        /** Локация */
+        obj.location = location.replace(/([, ])/g, ' ')
         obj.content = content.trim()
-        obj.folder = folderImage
-        obj.upload_total = imageTotal
+        obj.country = country
+        obj.country_id = country_id
+        // console.log('⚡ objCountry[country]::', objCountry[country])
+        if (urlAdd === 'ate') {
+          obj.ate = region
+        }
+        if (urlAdd === 'city') {
+          obj.city = cityField.value.trim()
+        }
+
+        obj.main = main.checked ? true : false
         if (folderImage !== '' && imageTotal !== '') {
           let img =
             tinyMCE.activeEditor.iframeElement.contentWindow.document.querySelectorAll(
@@ -474,27 +650,151 @@ import { picture } from './upload/picture.js'
             i++
             return item.src
           })
-          /** Сколько всего вставлено изображений в материал */
-          obj.imageTotalArticle = i
-          /** Возможность оценить статью */
-          obj.like = elementForm.like.checked
-          /** Ключевые слова */
-          obj.keyword = elementForm.keyword.value
-          /** Описание материала */
-          obj.description = elementForm.description.value
-          /** Локация */
-          obj.location = elementForm.location.value
-          /** Отображать количество просмотров */
-          obj.numberViews = elementForm.numberViews.checked
-          /** Возможность комментировать статью */
-          obj.comments = elementForm.comments.checked
-          /** Тэги по которым можно найти */
-          obj.tags = tags !== '' ? tags.split(',') : []
         }
+        obj.image = obj.image || []
+        /** Возможность оценить статью */
+        obj.like = elementForm.like.checked
+        /** Ключевые слова */
+        obj.keyword = elementForm.keyword.value.trim()
+        /** Описание материала */
+        obj.description = elementForm.description.value.trim()
+        /** Отображать количество просмотров */
+        obj.numberViews = elementForm.numberViews.checked
+        /** Возможность комментировать статью */
+        obj.comments = elementForm.comments.checked
+        /** Тэги по которым можно найти */
+        obj.tags = tags // !== '' ? tags.split(',') : []
+        obj.id = nanoid()
+        // console.log('⚡ imgUpload-1::', imgUpload)
+        _$.ajax('/article/create-' + urlAdd, {
+          method: 'put',
+          body: { ...obj },
+        })
+          .then((done) => {
+            preloader.hide()
 
-        console.log('⚡ obj::', obj)
-        // console.log('⚡ i::', i)
+            if (done.insert === true) {
+              formAdd._form.reset()
+              _$.message('success', {
+                title: save.success.title,
+                message: save.success.message,
+                position: position,
+              })
+            } else {
+              console.log('⚡ done::', done)
+              _$.message('error', {
+                title: '🗺',
+                message: done.message,
+                position: position,
+              })
+            }
+          })
+          .catch((error) => error)
       }
     })
+
+    /** Выбор страны */
+    // ul
+    const dropdown = doc.querySelector('.value-list')
+    objCountry = inputFilter(countryField, dropdown, 'страну')
+    if (urlAdd !== 'country') {
+      console.log('⚡ urlAdd::', urlAdd)
+
+      /**
+       * Регион
+       */
+      let dropdownRegion = doc.querySelector('.region-list')
+      // Данные с сервера в json
+      // let objRegions
+      function clear(elem, input) {
+        elem.innerHTML = ''
+        input.value = ''
+      }
+      function insertRegion(field, list, div, regionArr, language) {
+        let len = regionArr.length
+        let i = 0
+        clear(list, field)
+        for (i = 0; i < len; i++) {
+          let li = doc.createElement('li')
+          li.innerText = regionArr[i].title
+          li.dataset.id = regionArr[i].id
+          list.appendChild(li)
+        }
+        div.classList.add('open')
+        objRegions = inputFilter(field, list, language)
+      }
+
+      /**
+       *
+       * @param {Number} id Страна по которому делаем выборку регионов страны из колонки country_id
+       */
+      function region(id, field, list, div, language, url = 'regions') {
+        preloader.show()
+        _$.ajax('/geo/' + url, {
+          method: 'post',
+          body: {
+            csrf: csrf,
+            id: id,
+          },
+        })
+          .then((done) => {
+            clear(list, field)
+            preloader.hide()
+            insertRegion(field, list, div, done.regions, language)
+          })
+          .catch((error) => error)
+      }
+
+      countryField.addEventListener('change', async (e) => {
+        let target = e.target
+        let countryName = e.target.value.trim()
+        let id = objCountry[countryName]
+        console.log('⚡ id::', id)
+        region(id, regionField, dropdownRegion, divRegion, 'край и т.д.')
+        // await urlTranslit()
+      })
+
+      dropdown.addEventListener('click', async (e) => {
+        let target = e.target
+        let id = target.dataset.id
+        region(id, regionField, dropdownRegion, divRegion, 'край и т.д.')
+        // await urlTranslit()
+      })
+
+      if (urlAdd === 'city') {
+        /** Регион */
+        let cityField = doc.querySelector('.city-value')
+        let dropdownCities = doc.querySelector('.city-list')
+        let divCities = doc.querySelector('.division-column__city')
+        let objCity
+
+        regionField.addEventListener('change', (e) => {
+          let target = e.target
+          let regionName = e.target.value.trim()
+          let id = objRegions[regionName]
+          region(
+            id,
+            cityField,
+            dropdownCities,
+            divCities,
+            'город, село и т.д.',
+            'cities',
+          )
+        })
+
+        dropdownRegion.addEventListener('click', (e) => {
+          let target = e.target
+          let id = target.dataset.id
+          region(
+            id,
+            cityField,
+            dropdownCities,
+            divCities,
+            'город, село и т.д.',
+            'cities',
+          )
+        })
+      }
+    }
   })
 })()
