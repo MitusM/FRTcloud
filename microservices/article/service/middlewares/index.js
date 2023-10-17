@@ -10,7 +10,7 @@ const middlewares = (app) => {
     [
       '/article/',
       '/article/settings(.*)',
-      '/article/create-:add(.*)',
+      '/article/add-:page.:html',
       '/article/upload-:upload(.*)',
       '/article/delete-:endpoint(.*)',
       '/article/create-:add(.*)',

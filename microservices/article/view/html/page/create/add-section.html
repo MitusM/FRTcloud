@@ -1,0 +1,113 @@
+<div class="container-fluid">
+  {# animate__animated animate__backOutLeft #}
+  <div class="row">{% include "./breadcrumb.html" %}</div>
+  <div class="article">
+    <div class="container-fluid">
+      <div class="row card">
+        <div id="{{breadcrumb}}" class="animate__animated">
+          <form
+            action="/article/add-{{breadcrumb}}.html"
+            id="add"
+            method="post"
+            class="form-grid-column"
+          >
+            <fieldset class="form-group-row form-grid-column__title">
+              <label for="country-name" class="country-title-label">
+                {{lang.add.form.title.section}}:
+              </label>
+              <input
+                type="text"
+                class="form-group-input form-control country-name"
+                name="title"
+                tabindex="1"
+                required
+                autofocus
+              />
+            </fieldset>
+
+            <fieldset class="form-grid-column__content">
+              <textarea name="content" id="content" tabindex="2"></textarea>
+            </fieldset>
+
+            <fieldset class="form-group-row form-grid-column__url">
+              <label for="section-url" class="country-url-label">
+                {{lang.add.form.title.url}}:
+              </label>
+              <input
+                type="text"
+                class="form-group-input form-control section-url"
+                name="url"
+              />
+            </fieldset>
+
+            <fieldset class="form-group-row form-grid-column__tags tags">
+              <label for="tags__input" class="tags-label">
+                {{lang.add.form.title.tags}}:
+              </label>
+              <input
+                type="text"
+                class="form-group-input form-control tags__input"
+                name="tags"
+              />
+            </fieldset>
+
+            <fieldset class="form-group-row form-grid-column__description">
+              <label for="description__textarea" class="tags-label">
+                {{lang.add.form.title.description}}:
+              </label>
+              <textarea
+                name="description"
+                id="description"
+                tabindex="3"
+                class="description__textarea form-control"
+              ></textarea>
+            </fieldset>
+
+            <fieldset class="form-group-row form-grid-column__keyword keyword">
+              <label for="keyword__input" class="keyword-label">
+                {{lang.add.form.title.keyword}}
+                <span class="form-input-desc">
+                  {{lang.add.form.title.keyword_desc}}:
+                </span>
+              </label>
+              <input
+                type="text"
+                class="form-group-input form-control keyword__input"
+                name="keyword"
+              />
+            </fieldset>
+
+            <input id="folder" type="hidden" name="folder" value="" />
+            <input type="hidden" name="total" id="total-image" />
+            <div class="form-grid-column__save btn btn-primary" id="submit">
+              {{lang.add.form.save}}
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- DROPZONE -->
+      <div class="dropzone-file card">
+        <div class="d-flex upload-totals">
+          <div class="upload-totals-title" id="">
+            {{lang.upload.total}}:
+            <span class="upload-totals-title__number" id="js-count">0</span>
+          </div>
+        </div>
+        <form
+          action="/upload/article-country"
+          type="file"
+          name="country_file"
+          method="POST"
+          enctype="multipart/form-data"
+          class="dropzone"
+        ></form>
+      </div>
+      <div class="my-dropzone"></div>
+    </div>
+  </div>
+</div>
+<div class="wrapper-dropzone"></div>
+
+<div class="preloader">
+  <div class="animation animation-rotating-square"></div>
+</div>

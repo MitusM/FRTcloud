@@ -16,7 +16,7 @@ class Model extends PDO {
       session.close()
       return message
     } catch (err) {
-      console.log('⚡ err::PDO.queryAll => ', err)
+      console.log('⚡ err::PDO.queryAll => ModelService.js:19 ', err)
       process.exit()
     }
   }

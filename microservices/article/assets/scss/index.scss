@@ -25,12 +25,116 @@
   background-size: contain;
   margin-right: 0.5em;
 }
-
+// ----------------------------------------------------------------
+// ARTICLE LEFT MENU
+// ----------------------------------------------------------------
+.navbar-left-ul__li a {
+  line-height: 1rem;
+}
 .navbar-left-ul-li__title {
-  font: 1.1rem/1.5rem var(--cl--font-sans-serif);
   text-align: center;
-  margin: 1rem 0;
-  color: var(--cl-red);
+  font: 1.5em/2.5em sans-serif;
+}
+// ----------------------------------------------------------------
+// ARTICLE DASHBOARD
+// ----------------------------------------------------------------
+#i-article {
+  fill: var(--cl-sidebar-background-color);
+  width: 32px;
+  height: 32px;
+}
+
+.breadcrumb {
+  .breadcrumb-item-a {
+    #pen {
+      width: 52px;
+      height: 52px;
+    }
+    svg {
+      width: 52px;
+      height: 52px;
+    }
+  }
+}
+.breadcrumb-item {
+}
+//
+.navbar-article-ul-li {
+  &__span {
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+.navbar-article-url {
+}
+.navbar-left {
+}
+.navbar-left-ul {
+  &__li {
+  }
+}
+.navbar-left-ul-li {
+  &__item {
+  }
+}
+.sidebar-nav {
+}
+// ----------------------------------------------------------------
+// ARTICLE ADD PAGE
+// ----------------------------------------------------------------
+#add {
+  .form-group-row {
+    margin: 0 0.5rem;
+  }
+}
+.form-grid-column {
+  display: grid;
+}
+@media (min-width: 768px) and (max-width: 1920px) {
+  .form-grid-column {
+    // display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    // grid-template-rows: repeat(1fr, 1fr, 1fr, 1fr, 1fr, repeat(2, auto));
+    grid-template-rows: 1fr 1fr 1fr 1fr auto auto;
+    &__title {
+      grid-column-start: 1;
+      grid-row-start: 1;
+    }
+    &__url {
+      grid-column-start: 2;
+      grid-row-start: 1;
+    }
+    &__tags {
+      grid-column-start: 1;
+      grid-row-start: 2;
+    }
+    &__description {
+      grid-column-start: 2;
+      grid-row-start: 3;
+      grid-row-end: 5;
+      textarea {
+        // width: 100%;
+        min-height: 135px;
+      }
+    }
+    &__keyword {
+      grid-column-start: 2;
+      grid-row-start: 2;
+    }
+    &__content {
+      grid-column-start: 1;
+      grid-row-start: 5;
+      grid-column-end: 3;
+    }
+    &__save {
+      grid-column: 1;
+      grid-row-start: 6;
+      width: 150px;
+      margin: 2rem 0 0 2rem;
+    }
+  }
 }
 // ----------------------------------------------------------------
 // ARTICLE FORM
@@ -259,11 +363,11 @@
       border-bottom: 1px solid #ccc;
     }
   }
-  #add {
-    .form-group-row {
-      margin: 1rem;
-    }
-  }
+  // #add {
+  //   .form-group-row {
+  //     margin: 0 0.5rem;
+  //   }
+  // }
   .form-group-checkbox {
     &__search {
       grid-column: 1;

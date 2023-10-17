@@ -27,9 +27,9 @@ class GeoModel extends PDO {
 
   async cities(region_id) {
     const [rows] = await this.pool.query(
-      ' SELECT `city_id` as id, `country_id`, `region_id`, `region_ru`, `title_ru` as title FROM `_cities` WHERE `region_id` ="' +
+      'SELECT `city_id` as id, `country_id`, `region_id`, `region_ru`, `title_ru` as title FROM `_cities` WHERE `region_id` ="' +
         region_id +
-        '" ORDER BY title_ru ASC ',
+        '" ORDER BY title_ru ASC',
     )
     return rows
   }

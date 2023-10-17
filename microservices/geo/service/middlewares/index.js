@@ -7,7 +7,6 @@
 
 const middlewares = (app) => {
   app.all(['/geo/:endpoint'], async (req, res, next) => {
-    console.log('🪐 req::endpoint', req.params.endpoint)
     if (!req.session.auth) {
       const redirect = await res.app.ask('auth', {
         server: {

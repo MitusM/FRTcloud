@@ -1,0 +1,71 @@
+<div
+  id="{{user._id}}"
+  class="user-table-body-line animate__animated"
+  data-id="{{user._id}}"
+>
+  <div class="username user-table-body-line-item" data-class="username">
+    {{ user.username }}
+  </div>
+  <div class="user-table-body-line-item" data-class="created">
+    {{ user.created | date}}
+  </div>
+  <div class="user-table-body-line-item" data-class="group">
+    {{ user.group }}
+  </div>
+  <div class="user-table-body-line-item" data-class="email">
+    {{ user.email }}
+  </div>
+  <div class="user-table-body-line-item" data-class="quota">
+    {{ user.quota | gb}}
+  </div>
+  <div class="user-table-body-line-item block d-flex justify-center">
+    {% if user.block === true %}
+    <span
+      class="unlock"
+      data-id="{{user._id}}"
+      data-rid="{{user.rid}}"
+      data-target="unlock"
+    ></span>
+    {% else %}
+    <span
+      class="lock"
+      data-id="{{user._id}}"
+      data-rid="{{user.rid}}"
+      data-target="lock"
+    ></span>
+    {% endif %}
+  </div>
+  <div class="user-table-body-line-item actions">
+    <div
+      class="actions__edit"
+      data-id="{{user._id}}"
+      data-target="edit"
+      data-rid="{{user.rid}}"
+    ></div>
+    <div
+      class="actions__trash"
+      data-id="{{user._id}}"
+      data-rid="{{user.rid}}"
+      data-target="trash"
+    ></div>
+    <div class="actions__lock">
+      {% if user.block === true %}
+      <span
+        class="unlock"
+        data-id="{{user._id}}"
+        data-target="unlock"
+        data-rid="{{user.rid}}"
+      ></span>
+      {% else %}
+      <span
+        class="lock"
+        data-id="{{user._id}}"
+        data-target="lock"
+        data-rid="{{user.rid}}"
+      ></span>
+      {% endif %}
+    </div>
+    <div class="actions__"></div>
+    {{ user.actions }}
+  </div>
+</div>

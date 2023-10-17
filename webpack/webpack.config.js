@@ -137,7 +137,7 @@ module.exports = function (env) {
   return merge([
     {
       mode: 'development',
-      // watch: true
+      watch: true,
     },
     sass(),
     common,

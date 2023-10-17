@@ -5,16 +5,29 @@ import dotenv from 'dotenv'
 import csrf from 'csurf'
 
 dotenv.config()
-const redis = require('redis')
-var session = require('express-session')
-const RedisStore = require('connect-redis')(session)
-const redisClient = redis.createClient()
-const RedisSess = new RedisStore({ client: redisClient })
+// const redis = require('redis')
+// var session = require('express-session')
+// const RedisStore = require('connect-redis')(session)
+// const redisClient = redis.createClient()
+// const RedisSess = new RedisStore({ client: redisClient })
+
+import RedisStore from 'connect-redis'
+import session from 'express-session'
+import { createClient } from 'redis'
+
+// Initialize client.
+let redisClient = createClient()
+redisClient.connect().catch(console.error)
+
+// Initialize store.
+let redisStore = new RedisStore({
+  client: redisClient,
+})
 
 const action = (app) => {
   app.action('gateway:session', async (meta, res) => {
     try {
-      RedisSess.set(meta.sid, {
+      redisStore.set(meta.sid, {
         ...meta.session,
         auth: meta.auth,
         user: meta.user,
@@ -27,7 +40,7 @@ const action = (app) => {
 
   app.action('gateway:session-destroy', async (meta, res) => {
     try {
-      RedisSess.destroy(meta.sid)
+      redisStore.destroy(meta.sid)
       res
         .writeHead(302, {
           location: meta.location,
@@ -51,7 +64,7 @@ const action = (app) => {
         secure: false,
         maxAge: 1000 * 60 * 60 * 24 * 14, // expires in 14 days
       },
-      store: RedisSess,
+      store: redisStore,
     }),
   )
   // 3.2 CSRF

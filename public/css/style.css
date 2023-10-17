@@ -237,63 +237,61 @@ input {
 
 @media (min-width: 992px) {
   .container-lg,
-.container-md,
-.container-sm,
-.container {
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 960px;
   }
 }
 @media (min-width: 1200px) {
   .container-xl,
-.container-lg,
-.container-md,
-.container-sm,
-.container {
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 1140px;
   }
 }
 @media (min-width: 1400px) {
   .container-xxl,
-.container-xl,
-.container-lg,
-.container-md,
-.container-sm,
-.container {
+  .container-xl,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 1320px;
   }
 }
 .page {
-  margin: 0;
-  padding: 0;
   display: grid;
-  grid-template-columns: 280px auto auto auto;
-  grid-template-areas: "header  header header header" "sidebar main   main   main" "footer  footer footer footer";
+  grid-template-columns: 280px auto;
+  grid-template-rows: 60px auto 60px;
   height: 100%;
-  grid-auto-flow: column;
-  align-items: start;
 }
 
 .page-header {
-  grid-area: header;
+  grid-column-start: 1;
+  grid-column-end: 3;
   display: grid;
   grid-template-columns: 280px auto 150px;
-  column-gap: 25px;
-  align-items: center;
+  vertical-align: middle;
 }
 
 .page-aside {
-  grid-area: sidebar;
+  grid-column-start: 1;
+  grid-row-start: 2;
+  grid-row-end: 4;
   border-right: 1px solid #ccc;
-  grid-auto-flow: column;
-  height: 100%;
+  grid-template-rows: auto 100px !important;
 }
 
 .page-content {
-  grid-area: main;
+  grid-column-start: 2;
+  grid-column-end: 3;
 }
 
 .page-footer {
-  grid-area: footer;
+  grid-row-start: 3;
 }
 
 .header-top {
@@ -340,6 +338,7 @@ input {
 
 .header-top-user-panel {
   display: flex;
+  align-items: center;
   line-height: 2rem;
   color: var(--cl-header-logo-background-color);
 }
@@ -419,10 +418,10 @@ input {
 .breadcrumb-item-a {
   display: flex;
   align-content: center;
-  line-height: 32px;
+  font: 1.2em/2.5em sans-serif;
 }
 .breadcrumb-item-a svg {
-  margin: 0 0.5rem 0 0;
+  margin: 0 1rem 0 0;
 }
 
 .page-aside {

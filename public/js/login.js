@@ -30,83 +30,73 @@ __webpack_require__.r(__webpack_exports__);
   var _ref = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.mark(function _callee(window) {
     var Login, elements, token, consumer, user, password, submit, csrf, message, validateFields;
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            Login = new _$.Form("login_form");
-            elements = Login._form.elements;
-            token = elements[1];
-            consumer = elements[2];
-            user = elements[3];
-            password = elements[4];
-            submit = elements[5];
-            csrf = document.querySelector("meta[name=csrf-token]").getAttributeNode("content").value;
-            token.value = csrf;
-
-            message = function message(body) {
-              _$.message("error", {
-                title: "Ошибка",
-                message: body,
-                position: "topCenter"
-              });
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          Login = new _$.Form("login_form");
+          elements = Login._form.elements;
+          token = elements[1];
+          consumer = elements[2];
+          user = elements[3];
+          password = elements[4];
+          submit = elements[5];
+          csrf = document.querySelector("meta[name=csrf-token]").getAttributeNode("content").value;
+          token.value = csrf;
+          message = function message(body) {
+            _$.message("error", {
+              title: "Ошибка",
+              message: body,
+              position: "topCenter"
+            });
+          };
+          submit.addEventListener("click", function (e) {
+            e.preventDefault();
+            var target = e.target;
+            var usrVal = user.value;
+            var pswVal = password.value;
+            var obj = {
+              username: usrVal,
+              csrf: token.value,
+              password: pswVal
             };
-
-            submit.addEventListener("click", function (e) {
-              e.preventDefault();
-              var target = e.target;
-              var usrVal = user.value;
-              var pswVal = password.value;
-              var obj = {
+            if (usrVal === "") {
+              validateFields(user, "Укажите логин");
+              user.focus();
+            }
+            if (pswVal === "") {
+              validateFields(password, "Укажите пароль");
+              password.focus();
+            }
+            if (usrVal !== "" && pswVal !== "") {
+              // submit.disabled = true;
+              axios.post("/auth/signin", {
                 username: usrVal,
                 csrf: token.value,
-                password: pswVal
-              };
-
-              if (usrVal === "") {
-                validateFields(user, "Укажите логин");
-                user.focus();
-              }
-
-              if (pswVal === "") {
-                validateFields(password, "Укажите пароль");
-                password.focus();
-              }
-
-              if (usrVal !== "" && pswVal !== "") {
-                // submit.disabled = true;
-                axios.post("/auth/signin", {
-                  username: usrVal,
-                  csrf: token.value,
-                  password: pswVal,
-                  consumer: consumer.value
-                }).then(function (response) {
-                  var data = response.data;
-
-                  if (response.status === 200) {
-                    window.location.href = response.data;
-                  } else {
-                    message(data.message);
-                  }
-                })["catch"](function (error) {
-                  console.log(error);
-                });
-              }
-            });
-
-            validateFields = function validateFields(field, body) {
-              // if (field === "") {
-              message(body);
-              field.focus(); // }
-            };
-
-          case 12:
-          case "end":
-            return _context.stop();
-        }
+                password: pswVal,
+                consumer: consumer.value
+              }).then(function (response) {
+                var data = response.data;
+                if (response.status === 200) {
+                  window.location.href = response.data;
+                } else {
+                  message(data.message);
+                }
+              })["catch"](function (error) {
+                console.log(error);
+              });
+            }
+          });
+          validateFields = function validateFields(field, body) {
+            // if (field === "") {
+            message(body);
+            field.focus();
+            // }
+          };
+        case 12:
+        case "end":
+          return _context.stop();
       }
     }, _callee);
   }));
-
   return function (_x) {
     return _ref.apply(this, arguments);
   };

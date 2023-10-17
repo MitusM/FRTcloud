@@ -22,7 +22,7 @@
   float: left;
   padding-right: 0.5rem;
   color: #6c757d;
-  content: var(--bs-breadcrumb-divider, "/")
+  content: var(--bs-breadcrumb-divider, '/')
     /* rtl: var(--bs-breadcrumb-divider, "/") */;
 }
 .breadcrumb-item.active {
@@ -31,8 +31,9 @@
 .breadcrumb-item-a {
   display: flex;
   align-content: center;
-  line-height: 32px;
+  // line-height: 52px;
+  font: 1.2em/2.5em sans-serif;
   svg {
-    margin: 0 0.5rem 0 0;
+    margin: 0 1rem 0 0;
   }
 }

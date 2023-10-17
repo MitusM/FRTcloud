@@ -13,6 +13,7 @@ import preloader from 'preloader-js'
 ;(async () => {
   let doc = document
   preloader.hide()
+
   doc.addEventListener('DOMContentLoaded', () => {
     const lang = {
       ru: {
@@ -61,60 +62,6 @@ import preloader from 'preloader-js'
     const position = 'topRight'
     let maxfilesexceeded = false
 
-    const cyrillicToTranslit = new CyrillicToTranslit()
-    /** Add settings form for id  */
-    let formAdd = new _$.Form('add')
-    let elementForm = formAdd._form.elements
-    /** Поле ввода название страны */
-    let titleInput = elementForm.title
-    /** url */
-    let urlInput = elementForm.url
-    /** Название папки в которую загружаются изображения, используемые в статье */
-    let folder = elementForm.folder
-    /** Сколько всего загруженно изображений */
-    let totalInput = elementForm.total
-    /**  */
-    let bodyEditor
-    /** Счётчик сколько всего загруженно изображений */
-    let count = 0
-    /** Элемент на странице в котором отображаем количество загруженных изображений */
-    let total = doc.getElementById('js-count')
-    /** CSRF protection value */
-    const csrf = document
-      .querySelector('meta[name=csrf-token]')
-      .getAttributeNode('content').value
-    /** Контейнер с dropzone */
-    let dropZoneForm
-    /** Кнопка закрытия dropzone */
-    let divCloseDropZone
-    /** css class position dropzone */
-    let positionDropAbsolute = 'dropzone-absolute'
-    /** Зона затемнения вокруг dropzone, для фокусировки внимания  */
-    let wrapper = doc.querySelector('.wrapper-dropzone')
-    /** Кнопка добавить статью. */
-    let submit = doc.getElementById('submit')
-    // let imgUpload = []
-    let imgUpload = {}
-    /** Выбор страны */
-    const countryField = elementForm.country
-    /** Регионы */
-    const regionField = elementForm.region
-    /** Города */
-    const cityField = elementForm.city
-    const main = elementForm.main
-    /** Блок в котором отображается выбор региона */
-    const divRegion = doc.querySelector('.division-column__region')
-    /**  */
-    let objCountry
-    let objRegions
-    /** Переменная в которой храним заголовок статьи, если был указан заголовок, но не выбрана статья */
-    let titleArticle
-
-    /** Заглавная буква */
-    function capitalize(s) {
-      return s && s[0].toUpperCase() + s.slice(1)
-    }
-
     // ------------------->
     // TyneMCE
     // ------------------->
@@ -126,34 +73,16 @@ import preloader from 'preloader-js'
       icons_url: '/public/js/icons/cloudFRT/icons.js',
       icons: 'cloudFRT', // use icon pack
       min_height: 400,
-      // placeholder: 'Ну что начнём творить...',
-      plugins:
-        'lists advlist anchor link autolink image table preview wordcount searchreplace emoticons fullscreen visualblocks media visualchars quickbars template autoresize pagebreak',
-      // Настройки bullist
-      advlist_bullet_styles: 'square circle disc',
-      allow_html_in_named_anchor: true,
-      // autolink
-      link_default_target: '_blank',
-      link_context_toolbar: true,
-      link_default_protocol: 'https',
-      // Этот параметр позволяет указать, должен ли редактор анализировать и сохранять условные комментарии.
-      allow_conditional_comments: true,
+      // toolbar_location: 'bottom',
+      toolbar_mode: 'scrolling',
       // === === === === === === === === === === === ===
       //
       // === === === === === === === === === === === ===
       powerpaste_word_import: 'clean',
       powerpaste_html_import: 'clean',
-      // === === === === === === === === === === === ===
-      // AUTORESIZE
-      // === === === === === === === === === === === ===
-      autoresize_bottom_margin: 5,
-      // === === === === === === === === === === === ===
-      // PAGEBREAK
-      // === === === === === === === === === === === ===
-      // pagebreak_split_block: true,
 
-      toolbar_sticky: true,
-      // contextmenu: 'link image table',
+      plugins:
+        'lists advlist anchor link autolink image table preview wordcount searchreplace emoticons fullscreen visualblocks media visualchars quickbars template autoresize pagebreak',
       /**
        * bullist - маркированный список
        * numlist - нумерованный список
@@ -161,48 +90,16 @@ import preloader from 'preloader-js'
        *  quickimage
        */
       toolbar:
-        'fullscreen preview print searchreplace undo redo cut copy paste | bold italic underline strikethrough forecolor backcolor link anchor image media alignleft aligncenter alignright alignjustify numlist bullist table | emoticons wordcount visualblocks visualchars template pagebreak | dropzone typograf format',
+        'fullscreen preview print searchreplace undo redo cut copy paste | bold italic underline strikethrough forecolor backcolor link anchor image media alignleft aligncenter alignright alignjustify numlist bullist table | emoticons wordcount visualblocks visualchars template pagebreak | dropzone typograf format mybutton',
+
+      /** button ⚡️Upgrade */
+      promotion: false,
       quickbars_selection_toolbar:
         'bold italic | blocks | quicklink blockquote',
-      paste_tab_spaces: 2, // Этот параметр определяет, сколько пробелов используется для представления символа табуляции в HTML при вставке обычного текстового содержимого. По умолчанию плагин Paste преобразует каждый символ табуляции в 4 последовательных символа пробела.
-      paste_data_images: true,
-      //* -------------------> IMAGES <--------------------------------
-      file_picker_types: 'file image media',
-      // image_caption: true, // figure ->caption
-      /* enable title field in the Image dialog*/
-      image_title: true, // title=""
-      image_advtab: true, // Эта опция добавляет в диалоговое окно изображения вкладку «Дополнительно», позволяющую добавлять к изображениям собственные стили, интервалы и границы.
-      a11ychecker_allow_decorative_images: true, //?
-      file_picker_callback: function (callback, value, meta) {
-        console.log('⚡ callback::', callback)
-        console.log('⚡ value::', value)
-        console.log('⚡ meta::', meta)
-        var input = document.createElement('input')
-        input.setAttribute('type', 'file')
-        input.setAttribute('accept', 'image/*')
-
-        /* Note: In modern browsers input[type="file"] is functional without even adding it to the DOM, but that might not be the case in some older or quirky browsers like IE, so you might want to add it to the DOM just in case, and visually hide it. And do not forget do remove it once you do not need it anymore. */
-
-        input.onchange = function () {
-          var file = this.files[0]
-          var reader = new FileReader()
-
-          reader.onload = function () {
-            /* Note: Now we need to register the blob in TinyMCEs image blob registry. In the next release this part hopefully won't be necessary, as we are looking to handle it internally. */
-            var id = 'blobid' + new Date().getTime()
-            var blobCache = tinymce.activeEditor.editorUpload.blobCache
-            var base64 = reader.result.split(',')[1]
-            var blobInfo = blobCache.create(id, file, base64)
-            blobCache.add(blobInfo)
-
-            /* call the callback and populate the Title field with the file name */
-            callback(blobInfo.blobUri(), { title: file.name })
-          }
-          reader.readAsDataURL(file)
-        }
-
-        input.click()
-      },
+      // autolink
+      link_default_target: '_blank',
+      link_context_toolbar: true,
+      link_default_protocol: 'https',
       // -------------------> CSS <-------------------
       content_style:
         'figure { padding: 1rem; box-shadow: 0 2px 10px -1px rgba(69, 90, 100, 0.3);transition: box-shadow 0.2s ease-in-out; background-color: #fff;background-clip: border-box; border: 1px solid var(rgba(0, 0, 0, 0.125);}',
@@ -210,47 +107,63 @@ import preloader from 'preloader-js'
       setup: (editor) => {
         /** Пункты меню пересоздаются при закрытии и открытии меню, поэтому нам нужна переменная для хранения состояния переключаемого пункта меню */
         let toggleState = false
-        //* ************************************
-        //* ТИПОГРАФ
-        //* ************************************
-        editor.ui.registry.addButton('typograf', {
-          icon: 'typograf',
-          tooltip: 'Типографирование текста',
-          onAction() {
-            const tiny = tp.execute(editor.getContent())
-            tinyMCE.activeEditor.setContent(tiny)
-          },
-        })
-
-        editor.ui.registry.addButton('format', {
+        editor.ui.registry.addMenuButton('typograf', {
           icon: 'formating',
-          tooltip: 'Приведение разметки текста к заданным параметрам',
-          onAction() {
-            bodyEditor =
-              tinyMCE.activeEditor.iframeElement.contentWindow.document.getElementById(
-                'tinymce',
-              )
-            htmlFormatting(bodyEditor, validElements)
-          },
-        })
-
-        editor.ui.registry.addButton('dropzone', {
-          icon: 'drag_drop',
-          tooltip: 'Зона загрузки изображений',
-          onAction() {
-            dropZoneForm = dropZoneForm || doc.querySelector('.dropzone-file')
-            dropZoneForm.classList.add(positionDropAbsolute)
-            /** Кнопка закрыть dropzone */
-            divCloseDropZone = divCloseDropZone || doc.createElement('div')
-            divCloseDropZone.classList.add('dropzone-close')
-            divCloseDropZone.id = 'dc'
-            dropZoneForm.appendChild(divCloseDropZone)
-            /** Устанавливаем класс для отображения */
-            wrapper.classList.toggle('cover')
-            divCloseDropZone.addEventListener('click', (e) => {
-              dropZoneForm.classList.remove(positionDropAbsolute)
-              wrapper.classList.toggle('cover')
-            })
+          // text: 'My button',
+          tooltip: 'Типографирование текста',
+          fetch: (callback) => {
+            const items = [
+              {
+                type: 'menuitem',
+                text: 'Menu item 1',
+                onAction: () =>
+                  editor.insertContent(
+                    '&nbsp;<em>You clicked menu item 1!</em>',
+                  ),
+              },
+              {
+                type: 'nestedmenuitem',
+                text: 'Menu item 2',
+                icon: 'user',
+                getSubmenuItems: () => [
+                  {
+                    type: 'menuitem',
+                    text: 'Sub menu item 1',
+                    icon: 'unlock',
+                    onAction: () =>
+                      editor.insertContent(
+                        '&nbsp;<em>You clicked Sub menu item 1!</em>',
+                      ),
+                  },
+                  {
+                    type: 'menuitem',
+                    text: 'Sub menu item 2',
+                    icon: 'lock',
+                    onAction: () =>
+                      editor.insertContent(
+                        '&nbsp;<em>You clicked Sub menu item 2!</em>',
+                      ),
+                  },
+                ],
+              },
+              {
+                type: 'togglemenuitem',
+                text: 'Toggle menu item',
+                onAction: () => {
+                  toggleState = !toggleState
+                  editor.insertContent(
+                    '&nbsp;<em>You toggled a menuitem ' +
+                      (toggleState ? 'on' : 'off') +
+                      '</em>',
+                  )
+                },
+                onSetup: (api) => {
+                  api.setActive(toggleState)
+                  return () => {}
+                },
+              },
+            ]
+            callback(items)
           },
         })
       },
@@ -404,6 +317,7 @@ import preloader from 'preloader-js'
             fileId,
           ),
         )
+        // TODO: ???
         _$.delegate(preview, '.file-img-default', 'change', function (e) {
           console.log('⚡ e::', e)
         })
@@ -457,343 +371,6 @@ import preloader from 'preloader-js'
           )
         img.parentNode.removeChild(img)
         delete imgUpload[fileId]
-      }
-    }
-    /**  */
-    function translit(val) {
-      return cyrillicToTranslit.transform(val, '-').toLowerCase()
-    }
-    /**  */
-    titleInput.addEventListener('change', async (e) => {
-      try {
-        console.log('⚡ e::', e)
-        await urlTranslit(e.target.value)
-        // let titleVal = e.target.value.replace(/([,\-.!])/g, '')
-        // let country = countryField.value.replace(/([,\-.!])/g, '')
-        // console.log('⚡ countryField.value::', countryField.value)
-        // console.log('⚡ country::', country)
-        // if (country === '') {
-        //   console.log('TADA')
-        //   titleArticle = e.target.value
-        //   _$.message('error', {
-        //     title: '🗺',
-        //     message: lang.ru.error.country,
-        //     position: position,
-        //   })
-        // } else {
-        //   let trn = translit(country + '-' + titleVal)
-        //   let total = titleVal.length
-        //   urlInput.value = total > 0 ? 'country-' + trn + '.html' : titleVal
-        //   dropzone.enable()
-        //   if (total > 0) {
-        //     let done = await validateUrl(urlInput.value)
-        //     if (done.total > 0) {
-        //       urlInput.value = done.url
-        //     }
-        //   }
-        // }
-        // return countryField.value !== '' ? await urlTranslit() : ''
-      } catch (err) {
-        console.log('⚡ err::change', err)
-      }
-    })
-
-    titleInput.addEventListener('input', listenerTitleInput, false)
-    function listenerTitleInput(e) {
-      try {
-        e.preventDefault()
-        // console.log('⚡ event::', e)
-        let country = countryField.value
-        if (country === '') {
-          e.target.value = ''
-          _$.message('error', {
-            title: '🗺',
-            message: lang.ru.error.country,
-            position: position,
-          })
-        }
-      } catch (error) {
-        console.log('⚡ error::', error)
-      }
-    }
-
-    async function urlTranslit(input) {
-      let titleVal = input.replace(/([,\-.!])/g, '')
-      let country = countryField.value.replace(/([,\-.!])/g, '')
-
-      if (country === '') {
-        titleArticle = input.value
-        _$.message('error', {
-          title: '🗺',
-          message: lang.ru.error.country,
-          position: position,
-        })
-      } else {
-        let trn = translit(country + '-' + titleVal)
-        let total = titleVal.length
-        urlInput.value = total > 0 ? 'country-' + trn + '.html' : titleVal
-        dropzone.enable()
-        if (total > 0) {
-          let done = await validateUrl(urlInput.value)
-          if (done.total > 0) {
-            urlInput.value = done.url
-          }
-        }
-      }
-      console.log('⚡ titleArticle::', titleArticle)
-    }
-    function validateUrl(val) {
-      return _$.ajax('/article/validate', {
-        method: 'post',
-        body: {
-          type: capitalize(urlAdd),
-          params: 'url',
-          value: val,
-          csrf: csrf,
-        },
-      })
-    }
-
-    /** Сохраняем статью  */
-    submit.addEventListener('click', function (e) {
-      /** Заголовок статьи */
-      let title = titleInput.value
-      /** Контент статьи */
-      let content = tinyMCE.activeEditor.getContent()
-      /** Статья участвует в поиске */
-      let searchable = elementForm.searchable.checked
-      /** Папка в которую загружаются изображения */
-      let folderImage = folder.value
-      /** Сколько всего загруженно изображений */
-      let imageTotal = totalInput.value
-      /** Тэги */
-      let tags = elementForm.tags.value
-      /** Локация */
-      let location = elementForm.location.value.trim()
-      /** Страна */
-      let country = countryField.value.trim()
-      /** id страны */
-      let country_id = Number(objCountry[country])
-      /** Регион */
-      let region = regionField.value.trim()
-      /** Город посёлок и т.д. */
-      let city = cityField.value.trim()
-      // console.log('⚡ country_id::', country_id)
-      // console.log('⚡ typeof country_id::', typeof country_id)
-      let obj = {}
-      let i = 0
-      /** Сколько всего вставлено изображений в материал */
-      obj.imageTotalArticle = i
-      obj.folder = folderImage
-      obj.upload_total = imageTotal
-      obj.img_upload = imgUpload
-      if (title.length === 0) {
-        _$.message('error', {
-          title: '➡ ',
-          message: save.error.title,
-          position: position,
-        })
-      } else if (location === '') {
-        _$.message('error', {
-          title: '➡ ',
-          message: save.error.location,
-          position: position,
-        })
-      } else if (country_id === '') {
-        _$.message('error', {
-          title: '➡ ',
-          message: save.error.country,
-          position: position,
-        })
-      } else if (urlAdd === 'ate' && region === '') {
-        _$.message('error', {
-          title: '➡ ',
-          message: save.error.region,
-          position: position,
-        })
-      } else if (urlAdd === 'city' && city === '') {
-        _$.message('error', {
-          title: '➡ ',
-          message: save.error.city,
-          position: position,
-        })
-      } else {
-        /** csrf */
-        obj.csrf = csrf
-        obj.title = title
-        /** Ссылка статьи */
-        obj.url = urlInput.value.trim()
-        /** Если нет материала, то не участвует в поиске */
-        obj.searchable = content && searchable ? true : false
-        /** Локация */
-        obj.location = location.replace(/([, ])/g, ' ')
-        obj.content = content.trim()
-        obj.country = country
-        obj.country_id = country_id
-        // console.log('⚡ objCountry[country]::', objCountry[country])
-        if (urlAdd === 'ate') {
-          obj.ate = region
-        }
-        if (urlAdd === 'city') {
-          obj.city = cityField.value.trim()
-        }
-
-        obj.main = main.checked ? true : false
-        if (folderImage !== '' && imageTotal !== '') {
-          let img =
-            tinyMCE.activeEditor.iframeElement.contentWindow.document.querySelectorAll(
-              'img',
-            )
-          let arr = Array.prototype.slice.call(img)
-          /** Массив изображений вставленных в материал */
-          obj.image = arr.map((item, index) => {
-            i++
-            return item.src
-          })
-        }
-        obj.image = obj.image || []
-        /** Возможность оценить статью */
-        obj.like = elementForm.like.checked
-        /** Ключевые слова */
-        obj.keyword = elementForm.keyword.value.trim()
-        /** Описание материала */
-        obj.description = elementForm.description.value.trim()
-        /** Отображать количество просмотров */
-        obj.numberViews = elementForm.numberViews.checked
-        /** Возможность комментировать статью */
-        obj.comments = elementForm.comments.checked
-        /** Тэги по которым можно найти */
-        obj.tags = tags // !== '' ? tags.split(',') : []
-        obj.id = nanoid()
-        // console.log('⚡ imgUpload-1::', imgUpload)
-        _$.ajax('/article/create-' + urlAdd, {
-          method: 'put',
-          body: { ...obj },
-        })
-          .then((done) => {
-            preloader.hide()
-
-            if (done.insert === true) {
-              formAdd._form.reset()
-              _$.message('success', {
-                title: save.success.title,
-                message: save.success.message,
-                position: position,
-              })
-            } else {
-              console.log('⚡ done::', done)
-              _$.message('error', {
-                title: '🗺',
-                message: done.message,
-                position: position,
-              })
-            }
-          })
-          .catch((error) => error)
-      }
-    })
-
-    /** Выбор страны */
-    // ul
-    const dropdown = doc.querySelector('.value-list')
-    objCountry = inputFilter(countryField, dropdown, 'страну')
-    if (urlAdd !== 'country') {
-      console.log('⚡ urlAdd::', urlAdd)
-
-      /**
-       * Регион
-       */
-      let dropdownRegion = doc.querySelector('.region-list')
-      // Данные с сервера в json
-      // let objRegions
-      function clear(elem, input) {
-        elem.innerHTML = ''
-        input.value = ''
-      }
-      function insertRegion(field, list, div, regionArr, language) {
-        let len = regionArr.length
-        let i = 0
-        clear(list, field)
-        for (i = 0; i < len; i++) {
-          let li = doc.createElement('li')
-          li.innerText = regionArr[i].title
-          li.dataset.id = regionArr[i].id
-          list.appendChild(li)
-        }
-        div.classList.add('open')
-        objRegions = inputFilter(field, list, language)
-      }
-
-      /**
-       *
-       * @param {Number} id Страна по которому делаем выборку регионов страны из колонки country_id
-       */
-      function region(id, field, list, div, language, url = 'regions') {
-        preloader.show()
-        _$.ajax('/geo/' + url, {
-          method: 'post',
-          body: {
-            csrf: csrf,
-            id: id,
-          },
-        })
-          .then((done) => {
-            clear(list, field)
-            preloader.hide()
-            insertRegion(field, list, div, done.regions, language)
-          })
-          .catch((error) => error)
-      }
-
-      countryField.addEventListener('change', async (e) => {
-        let target = e.target
-        let countryName = e.target.value.trim()
-        let id = objCountry[countryName]
-        console.log('⚡ id::', id)
-        region(id, regionField, dropdownRegion, divRegion, 'край и т.д.')
-        // await urlTranslit()
-      })
-
-      dropdown.addEventListener('click', async (e) => {
-        let target = e.target
-        let id = target.dataset.id
-        region(id, regionField, dropdownRegion, divRegion, 'край и т.д.')
-        // await urlTranslit()
-      })
-
-      if (urlAdd === 'city') {
-        /** Регион */
-        let cityField = doc.querySelector('.city-value')
-        let dropdownCities = doc.querySelector('.city-list')
-        let divCities = doc.querySelector('.division-column__city')
-        let objCity
-
-        regionField.addEventListener('change', (e) => {
-          let target = e.target
-          let regionName = e.target.value.trim()
-          let id = objRegions[regionName]
-          region(
-            id,
-            cityField,
-            dropdownCities,
-            divCities,
-            'город, село и т.д.',
-            'cities',
-          )
-        })
-
-        dropdownRegion.addEventListener('click', (e) => {
-          let target = e.target
-          let id = target.dataset.id
-          region(
-            id,
-            cityField,
-            dropdownCities,
-            divCities,
-            'город, село и т.д.',
-            'cities',
-          )
-        })
       }
     }
   })

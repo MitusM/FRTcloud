@@ -52,82 +52,77 @@ const lastRid = function (arr) {
 const endpoints = async (app) => {
   /**  */
   const db = await app.options.db
+
   /**  */
   app.get('/article/', async (req, res) => {
     try {
-      // console.log('⚡ req.params::/article/', req.params)
-      // let users
-      let limit
-      let quota
-      let page
-      let del = await Redis.delPattern('articlePage:Admin:*')
-      // FIXME: this settings limit paginate
-      let multi = await Redis.multi()
-        .get('settings:article')
-        .get('articlePage:Admin:list:1')
-        .exec()
-
-      let settings = JSON.parse(multi[0][1])
-      /**  */
-      if (multi[0][0] !== null || multi[1][0] !== null) {
-        // FIXME: this errorHandler - get
-        return errorHandler(res, 'Multiple error Redis')
-      }
-      /** Settings User */
-      /** Если данных нет в Redis */
-      if (settings === null) {
-        /** Запрашиваем настройки в БД */
-        let s = await db.getSettings()
-        // Если нет в БД, то берём по дефолту
-        if (s === undefined) {
-          limit = process.env.USER_LIMIT
-          quota = process.env.USER_QUOTA
-        } else {
-          limit = s.settings.limit
-          quota = s.settings.quota
-        }
-      } else {
-        // берём из Redis
-        limit = settings.limit
-        quota = settings.quota
-      }
-
-      /** User page */
-      if (multi[1][1] === null) {
-        // users = await db.getAll(limit);
-        const { response } = await res.app.ask('render', {
-          server: {
-            action: 'html',
-            meta: {
-              dir: templateDir, // directory users template
-              page: process.env.TEMPLATE_FILE, // file template
-              // data for template
-              data: {
-                csrf: req.session.csrfSecret,
-                title: 'Статьи - Материалы | cloudFRT',
-                lang: lang,
-                page: './page/main-content.html',
-                breadcrumb: 'article',
-                number: 1,
-              },
+      /**  page */
+      // users = await db.getAll(limit);
+      const { response } = await res.app.ask('render', {
+        server: {
+          action: 'html',
+          meta: {
+            dir: templateDir, // directory article template
+            page: process.env.TEMPLATE_FILE, // file template
+            // data for template
+            data: {
+              csrf: req.session.csrfSecret,
+              title: 'Dashboard | cloudFRT',
+              lang: lang,
+              page: './page/main-content.html',
+              breadcrumb: 'article',
+              number: 1,
             },
           },
-        })
-        Redis.set('articlePage:Admin:list:1', response.html)
-        page = response.html
-      } else {
-        page = multi[1][1]
-      }
-      res.status(200).end(page)
+        },
+      })
+
+      // page = response.html
+
+      res.status(200).end(response.html)
     } catch (err) {
       console.log('⚡ err::/article/', err)
       return errorHandler(res, err)
     }
   })
 
-  app.get('/article/create-:add.:html', async (req, res) => {
+  app.get('/article/add-:page.:html', async (req, res) => {
     try {
       console.log('⚡ req.params::', req.params)
+      let page = req.params.page
+      console.log('⚡ page::', page)
+      let title = lang.add.title[page]
+      console.log('⚡ title::', title)
+      // console.log('⚡ process.env.TEMPLATE_FILE::', process.env.TEMPLATE_FILE)
+      const { response } = await res.app.ask('render', {
+        server: {
+          action: 'html',
+          meta: {
+            dir: templateDir, // directory users template
+            // FIXME: Перенести в настройки расположенные в БД
+            page: process.env.TEMPLATE_FILE, // file template
+            // data for template
+            data: {
+              csrf: req.session.csrfSecret,
+              title: title,
+              lang: lang,
+              page: `./page/create/add-section.html`, //${add}
+              breadcrumb: page,
+              // settings: settings,
+              // country: division.response.country,
+              urlAdd: page,
+            },
+          },
+        },
+      })
+      // console.log('⚡ response::', response)
+      // let html = response.html
+      res.status(200).end(response.html)
+    } catch (err) {}
+  })
+
+  app.get('/article/create-:add.:html', async (req, res) => {
+    try {
       let add = req.params.add
       let articleLimit
       let cacheServices
@@ -152,6 +147,7 @@ const endpoints = async (app) => {
           cacheServices = settings.cache
           articleQuota = settings.quota
         }
+
         /** Получаем список стран */
         const division = await res.app.ask('geo', {
           server: {
@@ -162,15 +158,13 @@ const endpoints = async (app) => {
             },
           },
         })
-        // console.log('⚡ country::', division.response.country)
+
         /**
          * cacheServices => false
          * Если кэширование страницы отклонено в настройках
          */
         if (!!cacheServices) {
           let title = lang.add.title[add]
-          console.log('⚡ add::', add)
-          console.log('⚡ title::', title)
           const { response } = await res.app.ask('render', {
             server: {
               action: 'html',

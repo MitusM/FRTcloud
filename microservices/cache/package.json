@@ -1,0 +1,18 @@
+{
+  "name": "cloudFRT-cache",
+  "version": "1.0.0",
+  "description": "Кэш",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": ""
+  },
+  "author": "MitusM",
+  "license": "MIT",
+  "dependencies": {
+    "connect-redis": "^6.1.3",
+    "express-session": "^1.17.3",
+    "ioredis": "^5.2.4",
+    "redis": "^4.5.1"
+  }
+}
