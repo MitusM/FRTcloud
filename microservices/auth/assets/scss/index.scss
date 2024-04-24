@@ -1,3 +1,4 @@
+// @import '~preloader-js/assets/css/preloader.css';
 .login-page {
   margin: 0;
   padding: 0;
@@ -8,10 +9,10 @@
   grid-template-columns: auto 460px auto;
   grid-template-rows: auto;
   grid-template-areas:
-    "header  header header"
+    'header  header header'
     // "header-left  header header-right"
-    ".  main ."
-    ".  footer .";
+    '.  main .'
+    '.  footer .';
   .form-group {
     line-height: 2rem;
   }
@@ -34,7 +35,7 @@
 }
 
 .login-page-header__title {
-  font: 1.5rem/2rem "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 1.5rem/2rem 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .login-page-footer {

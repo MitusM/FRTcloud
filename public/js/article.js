@@ -223,7 +223,6 @@ var validElements = {
     // process: function (node) {
     // }
   },
-
   h1: {
     convert_to: 'h2',
     valid_styles: 'text-align',

@@ -376,7 +376,6 @@ const endpoints = async (app) => {
       const body = req.body
       let add = req.params.add
       let table
-      console.log('⚡ req.params::create', req.params)
 
       if (body.csrf === req.session.csrfSecret) {
         let obj = {}

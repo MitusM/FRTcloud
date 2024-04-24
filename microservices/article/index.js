@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import pkg from 'app-root-path'
 const reqModule = pkg.require
 const MicroMQ = reqModule('./core/micromq/src/MicroService.js')
+// import Gateway from './core/micromq/gateway.js'
 
 import { error } from './service/errorServices.js'
 

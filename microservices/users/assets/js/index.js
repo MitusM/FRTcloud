@@ -1,9 +1,15 @@
 import '../scss/index.scss'
 import { nanoid } from 'nanoid'
 import { prototype } from 'dropzone'
+import preloader from 'preloader-js'
+
+// === === === === === === === === === === === ===
+//
+// === === === === === === === === === === === ===
 ;(async () => {
   let doc = document
   doc.addEventListener('DOMContentLoaded', () => {
+    preloader.hide()
     /** url добавить пользователя */
     let urlUserAdd = doc.getElementById('url-user-add')
     /** контейнер с формой добавить пользователя */
@@ -87,6 +93,7 @@ import { prototype } from 'dropzone'
       if (user === '') validateFields(username, langError.username)
       if (emailUpdated === '') validateFields(email, langError.email)
       if (user && email) {
+        preloader.show()
         if (user)
           axios
             .put('/users/update', {
@@ -103,7 +110,7 @@ import { prototype } from 'dropzone'
               let data = res.data
               let id
               let dataObj
-
+              preloader.hide()
               if (data.status === 201) {
                 dataObj = data.user
                 message('success', 'Your account has been updated')
@@ -137,6 +144,7 @@ import { prototype } from 'dropzone'
       if (user === '') validateFields(username, langError.username)
       if (pass === '') validateFields(password, langError.password)
       if (user !== '' && pass !== '') {
+        preloader.show()
         axios
           .put('/users/create', {
             username: user,
@@ -148,6 +156,7 @@ import { prototype } from 'dropzone'
             csrf: csrf,
           })
           .then((res) => {
+            preloader.hide()
             let data = res.data
             let id
             if (data.status === 201) {
@@ -189,6 +198,7 @@ import { prototype } from 'dropzone'
 
     /** Удаляем пользователя */
     const deleteUser = (user) => {
+      preloader.show()
       let rid = user.rid
       let id = user._id
       dialog.header('Удалить пользователя').show((bool) => {
@@ -196,6 +206,7 @@ import { prototype } from 'dropzone'
           axios
             .delete('/users/delete/' + id, { rid: rid, csrf: csrf })
             .then((res) => {
+              preloader.hide()
               if (res.data.status === 201) {
                 dialog.close()
                 let el = document.getElementById(id)
@@ -217,6 +228,7 @@ import { prototype } from 'dropzone'
 
     /** Блокируем или разблокируем пользователя */
     const userBan = (user, lock) => {
+      preloader.show()
       // TODO: Для будущей совместимости
       let page = lock ? 'lock' : 'unlock'
       let id
@@ -229,6 +241,7 @@ import { prototype } from 'dropzone'
           csrf: csrf,
         })
         .then((res) => {
+          preloader.hide()
           data = res.data
           if (data.status === 201 && data.count > 0) {
             id = doc.getElementById(user._id)
@@ -274,7 +287,6 @@ import { prototype } from 'dropzone'
       let id = target.dataset['id']
       let rid = target.dataset['rid']
       let user = await getUser(id, rid)
-
       if (typeof user === 'string') {
         message('error', user)
       } else {
@@ -351,9 +363,11 @@ import { prototype } from 'dropzone'
     }
 
     let addPage = async (num) => {
+      preloader.show()
       axios
         .post('/users/page-' + num, { rid: lastRid, csrf: csrf })
         .then((res) => {
+          preloader.hide()
           let data = res.data
           if (data.status === 200 && data.total > 0) {
             // total += data.total
@@ -363,10 +377,6 @@ import { prototype } from 'dropzone'
               '[data-number="' + num + '"]',
             )
             li.classList.add('animate__zoomInDown')
-            // message(
-            //   'success',
-            //   'Загружено! <br/> Всего пользователей на странице ' + total,
-            // )
           } else {
             message('success', 'Все пользователи загружены')
             window.removeEventListener('scroll', onScroll, false)

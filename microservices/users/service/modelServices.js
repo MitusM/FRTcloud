@@ -140,6 +140,7 @@ class UserModel extends PDO {
         return this.queryRid(select + '@rid = ' + user)
       }
     } catch (err) {
+      console.log('⚡ err::', err)
       return err
     }
   }

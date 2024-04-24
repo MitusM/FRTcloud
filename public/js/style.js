@@ -153,7 +153,7 @@ var Dialog = /*#__PURE__*/function () {
   /**
    * Получение элемента
    */
-  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Dialog, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Dialog, [{
     key: "element",
     get: function get() {
       return this.elem;
@@ -273,7 +273,6 @@ var Dialog = /*#__PURE__*/function () {
       });
     }
   }]);
-  return Dialog;
 }(); // window.Dialog = Dialog
 // module.exports = Dialog
 // if (typeof define === 'function' && define.amd) {
@@ -416,7 +415,6 @@ var initArguments = function initArguments(options) {
 
   // }
 };
-
 function status(response) {
   if (response.status >= 200 && response.status < 300) {
     return Promise.resolve(response);

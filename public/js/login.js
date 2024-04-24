@@ -23,6 +23,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _scss_index_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../scss/index.scss */ "./microservices/auth/assets/scss/index.scss");
+/* harmony import */ var preloader_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! preloader-js */ "./node_modules/preloader-js/preloader.js");
+
 
 
 
@@ -32,24 +34,27 @@ __webpack_require__.r(__webpack_exports__);
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_1__.wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          Login = new _$.Form("login_form");
+          /**  */
+          preloader_js__WEBPACK_IMPORTED_MODULE_3__.hide();
+          Login = new _$.Form('login_form');
           elements = Login._form.elements;
           token = elements[1];
           consumer = elements[2];
           user = elements[3];
           password = elements[4];
           submit = elements[5];
-          csrf = document.querySelector("meta[name=csrf-token]").getAttributeNode("content").value;
+          csrf = document.querySelector('meta[name=csrf-token]').getAttributeNode('content').value;
           token.value = csrf;
           message = function message(body) {
-            _$.message("error", {
-              title: "Ошибка",
+            _$.message('error', {
+              title: 'Ошибка',
               message: body,
-              position: "topCenter"
+              position: 'topCenter'
             });
           };
-          submit.addEventListener("click", function (e) {
+          submit.addEventListener('click', function (e) {
             e.preventDefault();
+            preloader_js__WEBPACK_IMPORTED_MODULE_3__.show();
             var target = e.target;
             var usrVal = user.value;
             var pswVal = password.value;
@@ -58,27 +63,30 @@ __webpack_require__.r(__webpack_exports__);
               csrf: token.value,
               password: pswVal
             };
-            if (usrVal === "") {
-              validateFields(user, "Укажите логин");
+            if (usrVal === '') {
+              validateFields(user, 'Укажите логин');
               user.focus();
             }
-            if (pswVal === "") {
-              validateFields(password, "Укажите пароль");
+            if (pswVal === '') {
+              validateFields(password, 'Укажите пароль');
               password.focus();
             }
-            if (usrVal !== "" && pswVal !== "") {
+            if (usrVal !== '' && pswVal !== '') {
               // submit.disabled = true;
-              axios.post("/auth/signin", {
+              axios.post('/auth/signin', {
                 username: usrVal,
                 csrf: token.value,
                 password: pswVal,
                 consumer: consumer.value
               }).then(function (response) {
+                preloader_js__WEBPACK_IMPORTED_MODULE_3__.hide();
                 var data = response.data;
-                if (response.status === 200) {
-                  window.location.href = response.data;
-                } else {
+                if (data.status === 204 || data.status === 203) {
                   message(data.message);
+                }
+                if (data.status === 200) {
+                  submit.disabled = true;
+                  window.location.replace(data.location);
                 }
               })["catch"](function (error) {
                 console.log(error);
@@ -91,7 +99,7 @@ __webpack_require__.r(__webpack_exports__);
             field.focus();
             // }
           };
-        case 12:
+        case 13:
         case "end":
           return _context.stop();
       }

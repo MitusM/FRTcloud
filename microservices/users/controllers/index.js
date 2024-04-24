@@ -61,6 +61,7 @@ const lastRid = function (arr) {
 const endpoints = async (app) => {
   /**  */
   const db = await app.options.db
+
   /**  */
   app.get('/users/', async (req, res) => {
     try {
@@ -70,65 +71,65 @@ const endpoints = async (app) => {
       let page
       // let del = await Redis.delPattern('userPage:Admin:*')
       // FIXME: this settings limit paginate
-      let multi = await Redis.multi()
-        .get('settings:users')
-        .get('userPage:Admin:list:1')
-        .exec()
+      // let multi = await Redis.multi()
+      //   .get('settings:users')
+      //   .get('userPage:Admin:list:1')
+      //   .exec()
 
-      let settings = JSON.parse(multi[0][1])
+      // let settings = JSON.parse(multi[0][1])
       /**  */
-      if (multi[0][0] !== null || multi[1][0] !== null) {
-        // FIXME: this errorHandler - get
-        return errorHandler(res, 'Multiple error Redis')
-      }
+      // if (multi[0][0] !== null || multi[1][0] !== null) {
+      //   // FIXME: this errorHandler - get
+      //   return errorHandler(res, 'Multiple error Redis')
+      // }
       /** Settings User */
       /** Если данных нет в Redis */
-      if (settings === null) {
-        /** Запрашиваем настройки в БД */
-        let s = await db.getSettings()
-        // Если нет в БД, то берём по дефолту
-        if (s === undefined) {
-          limit = process.env.USER_LIMIT
-          quota = process.env.USER_QUOTA
-        } else {
-          limit = s.settings.limit
-          quota = s.settings.quota
-        }
-      } else {
-        // берём из Redis
-        limit = settings.limit
-        quota = settings.quota
-      }
+      // if (settings === null) {
+      // /** Запрашиваем настройки в БД */
+      // let s = await db.getSettings()
+      // Если нет в БД, то берём по дефолту
+      // if (s === undefined) {
+      //   limit = process.env.USER_LIMIT
+      //   quota = process.env.USER_QUOTA
+      // } else {
+      //   limit = s.settings.limit
+      //   quota = s.settings.quota
+      // }
+      // } else {
+      //   // берём из Redis
+      //   limit = settings.limit
+      //   quota = settings.quota
+      // }
 
       /** User page */
-      if (multi[1][1] === null) {
-        users = await db.getUserAll(limit)
-        const { response } = await res.app.ask('render', {
-          server: {
-            action: 'html',
-            meta: {
-              dir: templateDir, // directory users template
-              page: process.env.TEMPLATE_FILE, // file template
-              // data for template
-              data: {
-                csrf: req.session.csrfSecret,
-                title: 'Пользователи | cloudFRT',
-                users: users, // Получаем список пользователей
-                lang: lang,
-                page: './page/main-content.html',
-                breadcrumb: 'users',
-                last_rid: lastRid(users), //users.last().rid,
-                number: 1,
-                quota: quota,
-              },
+      // if (multi[1][1] === null) {
+      users = await db.getUserAll(limit)
+      const { response } = await res.app.ask('render', {
+        server: {
+          action: 'html',
+          meta: {
+            dir: templateDir, // directory users template
+            page: process.env.TEMPLATE_FILE, // file template
+            // data for template
+            data: {
+              csrf: req.session.csrfSecret,
+              title: 'Пользователи | cloudFRT',
+              users: users, // Получаем список пользователей
+              lang: lang,
+              page: './page/main-content.html',
+              breadcrumb: 'users',
+              last_rid: lastRid(users), //users.last().rid,
+              number: 1,
+              quota: quota,
             },
           },
-        })
-        Redis.set('userPage:Admin:list:1', response.html)
-        page = response.html
-      } else {
-        page = multi[1][1]
-      }
+        },
+      })
+      // Redis.set('userPage:Admin:list:1', response.html)
+      page = response.html
+      // } else {
+      //   page = multi[1][1]
+      // }
       res.status(200).end(page)
     } catch (err) {
       console.log('⚡ err::/users/', err)
