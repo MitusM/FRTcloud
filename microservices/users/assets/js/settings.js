@@ -41,6 +41,7 @@
         .then((res) => {
           let data = res.data
           let mess = ''
+          console.log('⚡ data::', data)
           /** Успешное выполнение операций. Если пришёл ответ со статусом 201. Все остальные ошибка */
           if (data.status === 201) {
             if (data.message.bd === 1) {

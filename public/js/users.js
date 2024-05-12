@@ -225,7 +225,7 @@ __webpack_require__.r(__webpack_exports__);
             var id = user._id;
             dialog.header('Удалить пользователя').show(function (bool) {
               if (bool === 'true') {
-                axios["delete"]('/users/delete/' + id, {
+                axios.put('/users/delete/' + id, {
                   rid: rid,
                   csrf: csrf
                 }).then(function (res) {

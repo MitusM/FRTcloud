@@ -204,7 +204,7 @@ import preloader from 'preloader-js'
       dialog.header('Удалить пользователя').show((bool) => {
         if (bool === 'true') {
           axios
-            .delete('/users/delete/' + id, { rid: rid, csrf: csrf })
+            .put('/users/delete/' + id, { rid: rid, csrf: csrf })
             .then((res) => {
               preloader.hide()
               if (res.data.status === 201) {

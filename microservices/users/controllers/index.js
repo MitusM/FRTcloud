@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { createRequire } from 'module'
 
 import { Cache } from '../service/cacheServices.js'
+import { action } from '../action/index.js'
 
 const require = createRequire(import.meta.url)
 const appRoot = pkg.path
@@ -69,41 +70,71 @@ const endpoints = async (app) => {
       let limit
       let quota
       let page
-      // let del = await Redis.delPattern('userPage:Admin:*')
-      // FIXME: this settings limit paginate
-      // let multi = await Redis.multi()
-      //   .get('settings:users')
-      //   .get('userPage:Admin:list:1')
-      //   .exec()
+      let settings
 
-      // let settings = JSON.parse(multi[0][1])
+      const cache = await res.app.ask('cache', {
+        server: {
+          action: 'cache:multi',
+          meta: {
+            options: { db: 1 },
+            list: [
+              ['get', 'settings:users'],
+              ['get', 'users:list:1'],
+            ],
+          },
+        },
+      })
+
+      let multi = cache.response
+
       /**  */
-      // if (multi[0][0] !== null || multi[1][0] !== null) {
-      //   // FIXME: this errorHandler - get
-      //   return errorHandler(res, 'Multiple error Redis')
-      // }
+      if (multi[0][0] !== null || multi[1][0] !== null) {
+        // FIXME: this errorHandler - get
+        return errorHandler(res, 'Multiple error Redis')
+      }
+
+      settings = JSON.parse(multi[0][1])
+
       /** Settings User */
       /** Если данных нет в Redis */
-      // if (settings === null) {
-      // /** Запрашиваем настройки в БД */
-      // let s = await db.getSettings()
-      // Если нет в БД, то берём по дефолту
-      // if (s === undefined) {
-      //   limit = process.env.USER_LIMIT
-      //   quota = process.env.USER_QUOTA
-      // } else {
-      //   limit = s.settings.limit
-      //   quota = s.settings.quota
-      // }
-      // } else {
-      //   // берём из Redis
-      //   limit = settings.limit
-      //   quota = settings.quota
-      // }
+      if (settings === null) {
+        /** Запрашиваем настройки в БД */
+        let settingBD = await db.getSettings()
+        //Если нет в БД, то берём по дефолту
+        if (settingBD === undefined) {
+          limit = process.env.USER_LIMIT
+          quota = process.env.USER_QUOTA
+        } else {
+          limit = settingBD.settings.limit
+          quota = settingBD.settings.quota
+        }
+      } else {
+        // берём из Redis
+        limit = settings.limit
+        quota = settings.quota
+      }
+      /** USERS List */
+      if (multi[1][1] === null) {
+        users = await db.getUserAll(limit)
+        // let setUsers =
+        await res.app.ask('cache', {
+          server: {
+            action: 'cache:set',
+            meta: {
+              options: { db: 1 },
+              key: 'users:list:1',
+              val: JSON.stringify(users),
+            },
+          },
+        })
+        /** Тут получаем ответ в виде:
+         * { status: 200, response: { value: 'OK' } }
+         *
+         */
+      } else {
+        users = JSON.parse(multi[1][1])
+      }
 
-      /** User page */
-      // if (multi[1][1] === null) {
-      users = await db.getUserAll(limit)
       const { response } = await res.app.ask('render', {
         server: {
           action: 'html',
@@ -125,11 +156,9 @@ const endpoints = async (app) => {
           },
         },
       })
-      // Redis.set('userPage:Admin:list:1', response.html)
+
       page = response.html
-      // } else {
-      //   page = multi[1][1]
-      // }
+
       res.status(200).end(page)
     } catch (err) {
       console.log('⚡ err::/users/', err)
@@ -144,47 +173,48 @@ const endpoints = async (app) => {
     try {
       /**  */
       let settings
-      let page = await Redis.multi()
-        .get('settings:users')
-        .get('userPage:Admin:settings')
-        .exec()
+      const cache = await res.app.ask('cache', {
+        server: {
+          action: 'cache:get',
+          meta: {
+            options: { db: 1 },
+            list: 'settings:users',
+          },
+        },
+      })
 
-      if (page[0][1] === null) {
+      let cacheValue = cache.response.value
+
+      if (cacheValue === null && cache.status === 200) {
         settings = {
           quota: process.env.USER_QUOTA,
           limit: process.env.USER_LIMIT,
           cache: process.env.CACHE,
         }
       } else {
-        settings = JSON.parse(page[0][1])
+        settings = JSON.parse(cacheValue)
       }
 
-      if (page[1][1] === null) {
-        const { response } = await res.app.ask('render', {
-          server: {
-            action: 'html',
-            meta: {
-              dir: templateDir, // directory users template
-              page: process.env.TEMPLATE_FILE, // file template
-              // data for template
-              data: {
-                csrf: req.session.csrfSecret,
-                title: 'Настройки | cloudFRT',
-                lang: lang,
-                page: './page/settings.html',
-                breadcrumb: 'settings',
-                settings: settings,
-              },
+      const { response } = await res.app.ask('render', {
+        server: {
+          action: 'html',
+          meta: {
+            dir: templateDir, // directory users template
+            page: process.env.TEMPLATE_FILE, // file template
+            // data for template
+            data: {
+              csrf: req.session.csrfSecret,
+              title: 'Настройки | cloudFRT',
+              lang: lang,
+              page: './page/settings.html',
+              breadcrumb: 'settings',
+              settings: settings,
             },
           },
-        })
-        Redis.set('userPage:Admin:settings', response.html)
-        page = response.html
-      } else {
-        page = page[1][1]
-      }
+        },
+      })
 
-      res.status(200).end(page)
+      res.status(200).end(response.html)
     } catch (err) {
       console.log('⚡ err::settings', err)
       // {"message":{}}
@@ -201,34 +231,51 @@ const endpoints = async (app) => {
       const num = req.params.num || 1
       const body = req.body
       if (body.csrf === req.session.csrfSecret) {
-        let usersPage = `userPage:Admin:list:${num}`
+        let usersPage = `users:list:${num}`
         let limit
         let quota
         let obj = {}
-        let multi = await Redis.multi()
-          .get('settings:users')
-          .get(usersPage)
-          .exec()
+        // let multi = await Redis.multi()
+        //   .get('settings:users')
+        //   .get(usersPage)
+        //   .exec()
 
-        let settings = JSON.parse(multi[0][1])
+        // let settings = JSON.parse(multi[0][1])
 
+        const cache = await res.app.ask('cache', {
+          server: {
+            action: 'cache:multi',
+            meta: {
+              options: { db: 1 },
+              list: [
+                ['get', 'settings:users'],
+                ['get', usersPage],
+              ],
+            },
+          },
+        })
+
+        let multi = cache.response
         /**  */
         if (multi[0][0] !== null || multi[1][0] !== null) {
           // FIXME: this errorHandler - get
           return errorHandler(res, 'Multiple error Redis')
         }
 
+        let settings = JSON.parse(multi[0][1])
+
         /** Settings User */
+        /** Если данных нет в Redis */
         if (settings === null) {
           /** Запрашиваем настройки в БД */
-          let s = await db.getSettings()
-          // Если нет в БД, то берём по дефолту
-          if (s === undefined) {
+          let settingBD = await db.getSettings()
+          //Если нет в БД, то берём по дефолту
+          if (settingBD === undefined) {
             limit = process.env.USER_LIMIT
             quota = process.env.USER_QUOTA
           } else {
-            limit = s.settings.limit
-            quota = s.settings.quota
+            limit = settingBD.settings.limit
+            quota = settingBD.settings.quota
           }
         } else {
           // берём из Redis
@@ -317,32 +364,26 @@ const endpoints = async (app) => {
         }
         /** Сохраняем или обновляем настройки в БД */
         let settings = await db.setSettings(obj)
-        /** Сохраняем или обновляем настройки в Redis */
-        let setRedis = await Redis.set('settings:users', JSON.stringify(obj))
-        /** Удаляем страницы из Redis - кэш */
-        let del = await Redis.delPattern('userPage:Admin:*')
-        // console.log('⚡ del::', del)
         let status = 201
         let message = {}
         if (settings.count === 1) {
           message.bd = 1
+          /** Сохраняем или обновляем настройки в Redis */
+          const cache = await res.app.ask('cache', {
+            server: {
+              action: 'cache:set',
+              meta: {
+                options: { db: 1 },
+                key: 'settings:users',
+                val: JSON.stringify(obj),
+              },
+            },
+          })
+
+          message.redis = cache.response.value === 'OK' ? 1 : 0
         } else {
           status = 200
           message.bd = 0
-        }
-
-        if (setRedis === 'OK') {
-          message.redis = 1
-        } else {
-          status = 200
-          message.redis = 0
-        }
-
-        if (del === true) {
-          message.cache = 1
-        } else {
-          status = 200
-          message.cache = 0
         }
         res.status(200).end({ status: status, message: message })
       } else {
@@ -413,7 +454,15 @@ const endpoints = async (app) => {
 
         let user = await db.setCreated(obj)
         /** Удаляем страницы из Redis - кэш */
-        let del = await Redis.delPattern('userPage:Admin:*')
+        const cache = await res.app.ask('cache', {
+          server: {
+            action: 'cache:del',
+            meta: {
+              options: { db: 1 },
+              pattern: 'users:list:**',
+            },
+          },
+        })
 
         // ------------------->
         const { response } = await res.app.ask('render', {
@@ -533,7 +582,16 @@ const endpoints = async (app) => {
 
           if (userUpdated.count > 0) {
             /** Удаляем страницы из Redis - кэш */
-            let del = await Redis.delPattern('userPage:Admin:*')
+            const cache = await res.app.ask('cache', {
+              server: {
+                action: 'cache:del',
+                meta: {
+                  options: { db: 1 },
+                  pattern: 'users:list:**',
+                },
+              },
+            })
+
             res.status(200).json({
               status: 201,
               // html: response.html,
@@ -571,7 +629,15 @@ const endpoints = async (app) => {
             })
           if (updated.count > 0) {
             /** Удаляем страницы из Redis - кэш */
-            let del = await Redis.delPattern('userPage:Admin:*')
+            const cache = await res.app.ask('cache', {
+              server: {
+                action: 'cache:del',
+                meta: {
+                  options: { db: 1 },
+                  pattern: 'users:list:**',
+                },
+              },
+            })
           }
           let t =
             updated.count > 0
@@ -592,8 +658,7 @@ const endpoints = async (app) => {
   /*************************************
    * * * * * * * DELETE * * * * * * * * *
    *************************************/
-
-  app.delete('/users/delete/:id', async (req, res) => {
+  app.put('/users/delete/:id', async (req, res) => {
     try {
       const body = req.body
       if (body.csrf === req.session.csrfSecret) {
@@ -606,9 +671,19 @@ const endpoints = async (app) => {
           })
 
           if (user.count > 0) {
-            res.status(200).json({ status: 201, count: user })
+            res.status(200).json({ status: 201, ...user })
             /** Удаляем страницы из Redis - кэш */
-            await delCachePage()
+            // await delCachePage()
+            /** Удаляем страницы из Redis - кэш */
+            const cache = await res.app.ask('cache', {
+              server: {
+                action: 'cache:del',
+                meta: {
+                  options: { db: 1 },
+                  pattern: 'users:list:**',
+                },
+              },
+            })
           } else {
             errorHandler(res, 'No User delete')
           }

@@ -54,6 +54,7 @@ __webpack_require__.r(__webpack_exports__);
                   }).then(function (res) {
                     var data = res.data;
                     var mess = '';
+                    console.log('⚡ data::', data);
                     /** Успешное выполнение операций. Если пришёл ответ со статусом 201. Все остальные ошибка */
                     if (data.status === 201) {
                       if (data.message.bd === 1) {
